@@ -1,4 +1,4 @@
-package adarga;
+package adarga.getinfo;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +44,7 @@ public class Item {
 				if (json.get(key).equals("")) {
 					dataJSON.put(keyShort, 0);
 				} else {
-					log.info("json.get(key): " + json.get(key));
+					
 					//dataJSON.put(keyShort, Double.parseDouble((String) json.get(key)));
 					dataJSON.put(keyShort, json.get(key));
 				}
@@ -217,13 +217,15 @@ public class Item {
 		Item newItem = new Item();
 		int itemSize = item.size();
 		int size = this.size();
+		int delta= item.lastYear() - lastYear();
 		JSONObject json = new JSONObject();
+		
 		if (itemSize == size) {
 			
 			Iterator<String> iter = years.iterator();
 			while (iter.hasNext()) {
 				int year = Integer.parseInt(iter.next());
-				Double operation = this.getValue(year) / item.getValue(year);
+				Double operation = this.getValue(year) / item.getValue(year + delta);
 				newItem.setValue(year, operation);
 				
 			}

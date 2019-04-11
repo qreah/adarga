@@ -1,9 +1,12 @@
-package adarga;
+package adarga.getinfo;
 
 import java.io.IOException;
 import java.util.logging.Logger;
 
 import org.json.JSONObject;
+
+import adarga.ratios.InvestmentManagement;
+import adarga.ratios.OperatingManagement;
 
 public class Company {
 	
@@ -14,22 +17,26 @@ public class Company {
 		IncomeStatement is = new IncomeStatement();
 		CashFlowStatement cs = new CashFlowStatement();
 		CompanyInformation ci = new CompanyInformation();
-		try {
+		//try {
 			bs.execute(companyName);
 			is.execute(companyName);
 			cs.execute(companyName);
 			ci.execute(companyName);
-		} catch (Exception e) {
-			log.info("Error: Company. com.google.apphosting.api.DeadlineExceededException | Company: " + companyName);
-		}
+			
+		//} catch (Exception e) {
+		//	log.info("Error: Company. com.google.apphosting.api.DeadlineExceededException | Company: " + companyName);
+		//}
 	}
 	
 	public JSONObject analysis(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs, CompanyInformation ci) {
 	  JSONObject json = new JSONObject();
-	  try {
+	  //try {
 		int lastYear = is.get("Revenue").lastYear();
 		
-		// Sources of Value. Previous for Forecasting hypothesis
+		OperatingManagement OM = new OperatingManagement(bs, is, cs);
+		InvestmentManagement IM = new InvestmentManagement(bs, is, cs);
+		
+		
 		Item revenue = is.get("Revenue");
 		Item salesGrowth = revenue.changeInItem();
 		Item provisionForIncomeTaxes = is.get("Provision for income taxes");
@@ -94,6 +101,17 @@ public class Company {
 		double g10Years = growthFirst10Years(gOperatingIncome);
 		
 		
+		
+		
+		
+		//Investment Management
+		
+		
+		//Financial Management
+		
+		//Financial Distress Analysis
+		
+	
 		// Global Analysis
 		
 		Item salesOverAssets = is.get("Revenue").divide(bs.get("Total assets"));
@@ -102,6 +120,8 @@ public class Company {
 		Item ROE = is.get("Net income").divide(bs.get("Total stockholders' equity"));
 		temp = bs.get("Total stockholders' equity").substract(controlNull(bs.get("Goodwill"), lastYear));
 		Item returnOnTangibleEquity = is.get("Net income").divide(temp);
+		
+		//Cash Management
 		
 		
 		// Display results
@@ -120,10 +140,13 @@ public class Company {
 		json.put("growthIncome", Double.toString(gIncome));
 		json.put("growthOperatingIncome", Double.toString(gOperatingIncome));
 		json.put("g10Years", Double.toString(g10Years));
+	 
+		/*
 	  } catch (Exception e) {
 		 
           json = emptyResults();
       }  
+      */
 		
 		return json;
 		

@@ -1,4 +1,4 @@
-package adarga;
+package adarga.endpoint;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,6 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
+
+import adarga.getinfo.BalanceSheet;
+import adarga.getinfo.CashFlowStatement;
+import adarga.getinfo.Company;
+import adarga.getinfo.CompanyInformation;
+import adarga.getinfo.IncomeStatement;
 
 
 /**

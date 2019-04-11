@@ -1,4 +1,4 @@
-package adarga;
+package adarga.getinfo;
 
 import java.io.IOException;
 import java.net.InetAddress;

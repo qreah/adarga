@@ -1,4 +1,4 @@
-package adarga;
+package adarga.getinfo;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -19,7 +19,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
-import adarga.BalanceSheet.FinancialModelingPrepUrl;
+import adarga.getinfo.BalanceSheet.FinancialModelingPrepUrl;
 
 public class AutomaticValuation {
 	private static final Logger log = Logger.getLogger(BalanceSheet.class.getName());
@@ -48,13 +48,13 @@ public class AutomaticValuation {
 		} else {
 			db.setRound(round + batch);
 		}
-		log.info("last round: " + round + batch);
+		
 		for (int i = round; i < round + batch +1; i++) {
 			JSONObject json = new JSONObject(array.get(i).toString());
 			String Name = json.getString("Name").replaceAll("'", "");
 			String Sector = json.getString("Sector");		
 			String Symbol = json.getString("Symbol");
-			log.info("Copmany: " + Symbol);
+			
 			BalanceSheet bs = new BalanceSheet();
 			IncomeStatement is = new IncomeStatement();
 			CashFlowStatement cs = new CashFlowStatement();

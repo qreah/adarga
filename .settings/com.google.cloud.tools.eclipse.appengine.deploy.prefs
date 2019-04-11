@@ -1,6 +1,7 @@
 account.email=rafa@adboss.io
 eclipse.preferences.version=1
 include.optional.configuration.files=true
+project.allowObsoleteRuntime=false
 project.bucket=
 project.id=apiadarga
 project.previousVersion.stop=true

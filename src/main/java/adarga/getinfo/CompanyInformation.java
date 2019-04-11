@@ -1,4 +1,4 @@
-package adarga;
+package adarga.getinfo;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
-import adarga.BalanceSheet.FinancialModelingPrepUrl;
+import adarga.getinfo.BalanceSheet.FinancialModelingPrepUrl;
 
 public class CompanyInformation {
 	private static final Logger log = Logger.getLogger(BalanceSheet.class.getName());
@@ -41,17 +41,24 @@ public class CompanyInformation {
 			String resString = res.parseAsString().replace("<pre>", "");
 			
 			JSONObject json = new JSONObject(resString).getJSONObject(companySymbol);
+			//companyInformation.put("Price", Double.toString(json.getDouble("Price")));
+			
 			Iterator<String> iter = json.keys();
 			
 			while (iter.hasNext()) {
 				String key = iter.next();
-				try {
-					String info = (String) json.get(key);
-					companyInformation.put(key, info);
-				} catch (Exception e) {
-					Double info = json.getDouble(key);
-					companyInformation.put(key, Double.toString(info));
+				
+				if (json.get(key).equals(null)) {
+				} else {
+					try {
+						String info = (String) json.get(key);
+						companyInformation.put(key, info);
+					} catch (Exception e) {
+						Double info = json.getDouble(key);
+						companyInformation.put(key, Double.toString(info));
+					}
 				}
+				
 				
 			}
 		

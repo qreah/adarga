@@ -1,4 +1,4 @@
-package adarga;
+package adarga.endpoint;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,33 +10,37 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
+
+import adarga.analysis.OpportunityIdentification;
+
 /**
- * Servlet implementation class Automatic
+ * Servlet implementation class Level1
  */
-@WebServlet("/automatic")
-public class Automatic extends HttpServlet {
+@WebServlet("/level1")
+public class Level1 extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Automatic() {
-        super();
-        // TODO Auto-generated constructor stub
+    public Level1() {
+    	
+    	
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		AutomaticValuation aV = new AutomaticValuation();
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
-		try {
-			aV.getCompanies();
-			out.write("Ok: Done!");
-		} catch (SQLException | ClassNotFoundException e) {
-			out.write("KO: Problem!");
+    	OpportunityIdentification oi = new OpportunityIdentification();
+    	try {
+			JSONObject json = oi.Level1();
+			out.write(json.toString());
+		} catch (ClassNotFoundException | SQLException e) {
+			
 			e.printStackTrace();
 		}
 	}

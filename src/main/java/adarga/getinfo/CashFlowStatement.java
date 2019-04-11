@@ -1,4 +1,4 @@
-package adarga;
+package adarga.getinfo;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
-import adarga.IncomeStatement.FinancialModelingPrepUrl;
+import adarga.getinfo.IncomeStatement.FinancialModelingPrepUrl;
 
 public class CashFlowStatement {
 	

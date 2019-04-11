@@ -1,4 +1,4 @@
-package adarga;
+package adarga.analysis;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -9,6 +9,10 @@ import java.util.logging.Logger;
 import javax.servlet.ServletException;
 
 import org.json.JSONObject;
+
+import adarga.getinfo.BalanceSheet;
+import adarga.getinfo.DB;
+import adarga.getinfo.Item;
 
 public class OpportunityIdentification {
 	private static final Logger log = Logger.getLogger(BalanceSheet.class.getName());
@@ -43,7 +47,7 @@ public class OpportunityIdentification {
 				
 				if (growthCriteriaLevel(itemSG, 0.05) && growthCriteriaLevel(itemNOPAT, 0.05) 
 						&& returnLevel(itemROTE, 0.05) && g10YearsLevel(g10Years, 0.02)){
-					json.put("Opportunity", rs.getString("Symbol"));
+					json.put(rs.getString("Company"), rs.getString("returnOnTangibleEquity"));
 				}
 			
 			}
@@ -82,8 +86,8 @@ public class OpportunityIdentification {
 				
 				double g10Years = Double.parseDouble(rs.getString("g10Years"));
 				
-				if (returnLevel(itemROTE, 0.30)){
-					json.put("Opportunity", rs.getString("Symbol"));
+				if (g10YearsLevel(g10Years, 0.02)){
+					json.put(rs.getString("Company"), rs.getString("returnOnTangibleEquity"));
 				}
 			
 			}
