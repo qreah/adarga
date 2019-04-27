@@ -40,6 +40,12 @@ public class AN extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
+		response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+        
 		String company = request.getParameter("com");
 		//comment to be erased
 		BalanceSheet bs = new BalanceSheet();
@@ -49,38 +55,7 @@ public class AN extends HttpServlet {
 		com.getFinancialStatements(company);
 		CompanyInformation ci = new CompanyInformation();
 		JSONObject result = com.analysis(bs, is, cs, ci);
-		//Málaga Madrid
-		out.println(company + "<BR>");
-		out.println("<BR>");
-		out.println("salesGrowth: " + result.getString("salesGrowth") + "<BR>");
-		out.println("<BR>");
-		out.println("NOPATGrowth: " + result.getString("NOPATGrowth") + "<BR>");
-		out.println("<BR>");
-		out.println("NOPATMargin: " + result.getString("NOPATMargin") + "<BR>");
-		out.println("<BR>");
-		out.println("netWorkingCapitalOverRevenues: " + result.getString("netWorkingCapitalOverRevenues") + "<BR>");
-		out.println("<BR>");
-		out.println("netLongTermAssetsOverRevenue: " + result.getString("netLongTermAssetsOverRevenue") + "<BR>");
-		out.println("<BR>");
-		out.println("netDebtToCapitalRatio: " + result.getString("netDebtToCapitalRatio") + "<BR>");
-		out.println("<BR>");
-		out.println("afterTaxCostOfDebt: " + result.getString("afterTaxCostOfDebt") + "<BR>");
-		out.println("<BR>");
-		out.println("OperatingROA: " + result.getString("OperatingROA") + "<BR>");
-		out.println("<BR>");
-		out.println("salesOverNetAssets: " + result.getString("salesOverNetAssets") + "<BR>");
-		out.println("<BR>");
-		out.println("ROE: " + result.getString("ROE") + "<BR>");
-		out.println("<BR>");
-		out.println("returnOnTangibleEquity: " + result.getString("returnOnTangibleEquity") + "<BR>");
-		out.println("<BR>");
-		out.println("growthIncome: " + result.getString("growthIncome") + "<BR>");
-		out.println("<BR>");
-		out.println("growthOperatingIncome: " + result.getString("growthOperatingIncome") + "<BR>");
-		out.println("<BR>");
-		out.println("g10Years: " + result.getString("g10Years") + "<BR>");
-		
-		
+		out.println(result.toString());		
 		
 	}
 

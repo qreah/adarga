@@ -1,5 +1,7 @@
 package adarga.ratios;
 
+import java.util.logging.Logger;
+
 import org.json.JSONObject;
 
 import adarga.getinfo.BalanceSheet;
@@ -7,8 +9,11 @@ import adarga.getinfo.CashFlowStatement;
 import adarga.getinfo.CompanyInformation;
 import adarga.getinfo.IncomeStatement;
 import adarga.getinfo.Item;
+import utils.Utils;
 
 public class GlobalManagement {
+	
+	private static final Logger log = Logger.getLogger(GlobalManagement.class.getName());
 	
 	Item operatingROA;
 	Item salesOverAssets;
@@ -31,6 +36,7 @@ public class GlobalManagement {
 	Item beginningNetDebt2CapitalRatio;
 	Item afterTaxCostOfDebt;
 	
+	@SuppressWarnings("static-access")
 	public GlobalManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs, CompanyInformation ci) {
 		Item revenue = is.get("Revenue");
 		Item provisionForIncomeTaxes = is.get("Provision for income taxes");
@@ -40,7 +46,9 @@ public class GlobalManagement {
 		salesOverAssets = is.get("Revenue").divide(bs.get("Total assets"));
 		operatingROA = NOPATMargin.multiply(salesOverAssets);
 		Item longTermDebt = bs.get("Long-term debt").sum(bs.get("Capital leases"));
-		Item netDebt = longTermDebt.sum(bs.get("Short-term debt"));
+		Utils utils = new Utils();
+		int yearBs = bs.get("Long-term debt").lastYear();
+		Item netDebt = longTermDebt.sum(utils.controlNull(bs.get("Short-term debt"), yearBs));
 		netDebt = netDebt.substract(bs.get("Total cash"));
 		Item temp = taxRate.substractNumberAnte(1.0);
 		Item netInterestEarningsAfterTaxes = is.get("Interest Expense").multiply(temp);
@@ -54,17 +62,25 @@ public class GlobalManagement {
 		Item goodwillAndIntangibles = bs.get("Goodwill").sum(bs.get("Intangible assets"));
 		Item temp2 = equity.substract(goodwillAndIntangibles);
 		returnOnTangibleEquity = netIncome.divide(temp2);
-		Item dividends = cs.get("Dividend paid");
+		Item FCF = cs.get("Free cash flow");
+		int yearCs = FCF.lastYear();
+		Item dividends = utils.controlNull(cs.get("Dividend paid"), yearCs);
+		log.info("dividends last year: " + dividends.lastYear());
+		log.info("dividends: " + dividends.toString());
+		log.info("yearCs: " + yearCs);
+		
 		Double numberOfShares = ci.numberOfShares();
 		payOut = dividends.divideNumber(numberOfShares);
+		
+		
 		dividendYield = dividends.divideNumber(ci.getStockPrice());
-		Item FCF = cs.get("Free cash flow");
+		
 		FCFOverEquity = FCF.divide(equity);
 		FCFPerShare = FCF.divideNumber(numberOfShares);
 		earningsPerShare = netIncome.divideNumber(numberOfShares);
 		Item operatingIncome = is.get("Operating income");
 		operatingIncomePerShare = operatingIncome.divideNumber(numberOfShares);
-		Item temp3 = 
+		
 		growthRate = ROE.multiply(payOut.substractNumberAnte(1.0));
 		salesGrowthRate = revenue.changeInItem();
 		Item currentAssets = bs.get("Total current assets");
@@ -73,7 +89,8 @@ public class GlobalManagement {
 		Item shortTermDebtAndCurrentPortionOfLongTermDebt = bs.get("Short-term debt");
 		Item netWorkingCapital = currentAssets.substract(currentLiabilities);
 		netWorkingCapital = netWorkingCapital.substract(cashAndMarketableSecurities);
-		netWorkingCapital = netWorkingCapital.sum(shortTermDebtAndCurrentPortionOfLongTermDebt);
+		int YearB = netWorkingCapital.lastYear();
+		netWorkingCapital = netWorkingCapital.sum(utils.controlNull(shortTermDebtAndCurrentPortionOfLongTermDebt, YearB));
 		beginningNetOperatingWCOverSales = netWorkingCapital.divide(revenue);
 		Item LTAssets = bs.get("Total assets").substract(currentAssets);
 		Item temp4 = LTAssets.substract(goodwillAndIntangibles);
@@ -85,27 +102,27 @@ public class GlobalManagement {
 	
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
-		json.put("operatingROA", operatingROA.toString());
-		json.put("salesOverAssets", salesOverAssets.toString());
-		json.put("financialLeverageGain", financialLeverageGain.toString());
-		json.put("ROE", ROE.toString());
-		json.put("returnOnTangibleEquity", returnOnTangibleEquity.toString());
+		json.put("operatingROA", operatingROA.toJSON());
+		json.put("salesOverAssets", salesOverAssets.toJSON());
+		json.put("financialLeverageGain", financialLeverageGain.toJSON());
+		json.put("ROE", ROE.toJSON());
+		json.put("returnOnTangibleEquity", returnOnTangibleEquity.toJSON());
 		
-		json.put("payOut", payOut.toString());
-		json.put("dividendYield", dividendYield.toString());
-		json.put("FCFOverEquity", FCFOverEquity.toString());
-		json.put("FCFPerShare", FCFPerShare.toString());
-		json.put("earningsPerShare", earningsPerShare.toString());
+		json.put("payOut", payOut.toJSON());
+		json.put("dividendYield", dividendYield.toJSON());
+		json.put("FCFOverEquity", FCFOverEquity.toJSON());
+		json.put("FCFPerShare", FCFPerShare.toJSON());
+		json.put("earningsPerShare", earningsPerShare.toJSON());
 		
-		json.put("operatingIncomePerShare", operatingIncomePerShare.toString());
-		json.put("growthRate", growthRate.toString());
-		json.put("salesGrowthRate", salesGrowthRate.toString());
-		json.put("NOPATMargin", NOPATMargin.toString());
-		json.put("beginningNetOperatingWCOverSales", beginningNetOperatingWCOverSales.toString());
+		json.put("operatingIncomePerShare", operatingIncomePerShare.toJSON());
+		json.put("growthRate", growthRate.toJSON());
+		json.put("salesGrowthRate", salesGrowthRate.toJSON());
+		json.put("NOPATMargin", NOPATMargin.toJSON());
+		json.put("beginningNetOperatingWCOverSales", beginningNetOperatingWCOverSales.toJSON());
 		
-		json.put("beginningNetOperatingLTAssetsOverSales", beginningNetOperatingLTAssetsOverSales.toString());
-		json.put("beginningNetDebt2CapitalRatio", beginningNetDebt2CapitalRatio.toString());
-		json.put("afterTaxCostOfDebt", afterTaxCostOfDebt.toString());
+		json.put("beginningNetOperatingLTAssetsOverSales", beginningNetOperatingLTAssetsOverSales.toJSON());
+		json.put("beginningNetDebt2CapitalRatio", beginningNetDebt2CapitalRatio.toJSON());
+		json.put("afterTaxCostOfDebt", afterTaxCostOfDebt.toJSON());
 		
 		return json;
 		

@@ -51,24 +51,24 @@ public class OperatingManagement {
 	
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
-		json.put("revenue", revenue.toString());
-		json.put("salesGrowth", salesGrowth.toString());
-		json.put("COGS", COGS.toString());
-		json.put("operatingIncome", operatingIncome.toString());
-		json.put("grossMargin", grossMargin.toString());
-		json.put("SGA", SGA.toString());
-		json.put("SGAOverSales", SGAOverSales.toString());
-		json.put("NOPAT", NOPAT.toString());
-		json.put("NOPATGrowth", NOPATGrowth.toString());
-		json.put("NOPATMargin", NOPATMargin.toString());
-		json.put("operatingMargin", operatingMargin.toString());
-		json.put("provisionForIncomeTaxes", provisionForIncomeTaxes.toString());
-		json.put("taxRate", taxRate.toString());
-		json.put("interestExpense", interestExpense.toString());
-		json.put("netIncome", netIncome.toString());
-		json.put("incomeOverRevenue", incomeOverRevenue.toString());
-		json.put("operatingCashFlow", operatingCashFlow.toString());
-		json.put("operatingCashFlowOverIncome", operatingCashFlowOverIncome.toString());
+		json.put("revenue", revenue.toJSON());
+		json.put("salesGrowth", salesGrowth.toJSON());
+		json.put("COGS", COGS.toJSON());
+		json.put("operatingIncome", operatingIncome.toJSON());
+		json.put("grossMargin", grossMargin.toJSON());
+		json.put("SGA", SGA.toJSON());
+		json.put("SGAOverSales", SGAOverSales.toJSON());
+		json.put("NOPAT", NOPAT.toJSON());
+		json.put("NOPATGrowth", NOPATGrowth.toJSON());
+		json.put("NOPATMargin", NOPATMargin.toJSON());
+		json.put("operatingMargin", operatingMargin.toJSON());
+		json.put("provisionForIncomeTaxes", provisionForIncomeTaxes.toJSON());
+		json.put("taxRate", taxRate.toJSON());
+		json.put("interestExpense", interestExpense.toJSON());
+		json.put("netIncome", netIncome.toJSON());
+		json.put("incomeOverRevenue", incomeOverRevenue.toJSON());
+		json.put("operatingCashFlow", operatingCashFlow.toJSON());
+		json.put("operatingCashFlowOverIncome", operatingCashFlowOverIncome.toJSON());
 
 		return json;
 		

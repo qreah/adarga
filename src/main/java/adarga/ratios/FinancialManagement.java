@@ -1,13 +1,19 @@
 package adarga.ratios;
 
+import java.util.logging.Logger;
+
 import org.json.JSONObject;
 
 import adarga.getinfo.BalanceSheet;
 import adarga.getinfo.CashFlowStatement;
+import adarga.getinfo.Company;
 import adarga.getinfo.IncomeStatement;
 import adarga.getinfo.Item;
+import utils.Utils;
 
 public class FinancialManagement {
+	
+	private static final Logger log = Logger.getLogger(FinancialManagement.class.getName());
 	
 	Item netInterestEarningsAfterTaxes;
 	Item longTermDebt;
@@ -25,13 +31,18 @@ public class FinancialManagement {
 	Item interestCoverage_operatingCashFlowVSinterestexpense;
 	
 	
+	@SuppressWarnings("static-access")
 	public FinancialManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) {
 		Item provisionForIncomeTaxes = is.get("Provision for income taxes");
 		Item taxRate = provisionForIncomeTaxes.divide(is.get("Net income")); 
 		Item temp = taxRate.substractNumberAnte(1.0);
 		netInterestEarningsAfterTaxes = is.get("Interest Expense").multiply(temp);
-		longTermDebt = bs.get("Long-term debt").sum(bs.get("Capital leases"));
-		netDebt = longTermDebt.sum(bs.get("Short-term debt"));
+		equity = bs.get("Total stockholders' equity");
+		Utils utils = new Utils();
+		int lastYear = equity.lastYear();
+		longTermDebt = bs.get("Long-term debt").sum(utils.controlNull(bs.get("Capital leases"), lastYear));
+		Item shortDebt = utils.controlNull(bs.get("Short-term debt"), lastYear);
+		netDebt = longTermDebt.sum(shortDebt);
 		netDebt = netDebt.substract(bs.get("Total cash"));
 		equity = bs.get("Total stockholders' equity");
 		debtToCapitalRatio = netDebt;
@@ -66,21 +77,21 @@ public class FinancialManagement {
 	
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
-		json.put("netInterestEarningsAfterTaxes", netInterestEarningsAfterTaxes.toString());
-		json.put("longTermDebt", longTermDebt.toString());
-		json.put("netDebt", netDebt.toString());
-		json.put("equity", equity.toString());
-		json.put("debtToCapitalRatio", debtToCapitalRatio.toString());
-		json.put("netDebtToNetCapitalRatio", netDebtToNetCapitalRatio.toString());
-		json.put("spread", spread.toString());
-		json.put("netFinancialLeverage", netFinancialLeverage.toString());
-		json.put("financialLeverage", financialLeverage.toString());
+		json.put("netInterestEarningsAfterTaxes", netInterestEarningsAfterTaxes.toJSON());
+		json.put("longTermDebt", longTermDebt.toJSON());
+		json.put("netDebt", netDebt.toJSON());
+		json.put("equity", equity.toJSON());
+		json.put("debtToCapitalRatio", debtToCapitalRatio.toJSON());
+		json.put("netDebtToNetCapitalRatio", netDebtToNetCapitalRatio.toJSON());
+		json.put("spread", spread.toJSON());
+		json.put("netFinancialLeverage", netFinancialLeverage.toJSON());
+		json.put("financialLeverage", financialLeverage.toJSON());
 		
-		json.put("currentRatio", currentRatio.toString());
-		json.put("quickRatio", quickRatio.toString());
-		json.put("cashRatio", cashRatio.toString());
-		json.put("interestCoverage_operatingIncomeVSinterestexpense", interestCoverage_operatingIncomeVSinterestexpense.toString());
-		json.put("interestCoverage_operatingCashFlowVSinterestexpense", interestCoverage_operatingCashFlowVSinterestexpense.toString());
+		json.put("currentRatio", currentRatio.toJSON());
+		json.put("quickRatio", quickRatio.toJSON());
+		json.put("cashRatio", cashRatio.toJSON());
+		json.put("interestCoverage_operatingIncomeVSinterestexpense", interestCoverage_operatingIncomeVSinterestexpense.toJSON());
+		json.put("interestCoverage_operatingCashFlowVSinterestexpense", interestCoverage_operatingCashFlowVSinterestexpense.toJSON());
 		
 				
 		return json;

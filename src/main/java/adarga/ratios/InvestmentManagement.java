@@ -1,13 +1,17 @@
 package adarga.ratios;
 
+import java.util.logging.Logger;
+
 import org.json.JSONObject;
 
 import adarga.getinfo.BalanceSheet;
 import adarga.getinfo.CashFlowStatement;
 import adarga.getinfo.IncomeStatement;
 import adarga.getinfo.Item;
+import utils.Utils;
 
 public class InvestmentManagement {
+	private static final Logger log = Logger.getLogger(InvestmentManagement.class.getName());
 	
 	Item accountsReceivable;
 	Item accountsReceivableGrowth;
@@ -37,6 +41,7 @@ public class InvestmentManagement {
 	Item cashOverNetAssets;
 	Item cashOverReceivables;
 	
+	@SuppressWarnings("static-access")
 	public InvestmentManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) {
 		Item revenue = is.get("Revenue");
 		Item COGS = is.get("Cost of revenue");
@@ -48,8 +53,12 @@ public class InvestmentManagement {
 		currentAssets = bs.get("Total current assets");
 		currentLiabilities = bs.get("Total current liabilities");
 		cashAndMarketableSecurities = bs.get("Total cash");
-		shortTermDebtAndCurrentPortionOfLongTermDebt = bs.get("Short-term debt");
+		Utils utils = new Utils();
+		int lastYears = currentLiabilities.lastYear();
+		shortTermDebtAndCurrentPortionOfLongTermDebt = utils.controlNull(bs.get("Short-term debt"), lastYears);
 		netWorkingCapital = currentAssets.substract(currentLiabilities);
+		log.info("shortTermDebtAndCurrentPortionOfLongTermDebt: " + shortTermDebtAndCurrentPortionOfLongTermDebt.toString());
+		log.info("cashAndMarketableSecurities: " + cashAndMarketableSecurities.toString());
 		netWorkingCapital = netWorkingCapital.substract(cashAndMarketableSecurities);
 		netWorkingCapital = netWorkingCapital.sum(shortTermDebtAndCurrentPortionOfLongTermDebt);
 		LTAssets = bs.get("Total assets").substract(currentAssets);
@@ -73,33 +82,33 @@ public class InvestmentManagement {
 	
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
-		json.put("accountsReceivable", accountsReceivable.toString());
-		json.put("accountsReceivableGrowth", accountsReceivableGrowth.toString());
-		json.put("inventory", inventory.toString());
-		json.put("inventoryGrowth", inventoryGrowth.toString());
-		json.put("accountsPayable", accountsPayable.toString());
-		json.put("currentAssets", currentAssets.toString());
-		json.put("currentLiabilities", currentLiabilities.toString());
-		json.put("cashAndMarketableSecurities", cashAndMarketableSecurities.toString());
-		json.put("shortTermDebtAndCurrentPortionOfLongTermDebt", shortTermDebtAndCurrentPortionOfLongTermDebt.toString());
-		json.put("netWorkingCapital", netWorkingCapital.toString());
-		json.put("LTAssets", LTAssets.toString());
-		json.put("goodwillAndIntangibles", goodwillAndIntangibles.toString());
-		json.put("nonInterestBearingLTLiabilities", nonInterestBearingLTLiabilities.toString());
-		json.put("netLTAssets", netLTAssets.toString());
-		json.put("netAssets", netAssets.toString());
-		json.put("longTermDebt", longTermDebt.toString());
-		json.put("accountsReceivableOverSales", accountsReceivableOverSales.toString());
-		json.put("inventorySales", inventorySales.toString());
-		json.put("accountsPayableSales", accountsPayableSales.toString());
-		json.put("daysReceivables", daysReceivables.toString());
-		json.put("daysInventory", daysInventory.toString());
-		json.put("daysPayables", daysPayables.toString());
-		json.put("salesOverWorkingCapital", salesOverWorkingCapital.toString());
-		json.put("salesOverNetLTAssets", salesOverNetLTAssets.toString());
-		json.put("salesOverNetAssets", salesOverNetAssets.toString());
-		json.put("cashOverNetAssets", cashOverNetAssets.toString());
-		json.put("cashOverReceivables", cashOverReceivables.toString());
+		json.put("accountsReceivable", accountsReceivable.toJSON());
+		json.put("accountsReceivableGrowth", accountsReceivableGrowth.toJSON());
+		json.put("inventory", inventory.toJSON());
+		json.put("inventoryGrowth", inventoryGrowth.toJSON());
+		json.put("accountsPayable", accountsPayable.toJSON());
+		json.put("currentAssets", currentAssets.toJSON());
+		json.put("currentLiabilities", currentLiabilities.toJSON());
+		json.put("cashAndMarketableSecurities", cashAndMarketableSecurities.toJSON());
+		json.put("shortTermDebtAndCurrentPortionOfLongTermDebt", shortTermDebtAndCurrentPortionOfLongTermDebt.toJSON());
+		json.put("netWorkingCapital", netWorkingCapital.toJSON());
+		json.put("LTAssets", LTAssets.toJSON());
+		json.put("goodwillAndIntangibles", goodwillAndIntangibles.toJSON());
+		json.put("nonInterestBearingLTLiabilities", nonInterestBearingLTLiabilities.toJSON());
+		json.put("netLTAssets", netLTAssets.toJSON());
+		json.put("netAssets", netAssets.toJSON());
+		json.put("longTermDebt", longTermDebt.toJSON());
+		json.put("accountsReceivableOverSales", accountsReceivableOverSales.toJSON());
+		json.put("inventorySales", inventorySales.toJSON());
+		json.put("accountsPayableSales", accountsPayableSales.toJSON());
+		json.put("daysReceivables", daysReceivables.toJSON());
+		json.put("daysInventory", daysInventory.toJSON());
+		json.put("daysPayables", daysPayables.toJSON());
+		json.put("salesOverWorkingCapital", salesOverWorkingCapital.toJSON());
+		json.put("salesOverNetLTAssets", salesOverNetLTAssets.toJSON());
+		json.put("salesOverNetAssets", salesOverNetAssets.toJSON());
+		json.put("cashOverNetAssets", cashOverNetAssets.toJSON());
+		json.put("cashOverReceivables", cashOverReceivables.toJSON());
 		
 		return json;
 		

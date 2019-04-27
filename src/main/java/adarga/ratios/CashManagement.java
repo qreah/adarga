@@ -1,13 +1,18 @@
 package adarga.ratios;
 
+import java.util.logging.Logger;
+
 import org.json.JSONObject;
 
 import adarga.getinfo.BalanceSheet;
 import adarga.getinfo.CashFlowStatement;
 import adarga.getinfo.IncomeStatement;
 import adarga.getinfo.Item;
+import utils.Utils;
 
 public class CashManagement {
+	
+	private static final Logger log = Logger.getLogger(CashManagement.class.getName());
 	
 	Item operatingCashFlow;
 	Item ChangeOperatingCashFlow;
@@ -32,6 +37,7 @@ public class CashManagement {
 	Item changeInDebtRepayment;
 		
 	
+	@SuppressWarnings("static-access")
 	public CashManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) {
 		Item revenue = is.get("Revenue");
 		operatingCashFlow = cs.get("Net cash provided by operating activities");
@@ -42,49 +48,55 @@ public class CashManagement {
 		changeInCAPEX = CAPEX.changeInItem();
 		adquisitions = cs.get("Acquisitions, net");
 		changeInAdquisitions = adquisitions.changeInItem();
-		securitiesNet = cs.get("Sales\\/Maturities of investments").substract(cs.get("Purchases of investments"));
-		changeInSecurities = changeInSecurities.changeInItem();
+		Utils utils = new Utils();
+		
+		log.info("Purchases: " + cs.get("Purchases of investments"));
+		securitiesNet = cs.get("Sales/Maturities of investments").substract(cs.get("Purchases of investments"));
+		changeInSecurities = securitiesNet.changeInItem();
 		financingCashFlow = cs.get("Net cash provided by (used for) financing activities");
 		investing = CAPEX.sum(adquisitions); //CAPEX and adquisitions
+		
 		changeInInvesting = investing.changeInItem();
 		FCF = cs.get("Free cash flow");
+		
 		changeInFCF = FCF.changeInItem();
-		dividends = cs.get("Dividend paid");
+		dividends = utils.controlNull(cs.get("Dividend paid"), FCF.lastYear());
+		log.info("dividends: " + dividends);
 		changeInDividends = dividends.changeInItem();
-		stockRepurchase = cs.get("Common stock repurchased").substract(cs.get("Common stock issued"));
+		stockRepurchase = utils.controlNull(cs.get("Common stock repurchased"), FCF.lastYear()).substract(utils.controlNull(cs.get("Common stock issued"), FCF.lastYear()));
 		changeInStockRepurchase = stockRepurchase.changeInItem();
-		debtRepayment = cs.get("Debt repayment").substract(cs.get("Debt issued"));
+		debtRepayment = utils.controlNull(cs.get("Debt repayment"), FCF.lastYear()).substract(utils.controlNull(cs.get("Debt issued"), FCF.lastYear()));
 		changeInDebtRepayment = debtRepayment.changeInItem();
 	
 	}
 	
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
-		json.put("operatingCashFlow", operatingCashFlow.toString());
-		json.put("ChangeOperatingCashFlow", ChangeOperatingCashFlow.toString());
-		json.put("investingCashFlow", investingCashFlow.toString());
-		json.put("ChangeInvestingCashFlow", ChangeInvestingCashFlow.toString());
+		json.put("operatingCashFlow", operatingCashFlow.toJSON());
+		json.put("ChangeOperatingCashFlow", ChangeOperatingCashFlow.toJSON());
+		json.put("investingCashFlow", investingCashFlow.toJSON());
+		json.put("ChangeInvestingCashFlow", ChangeInvestingCashFlow.toJSON());
 		
-		json.put("CAPEX", CAPEX.toString());
-		json.put("changeInCAPEX", changeInCAPEX.toString());
-		json.put("adquisitions", adquisitions.toString());
-		json.put("changeInAdquisitions", changeInAdquisitions.toString());
+		json.put("CAPEX", CAPEX.toJSON());
+		json.put("changeInCAPEX", changeInCAPEX.toJSON());
+		json.put("adquisitions", adquisitions.toJSON());
+		json.put("changeInAdquisitions", changeInAdquisitions.toJSON());
 		
-		json.put("securitiesNet", securitiesNet.toString());
-		json.put("changeInSecurities", changeInSecurities.toString());
-		json.put("financingCashFlow", financingCashFlow.toString());
-		json.put("investing", investing.toString());
+		json.put("securitiesNet", securitiesNet.toJSON());
+		json.put("changeInSecurities", changeInSecurities.toJSON());
+		json.put("financingCashFlow", financingCashFlow.toJSON());
+		json.put("investing", investing.toJSON());
 		
-		json.put("changeInInvesting", changeInInvesting.toString());
-		json.put("FCF", FCF.toString());
-		json.put("changeInFCF", changeInFCF.toString());
-		json.put("dividends", dividends.toString());
+		json.put("changeInInvesting", changeInInvesting.toJSON());
+		json.put("FCF", FCF.toJSON());
+		json.put("changeInFCF", changeInFCF.toJSON());
+		json.put("dividends", dividends.toJSON());
 		
-		json.put("changeInDividends", changeInDividends.toString());
-		json.put("stockRepurchase", stockRepurchase.toString());
-		json.put("changeInStockRepurchase", changeInStockRepurchase.toString());
-		json.put("debtRepayment", debtRepayment.toString());
-		json.put("changeInDebtRepayment", changeInDebtRepayment.toString());	
+		json.put("changeInDividends", changeInDividends.toJSON());
+		json.put("stockRepurchase", stockRepurchase.toJSON());
+		json.put("changeInStockRepurchase", changeInStockRepurchase.toJSON());
+		json.put("debtRepayment", debtRepayment.toJSON());
+		json.put("changeInDebtRepayment", changeInDebtRepayment.toJSON());	
 		
 		return json;
 		

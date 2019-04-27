@@ -24,7 +24,9 @@ public class Item {
 			int yeari = lastYear - i;
 			dataJSON.put(Integer.toString(yeari), 0);
 			years.add(Integer.toString(yeari));
+			
 		}
+		sortYears();
 		return this;
 	}
 			
@@ -53,6 +55,11 @@ public class Item {
 			}
 		}
 		
+		sortYears();
+		
+	}
+	
+	public void sortYears() {
 		Collections.sort(years, new Comparator<String>() {
 	        public int compare(String o1, String o2) {
 	            return extractInt(o1) - extractInt(o2);
@@ -63,11 +70,11 @@ public class Item {
 	            return num.isEmpty() ? 0 : Integer.parseInt(num);
 	        }
 	    });
-		
 	}
 	
 	public int lastYear() {
 		int last = years.size()-1;
+		
 		return Integer.parseInt(years.get(last));
 	}
 	
@@ -91,8 +98,11 @@ public class Item {
 		Item newItem = new Item();
 		int itemSize = item.size();
 		int size = this.size();
+		log.info("SUM itemSize: " + item.lastYear());
+		log.info("SUM size: " + lastYear());
 		if (itemSize == size) {
 			Iterator<String> iter = years.iterator();
+			
 			while (iter.hasNext()) {
 				int year = Integer.parseInt(iter.next());
 				Double operation = item.getValue(year) + this.getValue(year);
@@ -178,13 +188,17 @@ public class Item {
 	public Item multiply(Item item) {
 		Item newItem = new Item();
 		int itemSize = item.size();
+		
 		int size = this.size();
+		int delta = delta(lastYear(), item.lastYear());
+		
 		if (itemSize == size) {
 			
 			Iterator<String> iter = years.iterator();
 			while (iter.hasNext()) {
 				int year = Integer.parseInt(iter.next());
-				Double operation = item.getValue(year) * this.getValue(year);
+				
+				Double operation = item.getValue(year - delta) * this.getValue(year);
 				newItem.setValue(year, operation);
 				
 			}
@@ -290,9 +304,14 @@ public class Item {
 			
 	}
 	
+	 public int delta(int year, int yearItem) {
+		return year  - yearItem;
+		 
+	 }
 	
-	
-	
+	 public JSONObject toJSON() {
+			return dataJSON;
+		}
 	
 	public String toString() {
 		return dataJSON.toString();
