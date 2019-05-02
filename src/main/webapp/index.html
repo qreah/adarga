@@ -1,20 +1,182 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-  <head>
-    <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
-    <title>Hello App Engine</title>
-  </head>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-  <body>
-    <h1>Hello App Engine!</h1>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<link rel="icon" type="image/x-icon" href="/adargaLogo.ico">
+  <title>adarga</title>
+</head>
+<body>
   
-    <table>
-      <tr>
-        <td colspan="2" style="font-weight:bold;">Available Servlets:</td>        
-      </tr>
-      <tr>
-        <td><a href='/hello'>The servlet</a></td>
-      </tr>
-    </table>
-  </body>
+  <div class="container">
+    <div class="row">
+      <h1>Introduzca el ticker de tu empresa para analizarla</h1>
+    </div>
+    <div class="row justify-content-md-center">
+      <div class="col-4">
+        <div class="input-group input-group-sm mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-sm">Ticker</span>
+          </div>
+          <input id="company" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+        </div>
+      </div>
+      <div class="col-4">
+        <button id="analizar" class="btn-sm btn-dark" type="submit">Analizar</button>
+      </div>
+    </div>
+    <div class="row">
+      <h1 id="demo"></h1>
+    </div>
+  </div>
+
+  <div id="OM" style="visibility: hidden">
+
+    <h3>Operating Management</h3>  
+   
+      <table id="tableOM" class="table table-hover">
+        <thead id="theadOM" class="thead-dark">
+          <div id="colOM">
+          <tr >
+           
+            <th scope="col">Concepto</th>
+            <th id="col_1OM" scope="col"></th>
+            <th id="col_2OM" scope="col"></th>
+            <th id="col_3OM" scope="col"></th>
+            <th id="col_4OM" scope="col"></th>
+            <th id="col_5OM" scope="col"></th>
+            
+          </tr>
+
+        </thead>
+        <tbody id="tbodyOM">
+          <!-- app.js will insert html code -->   
+        </tbody>
+      </table>
+
+  </div>
+
+  <div id="IM" style="visibility: hidden">
+
+    <h3>Investing Management</h3>  
+   
+      <table id="tableIM" class="table table-hover">
+        <thead id="theadIM" class="thead-dark">
+          <div id="colIM">
+          <tr >
+           
+            <th scope="col">Concepto</th>
+            <th id="col_1IM" scope="col"></th>
+            <th id="col_2IM" scope="col"></th>
+            <th id="col_3IM" scope="col"></th>
+            <th id="col_4IM" scope="col"></th>
+            <th id="col_5IM" scope="col"></th>
+            
+          </tr>
+
+        </thead>
+        <tbody id="tbodyIM">
+          <!-- app.js will insert html code -->   
+        </tbody>
+      </table>
+
+  </div>
+
+
+  <div id="FM" style="visibility: hidden">
+
+    <h3>Financial Management</h3>  
+   
+      <table id="tableFM" class="table table-hover">
+        <thead id="theadFM" class="thead-dark">
+          <div id="colFM">
+          <tr >
+           
+            <th scope="col">Concepto</th>
+            <th id="col_1FM" scope="col"></th>
+            <th id="col_2FM" scope="col"></th>
+            <th id="col_3FM" scope="col"></th>
+            <th id="col_4FM" scope="col"></th>
+            <th id="col_5FM" scope="col"></th>
+            
+          </tr>
+
+        </thead>
+        <tbody id="tbodyFM">
+          <!-- app.js will insert html code -->   
+        </tbody>
+      </table>
+
+  </div>
+
+  <div id="CM" style="visibility: hidden">
+
+    <h3>Cash Management</h3>  
+   
+      <table id="tableCM" class="table table-hover">
+        <thead id="theadCM" class="thead-dark">
+          <div id="colCM">
+          <tr >
+           
+            <th scope="col">Concepto</th>
+            <th id="col_1CM" scope="col"></th>
+            <th id="col_2CM" scope="col"></th>
+            <th id="col_3CM" scope="col"></th>
+            <th id="col_4CM" scope="col"></th>
+            <th id="col_5CM" scope="col"></th>
+            
+          </tr>
+
+        </thead>
+        <tbody id="tbodyCM">
+          <!-- app.js will insert html code -->   
+        </tbody>
+      </table>
+
+  </div>
+
+
+
+  <div id="GM" style="visibility: hidden">
+
+    <h3>Global Management</h3>  
+   
+      <table id="tableGM" class="table table-hover">
+        <thead id="theadGM" class="thead-dark">
+          <div id="colGM">
+          <tr >
+           
+            <th scope="col">Concepto</th>
+            <th id="col_1GM" scope="col"></th>
+            <th id="col_2GM" scope="col"></th>
+            <th id="col_3GM" scope="col"></th>
+            <th id="col_4GM" scope="col"></th>
+            <th id="col_5GM" scope="col"></th>
+            
+          </tr>
+
+        </thead>
+        <tbody id="tbodyGM">
+          <!-- app.js will insert html code -->   
+        </tbody>
+      </table>
+
+  </div>
+
+
+
+  
+  
+  
+  <script src="/app.js" async></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  
+
+</body>
 </html>
