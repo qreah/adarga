@@ -28,6 +28,7 @@ public class IncomeStatement {
     static Map<String, Item> incomeStatementItems = new HashMap<String, Item>();
     static String name;
 	
+	@SuppressWarnings("unused")
 	public void execute(String companySymbol) throws IOException {
 		name = companySymbol;
 		String urlRaw = "https://financialmodelingprep.com/api/financials/income-statement/";
@@ -82,4 +83,113 @@ public class IncomeStatement {
 			e.printStackTrace();
 		}
     }
+	public Item InterestExpense() {
+		Item interestExpense = incomeStatementItems.get("Interest Expense");
+		if (interestExpense != null) {
+			
+		} else {
+			interestExpense = incomeStatementItems.get("Interest expense");
+		}
+		
+		return interestExpense;
+	}
+	
+	public Item costOfRevenue() {
+		Item interestExpense = incomeStatementItems.get("Cost of revenue");
+		if (interestExpense != null) {
+			
+		} else {
+			interestExpense = incomeStatementItems.get("Cost of revenue");
+		}
+		
+		return interestExpense;
+	}
+	
+	
+	public Item Revenue() {
+		Item interestExpense = incomeStatementItems.get("Revenue");
+		if (interestExpense != null) {
+			
+		} else {
+			interestExpense = incomeStatementItems.get("Revenue");
+		}
+		
+		return interestExpense;
+	}
+	
+	public Item provisionForIncomeTaxes() {
+		Item interestExpense = incomeStatementItems.get("Provision for income taxes");
+		if (interestExpense != null) {
+			
+		} else {
+			interestExpense = incomeStatementItems.get("Provision for income taxes");
+		}
+		
+		return interestExpense;
+	}
+	
+	public Item netIncome() {
+		Item interestExpense = incomeStatementItems.get("Net income");
+		if (interestExpense != null) {
+			
+		} else {
+			interestExpense = incomeStatementItems.get("Net income");
+		}
+		
+		return interestExpense;
+	}
+	
+	
+	public Item SGA() {
+		Item interestExpense = incomeStatementItems.get("Sales, General and administrative");
+		if (interestExpense != null) {
+			
+		} else {
+			interestExpense = incomeStatementItems.get("Sales, General and administrative");
+		}
+		
+		return interestExpense;
+	}
+	
+	
+	public Item grossProfit() {
+		Item interestExpense = incomeStatementItems.get("Gross profit");
+		if (interestExpense != null) {
+			
+		} else {
+			interestExpense = incomeStatementItems.get("Gross profit");
+		}
+		
+		return interestExpense;
+	}
+	
+	
+	
+	public Item manageTotalOperatingExpenses() {
+		Item totalOperatingExpenses = new Item();
+		
+		if (name.equals("XOM")) {
+			totalOperatingExpenses = incomeStatementItems.get("Total costs and expenses");
+		} else {
+			totalOperatingExpenses = incomeStatementItems.get("Total operating expenses");
+			
+		}
+		
+		return totalOperatingExpenses;
+	}
+	
+	public Item OperatingIncome() {
+		Item operatingIncome = incomeStatementItems.get("Operating income");
+		Item revenue = incomeStatementItems.get("Revenue");
+		Item COGS = incomeStatementItems.get("Cost of revenue");
+		Item totalOperatingExpenses = manageTotalOperatingExpenses();
+		if (operatingIncome != null) {
+				
+		} else {
+			
+			operatingIncome = revenue.substract(COGS);
+			operatingIncome = operatingIncome.substract(totalOperatingExpenses);
+		}
+		return operatingIncome;
+	}
 }

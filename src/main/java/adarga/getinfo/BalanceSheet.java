@@ -22,6 +22,8 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
+import utils.Utils;
+
 
 
 public class BalanceSheet {
@@ -69,6 +71,142 @@ public class BalanceSheet {
 	    public FinancialModelingPrepUrl(String encodedUrl) {
 	        super(encodedUrl);
 	    }
+	}
+	
+	public Item Equity() {
+		Item equity = balanceSheetItems.get("Total stockholders' equity");
+		if (equity != null) {
+			
+		} else {
+			equity = balanceSheetItems.get("Total Stockholders' equity");
+		}
+		return equity;
+	}
+	
+	public Item Receivables() {
+		Item equity = balanceSheetItems.get("Receivables");
+		if (equity != null) {
+			
+		} else {
+			equity = balanceSheetItems.get("Receivables");
+		}
+		return equity;
+	}
+	
+	public Item accountsPayable() {
+		Item equity = balanceSheetItems.get("Accounts payable");
+		if (equity != null) {
+			
+		} else {
+			equity = balanceSheetItems.get("Accounts payable");
+		}
+		return equity;
+	}
+	
+	public Item totalCurrentAssets() {
+		Item equity = balanceSheetItems.get("Total current assets");
+		if (equity != null) {
+			
+		} else {
+			equity = balanceSheetItems.get("Total current assets");
+		}
+		return equity;
+	}
+	
+	
+	public Item totalCurrentLiabilities() {
+		Item equity = balanceSheetItems.get("Total current liabilities");
+		if (equity != null) {
+			
+		} else {
+			equity = balanceSheetItems.get("Total current liabilities");
+		}
+		return equity;
+	}
+	
+	
+	public Item capitalLeases() {
+		Item equity = balanceSheetItems.get("Capital leases");
+		if (equity != null) {
+			
+		} else {
+			equity = balanceSheetItems.get("Capital leases");
+		}
+		return equity;
+	}
+	
+	public Item longTermDebt() {
+		Item equity = balanceSheetItems.get("Long-term debt");
+		if (equity != null) {
+			
+		} else {
+			equity = balanceSheetItems.get("Long-term debt");
+		}
+		return equity;
+	}
+	
+	public Item totalAssets() {
+		Item equity = balanceSheetItems.get("Total assets");
+		if (equity != null) {
+			
+		} else {
+			equity = balanceSheetItems.get("Total assets");
+		}
+		return equity;
+	}
+	
+	public Item shortTermDebt() {
+		Item equity = balanceSheetItems.get("Short-term debt");
+		if (equity != null) {
+			
+		} else {
+			equity = balanceSheetItems.get("Short-term debt");
+		}
+		return equity;
+	}
+	
+	public Item totalCash() {
+		Item equity = balanceSheetItems.get("Total cash");
+		if (equity != null) {
+			
+		} else {
+			equity = balanceSheetItems.get("Total cash");
+		}
+		return equity;
+	}
+	
+	public Item Inventories() {
+		Item equity = balanceSheetItems.get("Inventories");
+		if (equity != null) {
+			
+		} else {
+			equity = balanceSheetItems.get("Inventories");
+		}
+		return equity;
+	}
+	
+	public Item Goodwill() {
+		Item goodwill = balanceSheetItems.get("Goodwill");
+		Utils utils = new Utils();
+		if (goodwill != null) {
+			
+		} else {
+			goodwill = utils.controlNull(goodwill, balanceSheetItems.get("Receivables").lastYear());
+		}
+				
+		return goodwill;
+	}
+	
+	public Item IntagibleAssets() {
+		Item intagible = balanceSheetItems.get("Intangible assets");
+		Utils utils = new Utils();
+		if (intagible != null) {
+			
+		} else {
+			intagible = utils.controlNull(intagible, balanceSheetItems.get("Receivables").lastYear());
+		}
+				
+		return intagible;
 	}
 	
 	public static void main(String[] args) throws IOException {

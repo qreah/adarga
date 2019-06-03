@@ -43,28 +43,26 @@ public class InvestmentManagement {
 	
 	@SuppressWarnings("static-access")
 	public InvestmentManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) {
-		Item revenue = is.get("Revenue");
-		Item COGS = is.get("Cost of revenue");
-		accountsReceivable = bs.get("Receivables");
+		Item revenue = is.Revenue();
+		Item COGS = is.costOfRevenue();
+		accountsReceivable = bs.Receivables();
 		accountsReceivableGrowth = accountsReceivable.changeInItem();
-		inventory = bs.get("Inventories");
+		inventory = bs.Inventories();
 		inventoryGrowth = inventory.changeInItem();
-		accountsPayable = bs.get("Accounts payable");
-		currentAssets = bs.get("Total current assets");
-		currentLiabilities = bs.get("Total current liabilities");
-		cashAndMarketableSecurities = bs.get("Total cash");
-		Utils utils = new Utils();
-		int lastYears = currentLiabilities.lastYear();
-		shortTermDebtAndCurrentPortionOfLongTermDebt = utils.controlNull(bs.get("Short-term debt"), lastYears);
+		accountsPayable = bs.accountsPayable();
+		currentAssets = bs.totalCurrentAssets();
+		currentLiabilities = bs.totalCurrentLiabilities();
+		cashAndMarketableSecurities = bs.totalCash();
+		shortTermDebtAndCurrentPortionOfLongTermDebt = bs.shortTermDebt();
 		netWorkingCapital = currentAssets.substract(currentLiabilities);
-		log.info("shortTermDebtAndCurrentPortionOfLongTermDebt: " + shortTermDebtAndCurrentPortionOfLongTermDebt.toString());
-		log.info("cashAndMarketableSecurities: " + cashAndMarketableSecurities.toString());
+		
 		netWorkingCapital = netWorkingCapital.substract(cashAndMarketableSecurities);
 		netWorkingCapital = netWorkingCapital.sum(shortTermDebtAndCurrentPortionOfLongTermDebt);
-		LTAssets = bs.get("Total assets").substract(currentAssets);
-		goodwillAndIntangibles = bs.get("Goodwill").sum(bs.get("Intangible assets"));
-		longTermDebt = bs.get("Long-term debt").sum(bs.get("Capital leases"));
-		nonInterestBearingLTLiabilities = bs.get("Total assets").substract(longTermDebt);
+		LTAssets = bs.totalAssets().substract(currentAssets);
+		goodwillAndIntangibles = bs.Goodwill().sum(bs.IntagibleAssets());
+		
+		longTermDebt = bs.longTermDebt().sum(bs.capitalLeases());
+		nonInterestBearingLTLiabilities = bs.totalAssets().substract(longTermDebt);
 		netLTAssets = LTAssets.substract(nonInterestBearingLTLiabilities);
 		netAssets = LTAssets.sum(netWorkingCapital);
 		accountsReceivableOverSales = accountsReceivable.divide(revenue);

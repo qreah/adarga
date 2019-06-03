@@ -38,36 +38,32 @@ public class GlobalManagement {
 	
 	@SuppressWarnings("static-access")
 	public GlobalManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs, CompanyInformation ci) {
-		Item revenue = is.get("Revenue");
-		Item provisionForIncomeTaxes = is.get("Provision for income taxes");
-		Item taxRate = provisionForIncomeTaxes.divide(is.get("Net income")); 
-		Item NOPAT = is.get("Net income").sum(is.get("Interest Expense").multiply(taxRate.substractNumberAnte(1.0)));
+		
+		Item revenue = is.Revenue();
+		Item provisionForIncomeTaxes = is.provisionForIncomeTaxes();
+		Item taxRate = provisionForIncomeTaxes.divide(is.netIncome()); 
+		Item NOPAT = is.netIncome().sum(is.InterestExpense().multiply(taxRate.substractNumberAnte(1.0)));
 		NOPATMargin = NOPAT.divide(revenue);
-		salesOverAssets = is.get("Revenue").divide(bs.get("Total assets"));
+		salesOverAssets = is.Revenue().divide(bs.totalAssets());
 		operatingROA = NOPATMargin.multiply(salesOverAssets);
-		Item longTermDebt = bs.get("Long-term debt").sum(bs.get("Capital leases"));
-		Utils utils = new Utils();
-		int yearBs = bs.get("Long-term debt").lastYear();
-		Item netDebt = longTermDebt.sum(utils.controlNull(bs.get("Short-term debt"), yearBs));
-		netDebt = netDebt.substract(bs.get("Total cash"));
+		Item longTermDebt = bs.longTermDebt().sum(bs.capitalLeases());
+		
+		Item netDebt = longTermDebt.sum(bs.shortTermDebt());
+		netDebt = netDebt.substract(bs.totalCash());
 		Item temp = taxRate.substractNumberAnte(1.0);
-		Item netInterestEarningsAfterTaxes = is.get("Interest Expense").multiply(temp);
+		Item netInterestEarningsAfterTaxes = is.InterestExpense().multiply(temp);
 		afterTaxCostOfDebt = netInterestEarningsAfterTaxes.divide(netDebt);
-		Item equity = bs.get("Total stockholders' equity");
+		Item equity = bs.Equity();
 		Item spread = operatingROA.substract(afterTaxCostOfDebt);
 		Item netFinancialLeverage = netDebt.divide(equity);
 		financialLeverageGain = spread.multiply(netFinancialLeverage);
-		Item netIncome = is.get("Net income");
+		Item netIncome = is.netIncome();
 		ROE = netIncome.divide(equity);
-		Item goodwillAndIntangibles = bs.get("Goodwill").sum(bs.get("Intangible assets"));
+		Item goodwillAndIntangibles = bs.Goodwill().sum(bs.IntagibleAssets());
 		Item temp2 = equity.substract(goodwillAndIntangibles);
 		returnOnTangibleEquity = netIncome.divide(temp2);
-		Item FCF = cs.get("Free cash flow");
-		int yearCs = FCF.lastYear();
-		Item dividends = utils.controlNull(cs.get("Dividend paid"), yearCs);
-		log.info("dividends last year: " + dividends.lastYear());
-		log.info("dividends: " + dividends.toString());
-		log.info("yearCs: " + yearCs);
+		Item FCF = cs.FCF();
+		Item dividends = cs.DividendPaid();
 		
 		Double numberOfShares = ci.numberOfShares();
 		payOut = dividends.divideNumber(numberOfShares);
@@ -78,21 +74,21 @@ public class GlobalManagement {
 		FCFOverEquity = FCF.divide(equity);
 		FCFPerShare = FCF.divideNumber(numberOfShares);
 		earningsPerShare = netIncome.divideNumber(numberOfShares);
-		Item operatingIncome = is.get("Operating income");
+		Item operatingIncome = is.OperatingIncome();
 		operatingIncomePerShare = operatingIncome.divideNumber(numberOfShares);
 		
 		growthRate = ROE.multiply(payOut.substractNumberAnte(1.0));
 		salesGrowthRate = revenue.changeInItem();
-		Item currentAssets = bs.get("Total current assets");
-		Item currentLiabilities = bs.get("Total current liabilities");
-		Item cashAndMarketableSecurities = bs.get("Total cash");
-		Item shortTermDebtAndCurrentPortionOfLongTermDebt = bs.get("Short-term debt");
+		Item currentAssets = bs.totalCurrentAssets();
+		Item currentLiabilities = bs.totalCurrentLiabilities();
+		Item cashAndMarketableSecurities = bs.totalCash();
+		Item shortTermDebtAndCurrentPortionOfLongTermDebt = bs.shortTermDebt();
 		Item netWorkingCapital = currentAssets.substract(currentLiabilities);
 		netWorkingCapital = netWorkingCapital.substract(cashAndMarketableSecurities);
 		int YearB = netWorkingCapital.lastYear();
-		netWorkingCapital = netWorkingCapital.sum(utils.controlNull(shortTermDebtAndCurrentPortionOfLongTermDebt, YearB));
+		netWorkingCapital = netWorkingCapital.sum(shortTermDebtAndCurrentPortionOfLongTermDebt);
 		beginningNetOperatingWCOverSales = netWorkingCapital.divide(revenue);
-		Item LTAssets = bs.get("Total assets").substract(currentAssets);
+		Item LTAssets = bs.totalAssets().substract(currentAssets);
 		Item temp4 = LTAssets.substract(goodwillAndIntangibles);
 		beginningNetOperatingLTAssetsOverSales = temp4.divide(revenue);
 		Item netAssets = LTAssets.sum(netWorkingCapital);

@@ -33,43 +33,46 @@ public class FinancialManagement {
 	
 	@SuppressWarnings("static-access")
 	public FinancialManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) {
-		Item provisionForIncomeTaxes = is.get("Provision for income taxes");
-		Item taxRate = provisionForIncomeTaxes.divide(is.get("Net income")); 
+		Item provisionForIncomeTaxes = is.provisionForIncomeTaxes();
+		Item taxRate = provisionForIncomeTaxes.divide(is.netIncome()); 
 		Item temp = taxRate.substractNumberAnte(1.0);
-		netInterestEarningsAfterTaxes = is.get("Interest Expense").multiply(temp);
-		equity = bs.get("Total stockholders' equity");
+		netInterestEarningsAfterTaxes = is.InterestExpense().multiply(temp);
+		equity = bs.Equity();
+		
 		Utils utils = new Utils();
 		int lastYear = equity.lastYear();
-		longTermDebt = bs.get("Long-term debt").sum(utils.controlNull(bs.get("Capital leases"), lastYear));
-		Item shortDebt = utils.controlNull(bs.get("Short-term debt"), lastYear);
+		longTermDebt = bs.longTermDebt().sum(bs.capitalLeases());
+		
+		Item shortDebt = bs.shortTermDebt();
+		
 		netDebt = longTermDebt.sum(shortDebt);
-		netDebt = netDebt.substract(bs.get("Total cash"));
-		equity = bs.get("Total stockholders' equity");
+		netDebt = netDebt.substract(bs.totalAssets());
+		equity = bs.Equity();
 		debtToCapitalRatio = netDebt;
 		temp = netDebt.sum(equity);
 		debtToCapitalRatio = debtToCapitalRatio.divide(temp);
 		temp = netDebt.sum(equity);
 		netDebtToNetCapitalRatio = netDebt.divide(temp);
-		Item revenue = is.get("Revenue");
-		Item salesOverAssets = is.get("Revenue").divide(bs.get("Total assets"));
-		Item NOPAT = is.get("Net income").sum(is.get("Interest Expense").multiply(taxRate.substractNumberAnte(1.0)));
+		Item revenue = is.Revenue();
+		Item salesOverAssets = is.Revenue().divide(bs.totalAssets());
+		Item NOPAT = is.netIncome().sum(is.InterestExpense().multiply(taxRate.substractNumberAnte(1.0)));
 		Item NOPATMargin = NOPAT.divide(revenue);
 		Item OperatingROA = NOPATMargin.multiply(salesOverAssets);
 		Item afterTaxCostOfDebt = netInterestEarningsAfterTaxes.divide(netDebt);
 		spread = OperatingROA.substract(afterTaxCostOfDebt);
 		netFinancialLeverage = netDebt.divide(equity);
 		financialLeverage = spread.multiply(netFinancialLeverage);
-		Item currentAssets = bs.get("Total current assets");
-		Item currentLiabilities = bs.get("Total current liabilities");
+		Item currentAssets = bs.totalCurrentAssets();
+		Item currentLiabilities = bs.totalCurrentLiabilities();
 		currentRatio = currentAssets.divide(currentLiabilities);
-		Item accountsReceivable = bs.get("Receivables");
-		Item cashAndMarketableSecurities = bs.get("Total cash");
+		Item accountsReceivable = bs.Receivables();
+		Item cashAndMarketableSecurities = bs.totalCash();
 		quickRatio = accountsReceivable.sum(cashAndMarketableSecurities);
 		quickRatio = quickRatio.divide(currentLiabilities);
 		cashRatio = cashAndMarketableSecurities.divide(currentLiabilities);
-		Item operatingIncome = is.get("Operating income");
-		Item operatingCashFlow = cs.get("Net cash provided by operating activities");
-		Item interestExpense = is.get("Interest Expense");
+		Item operatingIncome = is.OperatingIncome();
+		Item operatingCashFlow = cs.NetCashProvidedByOperatingActivities();
+		Item interestExpense = is.InterestExpense();
 		interestCoverage_operatingIncomeVSinterestexpense = operatingIncome.divide(interestExpense);
 		interestCoverage_operatingCashFlowVSinterestexpense = operatingCashFlow.divide(interestExpense);
 		

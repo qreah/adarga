@@ -1,5 +1,7 @@
 package adarga.ratios;
 
+import java.util.logging.Logger;
+
 import org.json.JSONObject;
 
 import adarga.getinfo.BalanceSheet;
@@ -8,6 +10,9 @@ import adarga.getinfo.IncomeStatement;
 import adarga.getinfo.Item;
 
 public class OperatingManagement {
+	
+	private static final Logger log = Logger.getLogger(OperatingManagement.class.getName());
+	
 	
 	Item revenue;
 	Item salesGrowth;
@@ -29,25 +34,31 @@ public class OperatingManagement {
 	Item operatingCashFlowOverIncome;
 	
 	public OperatingManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) {
-		revenue = is.get("Revenue");
+		
+		revenue = is.Revenue();
 		salesGrowth = revenue.changeInItem();
-		COGS = is.get("Cost of revenue");
-		operatingIncome = is.get("Operating income");
+		COGS = is.costOfRevenue();
+		operatingIncome = is.OperatingIncome();
+		
 		operatingMargin = operatingIncome.divide(revenue);
-		grossMargin = is.get("Gross profit").divide(revenue);
-		SGA = is.get("Sales, General and administrative");
+		grossMargin = is.costOfRevenue().divide(revenue);
+		SGA = is.SGA();
 		SGAOverSales = SGA.divide(revenue);
-		interestExpense = is.get("Interest Expense");
-		netIncome = is.get("Net income");
+		interestExpense = is.InterestExpense();
+		netIncome = is.netIncome();
 		incomeOverRevenue = netIncome.divide(revenue);
 		operatingCashFlow = cs.get("Net cash provided by operating activities");
 		operatingCashFlowOverIncome = operatingCashFlow.divide(revenue);
-		provisionForIncomeTaxes = is.get("Provision for income taxes");
-		taxRate = provisionForIncomeTaxes.divide(is.get("Net income")); 
-		NOPAT = is.get("Net income").sum(is.get("Interest Expense").multiply(taxRate.substractNumberAnte(1.0)));
+		provisionForIncomeTaxes = is.provisionForIncomeTaxes();
+		taxRate = provisionForIncomeTaxes.divide(is.netIncome()); 
+		
+		NOPAT = is.netIncome().sum(is.InterestExpense()
+				.multiply(taxRate.substractNumberAnte(1.0)));
 		NOPATGrowth = NOPAT.changeInItem();
 		NOPATMargin = NOPAT.divide(revenue);
 	}
+	
+	
 	
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();

@@ -33,8 +33,7 @@ public class Utils {
 	public Item controlNull(Item inputItem, int lastYear) {
 		Item item = new Item();
 		item.setZero(5, lastYear);
-		log.info("years zero: " + item.toString());
-		log.info("years zero last year: " + item.lastYear());
+		
 		if (inputItem != null) {
 			item = inputItem;
 		} else {

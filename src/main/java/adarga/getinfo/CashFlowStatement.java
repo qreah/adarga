@@ -19,6 +19,7 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
 import adarga.getinfo.IncomeStatement.FinancialModelingPrepUrl;
+import utils.Utils;
 
 public class CashFlowStatement {
 	
@@ -65,6 +66,166 @@ public class CashFlowStatement {
 	    public FinancialModelingPrepUrl(String encodedUrl) {
 	        super(encodedUrl);
 	    }
+	}
+	
+	public Item NetCashProvidedByOperatingActivities() {
+		Item NetCashProvidedByOperatingActivities = cashFlowStatement.get("Net cash provided by operating activities");
+		if (NetCashProvidedByOperatingActivities != null) {
+			
+		} else {
+			NetCashProvidedByOperatingActivities = cashFlowStatement.get("Net cash provided by operating activities");
+		}
+		
+		return NetCashProvidedByOperatingActivities;
+	}
+	
+	public Item FCF() {
+		Item FCF = cashFlowStatement.get("Free cash flow");
+		if (FCF != null) {
+			
+		} else {
+			FCF = cashFlowStatement.get("Free cash flow");
+		}
+		
+		return FCF;
+	}
+	
+	public Item DividendPaid() {
+		Item DividendPaid = cashFlowStatement.get("Dividend paid");
+		if (DividendPaid != null) {
+			
+		} else {
+			DividendPaid = cashFlowStatement.get("Dividend paid");
+		}
+		
+		return DividendPaid;
+	}
+	
+	
+	public Item NetCashUsedForInvestingActivities() {
+		Item NC = cashFlowStatement.get("Net cash used for investing activities");
+		if (NC != null) {
+			
+		} else {
+			NC = cashFlowStatement.get("Net cash used for investing activities");
+		}
+		
+		return NC;
+	}
+	
+	public Item InvestmentsInPropertyPlantAndEquipment() {
+		Item NC = cashFlowStatement.get("Investments in property, plant, and equipment");
+		if (NC != null) {
+			
+		} else {
+			NC = cashFlowStatement.get("Investments in property, plant, and equipment");
+		}
+		
+		return NC;
+	}
+	
+	public Item NetCashProvidedByUsedForFinancingActivities() {
+		Item NC = cashFlowStatement.get("Net cash provided by (used for) financing activities");
+		if (NC != null) {
+			
+		} else {
+			NC = cashFlowStatement.get("Net cash provided by (used for) financing activities");
+		}
+		
+		return NC;
+	}
+	
+	public Item PurchasesOfInvestments() {
+		Item NC = cashFlowStatement.get("Purchases of investments");
+		if (NC != null) {
+			
+		} else {
+			NC = cashFlowStatement.get("Purchases of investments");
+		}
+		
+		return NC;
+	}
+	
+	public Item CommonStockIssued() {
+		Item NC = cashFlowStatement.get("Common stock issued");
+		if (NC != null) {
+			
+		} else {
+			NC = cashFlowStatement.get("Common stock issued");
+		}
+		
+		return NC;
+	}
+	
+	
+	public Item DebtRepayment() {
+		Item NC = cashFlowStatement.get("Debt repayment");
+		if (NC != null) {
+			
+		} else {
+			NC = cashFlowStatement.get("Debt repayment");
+		}
+		
+		return NC;
+	}
+	
+	public Item DebtIssued() {
+		Item NC = cashFlowStatement.get("Debt issued");
+		if (NC != null) {
+			
+		} else {
+			NC = cashFlowStatement.get("Debt issued");
+		}
+		
+		return NC;
+	}
+	
+	public Item CommonStockRepurchased() {
+		Item NC = cashFlowStatement.get("Common stock repurchased");
+		if (NC != null) {
+			
+		} else {
+			NC = cashFlowStatement.get("Common stock repurchased");
+		}
+		
+		return NC;
+	}
+	
+	
+	public Item AcquisitionsNet() {
+		Item NC = cashFlowStatement.get("Acquisitions, net");
+		if (NC != null) {
+			
+		} else {
+			NC = cashFlowStatement.get("Acquisitions, net");
+		}
+		
+		return NC;
+	}
+	
+	public Item PropertyPlantAndEquipmentReductions() {
+		Item NC = cashFlowStatement.get("Property, plant, and equipment reductions");
+		if (NC != null) {
+			
+		} else {
+			NC = cashFlowStatement.get("Property, plant, and equipment reductions");
+		}
+		
+		return NC;
+	}
+	
+	
+	
+	public Item SecuritiesInvestment() {
+		Item investments = cashFlowStatement.get("Sales/Maturities of investments");
+		Utils utils = new Utils();
+		if (investments != null) {
+			
+		} else {
+			investments = utils.controlNull(investments, cashFlowStatement.get("Inventory").lastYear());
+		}
+				
+		return investments;
 	}
 	
 	public static void main(String[] args) throws IOException {

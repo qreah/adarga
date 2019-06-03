@@ -39,33 +39,32 @@ public class CashManagement {
 	
 	@SuppressWarnings("static-access")
 	public CashManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) {
-		Item revenue = is.get("Revenue");
-		operatingCashFlow = cs.get("Net cash provided by operating activities");
-		ChangeOperatingCashFlow = operatingCashFlow.changeInItem();
-		investingCashFlow = cs.get("Net cash used for investing activities");
-		ChangeInvestingCashFlow = investingCashFlow.changeInItem();
-		CAPEX = cs.get("Investments in property, plant, and equipment").substract(cs.get("Property, plant, and equipment reductions"));
-		changeInCAPEX = CAPEX.changeInItem();
-		adquisitions = cs.get("Acquisitions, net");
-		changeInAdquisitions = adquisitions.changeInItem();
-		Utils utils = new Utils();
 		
-		log.info("Purchases: " + cs.get("Purchases of investments"));
-		securitiesNet = cs.get("Sales/Maturities of investments").substract(cs.get("Purchases of investments"));
+		Item revenue = is.Revenue();
+		operatingCashFlow = cs.NetCashProvidedByOperatingActivities();
+		ChangeOperatingCashFlow = operatingCashFlow.changeInItem();
+		investingCashFlow = cs.NetCashUsedForInvestingActivities();
+		ChangeInvestingCashFlow = investingCashFlow.changeInItem();
+		CAPEX = cs.InvestmentsInPropertyPlantAndEquipment().substract(cs.PropertyPlantAndEquipmentReductions());
+		changeInCAPEX = CAPEX.changeInItem();
+		adquisitions = cs.AcquisitionsNet();
+		changeInAdquisitions = adquisitions.changeInItem();
+		
+		securitiesNet = cs.SecuritiesInvestment().substract(cs.PurchasesOfInvestments());
 		changeInSecurities = securitiesNet.changeInItem();
-		financingCashFlow = cs.get("Net cash provided by (used for) financing activities");
+		financingCashFlow = cs.NetCashProvidedByUsedForFinancingActivities();
 		investing = CAPEX.sum(adquisitions); //CAPEX and adquisitions
 		
 		changeInInvesting = investing.changeInItem();
-		FCF = cs.get("Free cash flow");
+		FCF = cs.FCF();
 		
 		changeInFCF = FCF.changeInItem();
-		dividends = utils.controlNull(cs.get("Dividend paid"), FCF.lastYear());
-		log.info("dividends: " + dividends);
+		dividends = cs.DividendPaid();
+		
 		changeInDividends = dividends.changeInItem();
-		stockRepurchase = utils.controlNull(cs.get("Common stock repurchased"), FCF.lastYear()).substract(utils.controlNull(cs.get("Common stock issued"), FCF.lastYear()));
+		stockRepurchase = cs.CommonStockRepurchased().substract(cs.CommonStockIssued());
 		changeInStockRepurchase = stockRepurchase.changeInItem();
-		debtRepayment = utils.controlNull(cs.get("Debt repayment"), FCF.lastYear()).substract(utils.controlNull(cs.get("Debt issued"), FCF.lastYear()));
+		debtRepayment = cs.DebtRepayment().substract(cs.DebtIssued());
 		changeInDebtRepayment = debtRepayment.changeInItem();
 	
 	}

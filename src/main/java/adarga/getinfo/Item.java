@@ -15,7 +15,7 @@ public class Item {
 	JSONObject dataJSON = new JSONObject();
 	List<String> years = new ArrayList<String>();
 	String name;
-	String TTM;
+	String TTM;  //TTM is another entry "like" a year. It is something from the financial statements provider
 	
 	public Item setZero(int numYear, int lastYear) {
 		name = "Zero";
@@ -32,16 +32,32 @@ public class Item {
 			
 	
 	public void setValues(JSONObject json) {
-		
-		Iterator<String> iter = json.keys();
-		years = new ArrayList<String>();
+		Iterator<String> iterJson = json.keys();
+		while (iterJson.hasNext()) {
+			String yearJson = iterJson.next();
+			if (yearJson.equals("TTM")) {
+				
+			} else {
+				years.add(yearJson);
+			}
+			
+		}
+		sortYears();
 		String keyShort;
+		int i = 0;
+		String initialKey = null;
+		List<String> yearsTemp = new ArrayList<String>();
+		Iterator<String> iter = years.iterator();
 		while (iter.hasNext()) {
 			String key = iter.next();
+			if (i == 0) {
+				initialKey = key;
+			} 
 			if (key.length() < 4) {
 				TTM = key;
 			} else {
-				keyShort = key.substring(0, 4);
+				
+				keyShort = getYear(initialKey, i);
 				
 				if (json.get(key).equals("")) {
 					dataJSON.put(keyShort, 0);
@@ -51,12 +67,22 @@ public class Item {
 					dataJSON.put(keyShort, json.get(key));
 				}
 				
-				years.add(keyShort);
+				yearsTemp.add(keyShort);
 			}
+			i++;
 		}
-		
+		years = yearsTemp;
 		sortYears();
 		
+	}
+	
+	public String getYear(String initialKey, int i) {
+		
+		String yearFinal = initialKey.substring(0, 4);
+		int yearFinalInt = Integer.parseInt(yearFinal);	
+		yearFinalInt = yearFinalInt + i;
+		yearFinal = Integer.toString(yearFinalInt);
+		return yearFinal;
 	}
 	
 	public void sortYears() {
@@ -98,8 +124,7 @@ public class Item {
 		Item newItem = new Item();
 		int itemSize = item.size();
 		int size = this.size();
-		log.info("SUM itemSize: " + item.lastYear());
-		log.info("SUM size: " + lastYear());
+		
 		if (itemSize == size) {
 			Iterator<String> iter = years.iterator();
 			
@@ -276,6 +301,7 @@ public class Item {
 		
 		int size = this.size();
 		int firstYear = this.lastYear() - size + 1;
+		
 		Double temp = 0.0;
 		Double operation;
 		
