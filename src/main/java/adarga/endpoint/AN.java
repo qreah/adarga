@@ -3,6 +3,7 @@ package adarga.endpoint;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -52,10 +53,21 @@ public class AN extends HttpServlet {
 		IncomeStatement is = new IncomeStatement();
 		CashFlowStatement cs = new CashFlowStatement();
 		Company com = new Company();
-		com.getFinancialStatements(company);
+		List<Object> reports = com.getFinancialStatements(company);
 		CompanyInformation ci = new CompanyInformation();
-		JSONObject result = com.analysis(bs, is, cs, ci);
-		out.println(result.toString());		
+		bs = (BalanceSheet) reports.get(0);
+		is = (IncomeStatement) reports.get(1);
+		cs = (CashFlowStatement) reports.get(2);
+		ci = (CompanyInformation) reports.get(3);
+		JSONObject result;
+		try {
+			result = com.analysis(bs, is, cs, ci);
+			out.println(result.toString());	
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
 		
 	}
 

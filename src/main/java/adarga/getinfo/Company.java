@@ -1,7 +1,12 @@
 package adarga.getinfo;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
 
 import org.json.JSONObject;
 
@@ -15,7 +20,8 @@ public class Company {
 	
 	private static final Logger log = Logger.getLogger(Company.class.getName());
 	
-	public void getFinancialStatements(String companyName) throws IOException {
+	public List<Object> getFinancialStatements(String companyName) throws IOException {
+		List<Object> result = new ArrayList<Object>();
 		BalanceSheet bs = new BalanceSheet();
 		IncomeStatement is = new IncomeStatement();
 		CashFlowStatement cs = new CashFlowStatement();
@@ -26,18 +32,35 @@ public class Company {
 			cs.execute(companyName);
 			ci.execute(companyName);
 			
+			
+			
+			result.add(bs);
+			result.add(is);
+			result.add(cs);
+			result.add(ci);
+		
+			return result;
+			
+			
 		//} catch (Exception e) {
 		//	log.info("Error: Company. com.google.apphosting.api.DeadlineExceededException | Company: " + companyName);
 		//}
 	}
 	
-	public JSONObject analysis(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs, CompanyInformation ci) {
+	public JSONObject analysis(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs, CompanyInformation ci) throws ClassNotFoundException, ServletException, IOException, SQLException {
 		JSONObject json = new JSONObject();
-		OperatingManagement OM = new OperatingManagement(bs, is, cs);
-		InvestmentManagement IM = new InvestmentManagement(bs, is, cs);
-		FinancialManagement FM = new FinancialManagement(bs, is, cs);
-		CashManagement CM = new CashManagement(bs, is, cs);
-		GlobalManagement GM = new GlobalManagement(bs, is, cs, ci);
+		OperatingManagement OM = new OperatingManagement();
+		OM.loadOperatingManagement(bs, is, cs);
+		InvestmentManagement IM = new InvestmentManagement();
+		IM.loadInvestmentManagement(bs, is, cs);
+		
+		FinancialManagement FM = new FinancialManagement();
+		FM.loadFinancialManagement(bs, is, cs);
+		CashManagement CM = new CashManagement();
+		CM.loadCashManagement(bs, is, cs);
+		
+		GlobalManagement GM = new GlobalManagement();
+		GM.loadGlobalManagement(bs, is, cs, ci);
 		json = chain(OM, IM, FM, CM, GM);
 		return json;
 		
@@ -94,7 +117,7 @@ public class Company {
 	}
 	
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ClassNotFoundException, ServletException, SQLException {
         BalanceSheet bs = new BalanceSheet();
 		IncomeStatement is = new IncomeStatement();
 		CashFlowStatement cs = new CashFlowStatement();

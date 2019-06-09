@@ -1,6 +1,10 @@
 package adarga.ratios;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
 
 import org.json.JSONObject;
 
@@ -15,24 +19,24 @@ public class FinancialManagement {
 	
 	private static final Logger log = Logger.getLogger(FinancialManagement.class.getName());
 	
-	Item netInterestEarningsAfterTaxes;
-	Item longTermDebt;
-	Item netDebt;
-	Item equity;
-	Item debtToCapitalRatio;
-	Item netDebtToNetCapitalRatio;
-	Item spread;
-	Item netFinancialLeverage;
-	Item financialLeverage;
-	Item currentRatio;
-	Item quickRatio;
-	Item cashRatio;
-	Item interestCoverage_operatingIncomeVSinterestexpense;
-	Item interestCoverage_operatingCashFlowVSinterestexpense;
+	Item netInterestEarningsAfterTaxes = null;
+	Item longTermDebt = null;
+	Item netDebt = null;
+	Item equity = null;
+	Item debtToCapitalRatio = null;
+	Item netDebtToNetCapitalRatio = null;
+	Item spread = null;
+	Item netFinancialLeverage = null;
+	Item financialLeverage = null;
+	Item currentRatio = null;
+	Item quickRatio = null;
+	Item cashRatio = null;
+	Item interestCoverage_operatingIncomeVSinterestexpense = null;
+	Item interestCoverage_operatingCashFlowVSinterestexpense = null;
 	
 	
 	@SuppressWarnings("static-access")
-	public FinancialManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) {
+	public void loadFinancialManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) throws ClassNotFoundException, ServletException, IOException, SQLException {
 		Item provisionForIncomeTaxes = is.provisionForIncomeTaxes();
 		Item taxRate = provisionForIncomeTaxes.divide(is.netIncome()); 
 		Item temp = taxRate.substractNumberAnte(1.0);
@@ -73,11 +77,16 @@ public class FinancialManagement {
 		Item operatingIncome = is.OperatingIncome();
 		Item operatingCashFlow = cs.NetCashProvidedByOperatingActivities();
 		Item interestExpense = is.InterestExpense();
+		
 		interestCoverage_operatingIncomeVSinterestexpense = operatingIncome.divide(interestExpense);
 		interestCoverage_operatingCashFlowVSinterestexpense = operatingCashFlow.divide(interestExpense);
 		
 	}
 	
+	public FinancialManagement() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
 		json.put("netInterestEarningsAfterTaxes", netInterestEarningsAfterTaxes.toJSON());

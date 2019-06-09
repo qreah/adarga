@@ -28,6 +28,13 @@ public class CashFlowStatement {
     static JsonFactory JSON_FACTORY = new JacksonFactory();
     static Map<String, Item> cashFlowStatement = new HashMap<String, Item>();
     static String name;
+    static int year;
+    Utils utils = new Utils();
+    
+    public CashFlowStatement() {
+    	cashFlowStatement = new HashMap<String, Item>();
+    }
+    
 	
 	public void execute(String companySymbol) throws IOException {
 		name = companySymbol;
@@ -58,7 +65,20 @@ public class CashFlowStatement {
 		return cashFlowStatement.get(itemName);
 	}
 	
+	public int getYear() {
+		if (cashFlowStatement.get("Net income") != null) {
+    		year = cashFlowStatement.get("Net income").lastYear();
+    	} else {
+    		if (cashFlowStatement.get("Inventory") != null) {
+    			year = cashFlowStatement.get("Inventory").lastYear();
+    		} else {
+    			
+    			year = cashFlowStatement.get("Cash at end of period").lastYear();
+    		}
+    	}
 		
+		return year;
+	}
 
 	
 	public static class FinancialModelingPrepUrl extends GenericUrl {
@@ -69,14 +89,17 @@ public class CashFlowStatement {
 	}
 	
 	public Item NetCashProvidedByOperatingActivities() {
-		Item NetCashProvidedByOperatingActivities = cashFlowStatement.get("Net cash provided by operating activities");
-		if (NetCashProvidedByOperatingActivities != null) {
+		Item NC = cashFlowStatement.get("Net cash provided by operating activities");
+		if (NC != null) {
 			
 		} else {
-			NetCashProvidedByOperatingActivities = cashFlowStatement.get("Net cash provided by operating activities");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Net cash provided by operating activities");
+			
+			NC = utils.controlNull(cashFlowStatement.get("Net cash provided for operating activities"), getYear());
 		}
 		
-		return NetCashProvidedByOperatingActivities;
+		return NC;
 	}
 	
 	public Item FCF() {
@@ -84,21 +107,30 @@ public class CashFlowStatement {
 		if (FCF != null) {
 			
 		} else {
-			FCF = cashFlowStatement.get("Free cash flow");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Free cash flow");
+			FCF = utils.controlNull(cashFlowStatement.get("Free cash flow"), getYear());
 		}
 		
 		return FCF;
 	}
 	
 	public Item DividendPaid() {
-		Item DividendPaid = cashFlowStatement.get("Dividend paid");
-		if (DividendPaid != null) {
-			
+		Item k = new Item();
+		Item k1 = cashFlowStatement.get("Dividend paid");
+		Item k2 = cashFlowStatement.get("Cash dividends paid");
+		if (k1 != null) {
+			k = k1;
+		} else if (k2 != null) {
+			k = k2;
 		} else {
-			DividendPaid = cashFlowStatement.get("Dividend paid");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Dividend paid");
+			log.info("Término que no aparece: Cash dividends paid");
+			k = utils.controlNull(cashFlowStatement.get("Dividend paid"), getYear());
 		}
 		
-		return DividendPaid;
+		return k;
 	}
 	
 	
@@ -107,51 +139,56 @@ public class CashFlowStatement {
 		if (NC != null) {
 			
 		} else {
-			NC = cashFlowStatement.get("Net cash used for investing activities");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Net cash used for investing activities");
+			NC = utils.controlNull(cashFlowStatement.get("Net cash used for investing activities"), getYear());
 		}
 		
 		return NC;
 	}
 	
-	public Item InvestmentsInPropertyPlantAndEquipment() {
-		Item NC = cashFlowStatement.get("Investments in property, plant, and equipment");
-		if (NC != null) {
-			
-		} else {
-			NC = cashFlowStatement.get("Investments in property, plant, and equipment");
-		}
-		
-		return NC;
-	}
+	
 	
 	public Item NetCashProvidedByUsedForFinancingActivities() {
 		Item NC = cashFlowStatement.get("Net cash provided by (used for) financing activities");
 		if (NC != null) {
 			
 		} else {
-			NC = cashFlowStatement.get("Net cash provided by (used for) financing activities");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Net cash provided by (used for) financing activities");
+			NC = utils.controlNull(cashFlowStatement.get("Net cash provided by (used for) financing activities"), getYear());
 		}
 		
 		return NC;
 	}
 	
 	public Item PurchasesOfInvestments() {
-		Item NC = cashFlowStatement.get("Purchases of investments");
-		if (NC != null) {
-			
+		Item k = new Item();
+		Item k1 = cashFlowStatement.get("Purchases of investments");
+		
+		if (k1 != null) {
+			k = k1;
+		
 		} else {
-			NC = cashFlowStatement.get("Purchases of investments");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Purchases of investments");
+			
+			k = utils.controlNull(cashFlowStatement.get("Purchases of investments"), getYear());
 		}
 		
-		return NC;
+		return k;
 	}
 	
 	public Item CommonStockIssued() {
 		Item NC = cashFlowStatement.get("Common stock issued");
+		
 		if (NC != null) {
 			
 		} else {
-			NC = cashFlowStatement.get("Common stock issued");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Common stock issued");
+			NC = utils.controlNull(cashFlowStatement.get("Common stock issued"), getYear());
+			
 		}
 		
 		return NC;
@@ -163,7 +200,9 @@ public class CashFlowStatement {
 		if (NC != null) {
 			
 		} else {
-			NC = cashFlowStatement.get("Debt repayment");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Debt repayment");
+			NC = utils.controlNull(cashFlowStatement.get("Debt repayment"), getYear());
 		}
 		
 		return NC;
@@ -174,21 +213,33 @@ public class CashFlowStatement {
 		if (NC != null) {
 			
 		} else {
-			NC = cashFlowStatement.get("Debt issued");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Debt issued");
+			NC = utils.controlNull(cashFlowStatement.get("Debt issued"), getYear());
 		}
 		
 		return NC;
 	}
 	
 	public Item CommonStockRepurchased() {
-		Item NC = cashFlowStatement.get("Common stock repurchased");
-		if (NC != null) {
-			
+		Item k = new Item();
+		Item k1 = cashFlowStatement.get("Common stock repurchased");
+		Item k2 = cashFlowStatement.get("Net repurchased");
+		Item k3 = cashFlowStatement.get("Repurchases of treasury stock");
+		if (k1 != null) {
+			k = k1;
+		} else if (k2 != null) {
+			k = k2;
+		} else if (k3 != null) {
+			k = k3;
 		} else {
-			NC = cashFlowStatement.get("Common stock repurchased");
-		}
-		
-		return NC;
+				log.info("Empresa a monitorizar: " + name);
+				log.info("Término que no aparece: Common stock repurchased");
+				log.info("Término que no aparece: Net repurchased");
+				log.info("Término que no aparece: Repurchases of treasury stock");
+				k = utils.controlNull(cashFlowStatement.get("Common stock repurchased"), getYear());
+			}		
+		return k;
 	}
 	
 	
@@ -197,18 +248,36 @@ public class CashFlowStatement {
 		if (NC != null) {
 			
 		} else {
-			NC = cashFlowStatement.get("Acquisitions, net");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Acquisitions, net");
+			NC = utils.controlNull(cashFlowStatement.get("Acquisitions, net"), getYear());
 		}
 		
 		return NC;
 	}
 	
 	public Item PropertyPlantAndEquipmentReductions() {
-		Item NC = cashFlowStatement.get("Property, plant, and equipment reductions");
+		Item k = cashFlowStatement.get("Property, plant, and equipment reductions");
+		if (k != null) {
+			
+		} else {
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Property, plant, and equipment reductions");
+			k = utils.controlNull(cashFlowStatement.get("Property, plant, and equipment reductions"), getYear());
+		}
+		
+		return k;
+	}
+	
+	
+	public Item InvestmentsInPropertyPlantAndEquipment() {
+		Item NC = cashFlowStatement.get("Investments in property, plant, and equipment");
 		if (NC != null) {
 			
 		} else {
-			NC = cashFlowStatement.get("Property, plant, and equipment reductions");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Investments in property, plant, and equipment");
+			NC = utils.controlNull(cashFlowStatement.get("Investments in property, plant, and equipment"), getYear());
 		}
 		
 		return NC;
@@ -217,15 +286,22 @@ public class CashFlowStatement {
 	
 	
 	public Item SecuritiesInvestment() {
-		Item investments = cashFlowStatement.get("Sales/Maturities of investments");
-		Utils utils = new Utils();
-		if (investments != null) {
-			
+		Item k = new Item();
+		Item k1 = cashFlowStatement.get("Sales/Maturities of investments");
+		Item k2 = cashFlowStatement.get("Other investing activities");
+		
+		if (k1 != null) {
+			k = k1;
+		} else if (k2 != null) {
+			k = k2;
 		} else {
-			investments = utils.controlNull(investments, cashFlowStatement.get("Inventory").lastYear());
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Sales/Maturities of investments");
+			log.info("Término que no aparece: Other investing activities");
+			k = utils.controlNull(cashFlowStatement.get("Sales/Maturities of investments"), getYear());
 		}
 				
-		return investments;
+		return k;
 	}
 	
 	public static void main(String[] args) throws IOException {

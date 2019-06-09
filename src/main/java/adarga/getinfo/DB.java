@@ -32,6 +32,10 @@ public class DB {
 		
 	}
 	
+	public void close() throws SQLException {
+		conn.close();
+	}
+	
 	public Connection ConnectDB() throws ServletException, ClassNotFoundException, IOException, SQLException {
 		
 		String url;
@@ -123,14 +127,17 @@ public class DB {
 	
 	public ResultSet ExecuteSELECT(String SQL) throws SQLException, ClassNotFoundException, ServletException, IOException {
 		conn = ConnectDB();
+		ResultSet rsfinal = null;
+		ResultSet rs = null;
 		if (conn == null) {
 			
-			return null;
 		} else {
 			Statement secuencia = conn.createStatement(); 
-			ResultSet rs = (ResultSet) secuencia.executeQuery(SQL);
-			return rs;
+			rs = (ResultSet) secuencia.executeQuery(SQL);
 		}
+		rsfinal = rs;
+		
+		return rsfinal;
 	}
 	
 	public boolean Execute(String SQL) throws ClassNotFoundException, ServletException, IOException, SQLException  {
@@ -148,6 +155,7 @@ public class DB {
 			log.info("Error in 'Execute' function inside BD.java class");
 			e.printStackTrace();
 		} 
+		conn.close();
 		return executed;
 	}
 
@@ -158,7 +166,7 @@ public class DB {
 		while (rs.next()) {
 			round = Integer.parseInt(rs.getString("value"));
 	    }
-		
+		close();
 		return round;
 	}
 	
@@ -176,6 +184,7 @@ public class DB {
 		while (rs.next()) {
 			result = true;
 		}
+		close();
 		return result;
 	}
 

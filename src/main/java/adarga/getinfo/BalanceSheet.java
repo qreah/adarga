@@ -1,6 +1,7 @@
 package adarga.getinfo;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,6 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
 
 import org.json.JSONObject;
 
@@ -22,6 +25,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
+import adarga.analysis.QualityTest;
 import utils.Utils;
 
 
@@ -33,6 +37,11 @@ public class BalanceSheet {
     static JsonFactory JSON_FACTORY = new JacksonFactory();
     static Map<String, Item> balanceSheetItems = new HashMap<String, Item>();
     static String name;
+    Utils utils = new Utils();
+    
+    public BalanceSheet() {
+    	balanceSheetItems = new HashMap<String, Item>();
+    }
 	
 	public void execute(String companySymbol) throws IOException {
 		name = companySymbol;
@@ -59,6 +68,21 @@ public class BalanceSheet {
 					
 	}
 	
+	public int getYear() {
+		int year;
+		if (balanceSheetItems.get("Receivables") != null) {
+    		year = balanceSheetItems.get("Receivables").lastYear();
+    	} else {
+    		if (balanceSheetItems.get("Total assets") != null) {
+    			year = balanceSheetItems.get("Total assets").lastYear();
+    		} else {
+    			year = balanceSheetItems.get("Total liabilities").lastYear();
+    		}
+    	}
+		
+		return year;
+	}
+	
 	public static Item get(String itemName) {
 		return balanceSheetItems.get(itemName);
 	}
@@ -74,139 +98,193 @@ public class BalanceSheet {
 	}
 	
 	public Item Equity() {
-		Item equity = balanceSheetItems.get("Total stockholders' equity");
-		if (equity != null) {
+		Item k = balanceSheetItems.get("Total stockholders' equity");
+		if (k != null) {
 			
 		} else {
-			equity = balanceSheetItems.get("Total Stockholders' equity");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Total stockholders' equity");
+			k = utils.controlNull(balanceSheetItems.get("Total stockholders' equity"), getYear());
 		}
-		return equity;
+		return k;
 	}
 	
 	public Item Receivables() {
-		Item equity = balanceSheetItems.get("Receivables");
-		if (equity != null) {
+		Item k = balanceSheetItems.get("Receivables");
+		if (k != null) {
 			
 		} else {
-			equity = balanceSheetItems.get("Receivables");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Receivables");
+			k = utils.controlNull(balanceSheetItems.get("Receivables"), getYear());
 		}
-		return equity;
+		return k;
 	}
 	
 	public Item accountsPayable() {
-		Item equity = balanceSheetItems.get("Accounts payable");
-		if (equity != null) {
+		Item k = balanceSheetItems.get("Accounts payable");
+		if (k != null) {
 			
 		} else {
-			equity = balanceSheetItems.get("Accounts payable");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Accounts payable");
+			k = utils.controlNull(balanceSheetItems.get("Accounts payable"), getYear());
 		}
-		return equity;
+		return k;
 	}
 	
 	public Item totalCurrentAssets() {
-		Item equity = balanceSheetItems.get("Total current assets");
-		if (equity != null) {
+		Item k = balanceSheetItems.get("Total current assets");
+		if (k != null) {
 			
 		} else {
-			equity = balanceSheetItems.get("Total current assets");
+			k = balanceSheetItems.get("Receivables");
+			if (k != null) {
+				
+			} else {
+				log.info("Empresa a monitorizar: " + name);
+				log.info("Término que no aparece: Total current assets");
+				log.info("Término que no aparece: Receivables");
+				k = utils.controlNull(balanceSheetItems.get("Total current assets"), getYear());
+			}
+			
 		}
-		return equity;
+		return k;
 	}
 	
 	
 	public Item totalCurrentLiabilities() {
-		Item equity = balanceSheetItems.get("Total current liabilities");
-		if (equity != null) {
+		Item k = balanceSheetItems.get("Total current liabilities");
+		if (k != null) {
 			
 		} else {
-			equity = balanceSheetItems.get("Total current liabilities");
+			k = balanceSheetItems.get("Payables and accrued expenses");
+			if (k != null) {
+				
+			} else {
+				log.info("Empresa a monitorizar: " + name);
+				log.info("Término que no aparece: Total current liabilities");
+				log.info("Término que no aparece: Payables and accrued expenses");
+				k = utils.controlNull(balanceSheetItems.get("Total current liabilities"), getYear());
+			}
+			
 		}
-		return equity;
+		return k;
 	}
 	
 	
-	public Item capitalLeases() {
-		Item equity = balanceSheetItems.get("Capital leases");
-		if (equity != null) {
+	
+	public Item capitalLeases() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		Item k = balanceSheetItems.get("Capital leases");
+		
+		if (k != null) {
 			
 		} else {
-			equity = balanceSheetItems.get("Capital leases");
+			
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Capital leases");
+			qT.uploadRareCases(name, concepts, "BalanceSheet");
+			k = utils.controlNull(balanceSheetItems.get("Capital leases"), getYear());
 		}
-		return equity;
+		
+		return k;
 	}
 	
 	public Item longTermDebt() {
-		Item equity = balanceSheetItems.get("Long-term debt");
-		if (equity != null) {
+		Item k = balanceSheetItems.get("Long-term debt");
+		
+		if (k != null) {
 			
 		} else {
-			equity = balanceSheetItems.get("Long-term debt");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Long-term debt");
+			k = utils.controlNull(balanceSheetItems.get("Long-term debt"), getYear());
 		}
-		return equity;
+		return k;
 	}
 	
 	public Item totalAssets() {
-		Item equity = balanceSheetItems.get("Total assets");
-		if (equity != null) {
+		Item k = balanceSheetItems.get("Total assets");
+		if (k != null) {
 			
 		} else {
-			equity = balanceSheetItems.get("Total assets");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Total assets");
+			k = utils.controlNull(balanceSheetItems.get("Total assets"), getYear());
 		}
-		return equity;
+		return k;
 	}
 	
 	public Item shortTermDebt() {
-		Item equity = balanceSheetItems.get("Short-term debt");
-		if (equity != null) {
+		Item k = balanceSheetItems.get("Short-term debt");
+		if (k != null) {
 			
 		} else {
-			equity = balanceSheetItems.get("Short-term debt");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Short-term debt");
+			k = utils.controlNull(balanceSheetItems.get("Short-term debt"), getYear());
 		}
-		return equity;
+		return k;
 	}
 	
 	public Item totalCash() {
-		Item equity = balanceSheetItems.get("Total cash");
-		if (equity != null) {
-			
+		
+		Item k = new Item();
+		Item k1 = balanceSheetItems.get("Total cash");
+		//TODO: arreglarlo
+		//Item k2 = balanceSheetItems.get("Cash and cash equivalents").sum(balanceSheetItems.get("Restricted cash"));
+		
+		if (k1 != null) {
+			k = k1;
+					
 		} else {
-			equity = balanceSheetItems.get("Total cash");
+				log.info("Empresa a monitorizar: " + name);
+				log.info("Término que no aparece: Total cash");
+				log.info("Término que no aparece: Cash and cash equivalents y Restricted cash");
+				k = utils.controlNull(balanceSheetItems.get("Total cash"), getYear());
 		}
-		return equity;
+		return k;
 	}
 	
 	public Item Inventories() {
-		Item equity = balanceSheetItems.get("Inventories");
-		if (equity != null) {
+		Item k = balanceSheetItems.get("Inventories");
+		if (k != null) {
 			
 		} else {
-			equity = balanceSheetItems.get("Inventories");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Inventories");
+			k = utils.controlNull(balanceSheetItems.get("Inventories"), getYear());
 		}
-		return equity;
+		return k;
 	}
 	
 	public Item Goodwill() {
-		Item goodwill = balanceSheetItems.get("Goodwill");
-		Utils utils = new Utils();
-		if (goodwill != null) {
+		Item k = balanceSheetItems.get("Goodwill");
+		
+		if (k != null) {
 			
 		} else {
-			goodwill = utils.controlNull(goodwill, balanceSheetItems.get("Receivables").lastYear());
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Goodwill");
+			k = utils.controlNull(balanceSheetItems.get("Goodwill"), getYear());
 		}
 				
-		return goodwill;
+		return k;
 	}
 	
 	public Item IntagibleAssets() {
-		Item intagible = balanceSheetItems.get("Intangible assets");
-		Utils utils = new Utils();
-		if (intagible != null) {
+		Item k = balanceSheetItems.get("Intangible assets");
+		
+		if (k != null) {
 			
 		} else {
-			intagible = utils.controlNull(intagible, balanceSheetItems.get("Receivables").lastYear());
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Intangible assets");
+			k = utils.controlNull(balanceSheetItems.get("Intangible assets"), getYear());
 		}
 				
-		return intagible;
+		return k;
 	}
 	
 	public static void main(String[] args) throws IOException {

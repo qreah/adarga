@@ -1,6 +1,10 @@
 package adarga.ratios;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
 
 import org.json.JSONObject;
 
@@ -15,29 +19,29 @@ public class GlobalManagement {
 	
 	private static final Logger log = Logger.getLogger(GlobalManagement.class.getName());
 	
-	Item operatingROA;
-	Item salesOverAssets;
+	Item operatingROA = null;
+	Item salesOverAssets = null;
 	
-	Item financialLeverageGain;
-	Item ROE;
-	Item returnOnTangibleEquity;
-	Item payOut;
-	Item dividendYield;
-	Item FCFOverEquity;
-	Item FCFPerShare;
-	Item earningsPerShare;
-	Item operatingIncomePerShare;
-	Item growthRate;
+	Item financialLeverageGain = null;
+	Item ROE = null;
+	Item returnOnTangibleEquity = null;
+	Item payOut = null;
+	Item dividendYield = null;
+	Item FCFOverEquity = null;
+	Item FCFPerShare = null;
+	Item earningsPerShare = null;
+	Item operatingIncomePerShare = null;
+	Item growthRate = null;
 	
-	Item salesGrowthRate;
-	Item NOPATMargin;
-	Item beginningNetOperatingWCOverSales;
-	Item beginningNetOperatingLTAssetsOverSales;
-	Item beginningNetDebt2CapitalRatio;
-	Item afterTaxCostOfDebt;
+	Item salesGrowthRate = null;
+	Item NOPATMargin = null;
+	Item beginningNetOperatingWCOverSales = null;
+	Item beginningNetOperatingLTAssetsOverSales = null;
+	Item beginningNetDebt2CapitalRatio = null;
+	Item afterTaxCostOfDebt = null;
 	
 	@SuppressWarnings("static-access")
-	public GlobalManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs, CompanyInformation ci) {
+	public void loadGlobalManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs, CompanyInformation ci) throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
 		Item revenue = is.Revenue();
 		Item provisionForIncomeTaxes = is.provisionForIncomeTaxes();
@@ -96,6 +100,10 @@ public class GlobalManagement {
 		
 	}
 	
+	public GlobalManagement() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
 		json.put("operatingROA", operatingROA.toJSON());

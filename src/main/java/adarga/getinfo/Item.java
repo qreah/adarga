@@ -260,11 +260,14 @@ public class Item {
 		JSONObject json = new JSONObject();
 		
 		if (itemSize == size) {
-			
+			Double operation = 0.0;
 			Iterator<String> iter = years.iterator();
 			while (iter.hasNext()) {
 				int year = Integer.parseInt(iter.next());
-				Double operation = this.getValue(year) / item.getValue(year + delta);
+				if (item.getValue(year + delta) != 0) {
+					operation = this.getValue(year) / item.getValue(year + delta);
+					
+				} 
 				newItem.setValue(year, operation);
 				
 			}

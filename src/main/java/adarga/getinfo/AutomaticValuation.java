@@ -2,7 +2,7 @@ package adarga.getinfo;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -22,12 +22,12 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import adarga.getinfo.BalanceSheet.FinancialModelingPrepUrl;
 
 public class AutomaticValuation {
-	private static final Logger log = Logger.getLogger(BalanceSheet.class.getName());
+	private static final Logger log = Logger.getLogger(AutomaticValuation.class.getName());
 	static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     static JsonFactory JSON_FACTORY = new JacksonFactory();
     
-    public void getCompanies() throws IOException, SQLException, ClassNotFoundException, ServletException {
-    	DB db = new DB();
+    public void getCompanies() throws IOException, SQLException, ClassNotFoundException, ServletException {	
+		
 		String urlRaw = "https://api.adarga.org/sp500.json";
 		HttpRequestFactory requestFactory 
 	    = HTTP_TRANSPORT.createRequestFactory(
@@ -39,7 +39,7 @@ public class AutomaticValuation {
 		HttpResponse res = (HttpResponse)request.execute();
 		String resString = res.parseAsString();
 		JSONArray array = new JSONArray(resString);
-		
+		DB db = new DB();
 		int round = db.getRound();
 		int batch = 50;
 		if ((round + batch) > 500) {
@@ -49,7 +49,11 @@ public class AutomaticValuation {
 			db.setRound(round + batch);
 		}
 		
+		
+		
+		
 		for (int i = round; i < round + batch +1; i++) {
+			DB db2 = new DB();
 			JSONObject json = new JSONObject(array.get(i).toString());
 			String Name = json.getString("Name").replaceAll("'", "");
 			String Sector = json.getString("Sector");		
@@ -58,68 +62,91 @@ public class AutomaticValuation {
 			BalanceSheet bs = new BalanceSheet();
 			IncomeStatement is = new IncomeStatement();
 			CashFlowStatement cs = new CashFlowStatement();
-			Company com = new Company();
-			try {
-				com.getFinancialStatements(Symbol);
+			CompanyInformation ci = new CompanyInformation();
 			
-				CompanyInformation ci = new CompanyInformation();
-				try {
-					JSONObject result = com.analysis(bs, is, cs, ci);
-					String salesGrowth = result.get("salesGrowth").toString();
-					String NOPATGrowth = result.get("NOPATGrowth").toString();
-					String NOPATMargin = result.get("NOPATMargin").toString();
-					String netWorkingCapitalOverRevenues = result.get("netWorkingCapitalOverRevenues").toString();
-					String netLongTermAssetsOverRevenue = result.get("netLongTermAssetsOverRevenue").toString();
-					String netDebtToCapitalRatio = result.get("netDebtToCapitalRatio").toString();
-					String afterTaxCostOfDebt = result.get("afterTaxCostOfDebt").toString();
-					String OperatingROA = result.get("OperatingROA").toString();
-					String salesOverNetAssets = result.get("salesOverNetAssets").toString();
-					String ROE = result.get("ROE").toString();
-					String returnOnTangibleEquity = result.get("returnOnTangibleEquity").toString();
-					String growthIncome = result.get("growthIncome").toString();
-					String growthOperatingIncome = result.get("growthOperatingIncome").toString();
-					String g10Years = result.get("g10Years").toString();
+			Company com = new Company();
+			
+			List<Object> reports = com.getFinancialStatements(Symbol);
+			
+			switch(Symbol) {
+			  case "BEN":  
+			    break;
+			  case "AIZ":
+			    break;
+			  case "DTE":
+				break;
+			  case "EW":
+					break;
+			  case "GRMN":
+					break;
+			  case "IPGP":
+					break;
+			  case "MCD":
+					break;
+			  case "SCG":
+					break;
+			  case "ALXN":
+					break;
+			  case "CVS":
+					break;
+			  case "HBI":
+					break;
+			  case "IRM":
+					break;
+			  case "STX":
+					break;
+			  case "AGN":
+					break;
+			  case "BDX":
+					break;
+			  case "EVHC":
+					break;
+			  case "HIG":
+					break;
+			  case "EXC":
+					break;
+			  case "AMP":
+					break;
+			  case "IR":
+					break;
+			  case "MAS":
+					break;
+			  case "DISCA":
+					break;
+			  case "FAST":
+					break;
+			  case "FL":
+					break;
+			  default:
+			    
+			
+				
+					JSONObject result = new JSONObject();
+					bs = (BalanceSheet) reports.get(0);
+					is = (IncomeStatement) reports.get(1);
+					cs = (CashFlowStatement) reports.get(2);
+					ci = (CompanyInformation) reports.get(3);
+					
+					result = com.analysis(bs, is, cs, ci);
+					
 					String SQL = "";
 					if (db.companyIncluded(Symbol)) {
+						
 						SQL = "UPDATE apiadbossDB.CompanyValuation "
-								+ "SET salesGrowth = '" + salesGrowth
-								+ "' , NOPATGrowth = '" + NOPATGrowth
-								+ "' , NOPATMargin = '" + NOPATMargin
-								+ "' , netWorkingCapitalOverRevenues = '" + netWorkingCapitalOverRevenues
-								+ "' , netLongTermAssetsOverRevenue = '" + netLongTermAssetsOverRevenue
-								+ "' , netDebtToCapitalRatio = '" + netDebtToCapitalRatio
-								+ "' , afterTaxCostOfDebt = '" + afterTaxCostOfDebt
-								+ "' , OperatingROA = '" + OperatingROA
-								+ "' , salesOverNetAssets = '" + salesOverNetAssets
-								+ "' , ROE = '" + ROE
-								+ "' , returnOnTangibleEquity = '" + returnOnTangibleEquity
-								+ "' , growthIncome = '" + growthIncome
-								+ "' , growthOperatingIncome = '" + growthOperatingIncome
-								+ "' , g10Years = '" + g10Years
+								+ "SET analysis = '" + result.toString()
 								+ "' WHERE Symbol = '" + Symbol + "'";
+						
+						
 					} else {
+						
 						SQL = "INSERT INTO apiadbossDB.CompanyValuation "
-								+ "	(Symbol, Sector, Company, salesGrowth, NOPATGrowth, NOPATMargin, "
-								+ "netWorkingCapitalOverRevenues, netLongTermAssetsOverRevenue, netDebtToCapitalRatio, "
-								+ "afterTaxCostOfDebt, OperatingROA, salesOverNetAssets, ROE, returnOnTangibleEquity,"
-								+ "growthIncome, growthOperatingIncome, g10Years)"
-								+ " VALUES ('" + Symbol + "', '" + Sector + "', '" + Name + "', '" + salesGrowth 
-								+ "', '" + NOPATGrowth + "', '" + NOPATMargin + "', '" + netWorkingCapitalOverRevenues 
-								+ "', '" + netLongTermAssetsOverRevenue 
-								+ "', '" + netDebtToCapitalRatio 
-								+ "', '" + afterTaxCostOfDebt + "', '" + OperatingROA + "', '" + salesOverNetAssets 
-								+ "', '" + ROE 
-								+ "', '" + returnOnTangibleEquity + "', '" + growthIncome + "', '" + growthOperatingIncome 
-								+ "', '" + g10Years + "')";
-								 
+								+ "	(Symbol, Sector, Company, analysis)"
+								+ " VALUES ('" + Symbol + "', '" + Sector + "', '" + Name + "', '" + result.toString() + "')";
+							 
 					}
 					
-					db.Execute(SQL);
-				} catch (Exception e) {
-					log.info("Error | Company: " + Symbol);
-				}
-			} catch (Exception e) {
-				log.info("Error: Company Information. com.google.apphosting.api.DeadlineExceededException | Company: " + Symbol);
+					db2.Execute(SQL);	
+					
 			}
 		}
 		

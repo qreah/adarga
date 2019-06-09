@@ -14,38 +14,49 @@ public class CashManagement {
 	
 	private static final Logger log = Logger.getLogger(CashManagement.class.getName());
 	
-	Item operatingCashFlow;
-	Item ChangeOperatingCashFlow;
-	Item investingCashFlow;
-	Item ChangeInvestingCashFlow;
-	Item CAPEX;
-	Item changeInCAPEX;
-	Item adquisitions;
-	Item changeInAdquisitions;
-	Item securitiesNet;
-	Item changeInSecurities;
-	Item financingCashFlow;
-	Item investing; //CAPEX and adquisitions
-	Item changeInInvesting;
-	Item FCF;
-	Item changeInFCF;
-	Item dividends;
-	Item changeInDividends;
-	Item stockRepurchase;
-	Item changeInStockRepurchase;
-	Item debtRepayment;
-	Item changeInDebtRepayment;
+	Item operatingCashFlow = null;
+	Item ChangeOperatingCashFlow = null;
+	Item investingCashFlow = null;
+	Item ChangeInvestingCashFlow = null;
+	Item CAPEX = null;
+	Item changeInCAPEX = null;
+	Item adquisitions = null;
+	Item changeInAdquisitions = null;
+	Item securitiesNet = null;
+	Item changeInSecurities = null;
+	Item financingCashFlow = null;
+	Item investing = null; //CAPEX and adquisitions
+	Item changeInInvesting = null;
+	Item FCF = null;
+	Item changeInFCF = null;
+	Item dividends = null;
+	Item changeInDividends = null;
+	Item stockRepurchase = null;
+	Item changeInStockRepurchase = null;
+	Item debtRepayment = null;
+	Item changeInDebtRepayment = null;
+	Item CommonStockRepurchased = null;
+	Item CommonStockIssued = null;
+	Item plant = null;
+	Item plantReductions = null;
+	
+	public CashManagement() {
 		
+	}
 	
 	@SuppressWarnings("static-access")
-	public CashManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) {
+	public void loadCashManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) {
 		
 		Item revenue = is.Revenue();
+		
 		operatingCashFlow = cs.NetCashProvidedByOperatingActivities();
 		ChangeOperatingCashFlow = operatingCashFlow.changeInItem();
 		investingCashFlow = cs.NetCashUsedForInvestingActivities();
 		ChangeInvestingCashFlow = investingCashFlow.changeInItem();
-		CAPEX = cs.InvestmentsInPropertyPlantAndEquipment().substract(cs.PropertyPlantAndEquipmentReductions());
+		
+		plant = cs.InvestmentsInPropertyPlantAndEquipment();
+		plantReductions = cs.PropertyPlantAndEquipmentReductions();
+		CAPEX = plant.substract(plantReductions);
 		changeInCAPEX = CAPEX.changeInItem();
 		adquisitions = cs.AcquisitionsNet();
 		changeInAdquisitions = adquisitions.changeInItem();
@@ -62,7 +73,10 @@ public class CashManagement {
 		dividends = cs.DividendPaid();
 		
 		changeInDividends = dividends.changeInItem();
-		stockRepurchase = cs.CommonStockRepurchased().substract(cs.CommonStockIssued());
+		
+		CommonStockRepurchased = cs.CommonStockRepurchased();
+		CommonStockIssued = cs.CommonStockIssued();
+		stockRepurchase = CommonStockRepurchased.substract(CommonStockIssued);
 		changeInStockRepurchase = stockRepurchase.changeInItem();
 		debtRepayment = cs.DebtRepayment().substract(cs.DebtIssued());
 		changeInDebtRepayment = debtRepayment.changeInItem();

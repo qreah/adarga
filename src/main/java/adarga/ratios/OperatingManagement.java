@@ -14,26 +14,26 @@ public class OperatingManagement {
 	private static final Logger log = Logger.getLogger(OperatingManagement.class.getName());
 	
 	
-	Item revenue;
-	Item salesGrowth;
-	Item COGS;
-	Item operatingIncome;
-	Item grossMargin;
-	Item SGA;
-	Item SGAOverSales;
-	Item NOPAT;
-	Item NOPATGrowth;
-	Item NOPATMargin;
-	Item operatingMargin;
-	Item provisionForIncomeTaxes;
-	Item taxRate; 
-	Item interestExpense;
-	Item netIncome;
-	Item incomeOverRevenue;
-	Item operatingCashFlow;
-	Item operatingCashFlowOverIncome;
+	Item revenue = null;
+	Item salesGrowth = null;
+	Item COGS = null;
+	Item operatingIncome = null;
+	Item grossMargin = null;
+	Item SGA = null;
+	Item SGAOverSales = null;
+	Item NOPAT = null;
+	Item NOPATGrowth = null;
+	Item NOPATMargin = null;
+	Item operatingMargin = null;
+	Item provisionForIncomeTaxes = null;
+	Item taxRate = null; 
+	Item interestExpense = null;
+	Item netIncome = null;
+	Item incomeOverRevenue = null;
+	Item operatingCashFlow = null;
+	Item operatingCashFlowOverIncome = null;
 	
-	public OperatingManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) {
+	public void loadOperatingManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) {
 		
 		revenue = is.Revenue();
 		salesGrowth = revenue.changeInItem();
@@ -41,6 +41,7 @@ public class OperatingManagement {
 		operatingIncome = is.OperatingIncome();
 		
 		operatingMargin = operatingIncome.divide(revenue);
+		
 		grossMargin = is.costOfRevenue().divide(revenue);
 		SGA = is.SGA();
 		SGAOverSales = SGA.divide(revenue);
@@ -60,6 +61,16 @@ public class OperatingManagement {
 	
 	
 	
+	
+
+	public OperatingManagement() {
+		// TODO Auto-generated constructor stub
+	}
+
+
+
+
+
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
 		json.put("revenue", revenue.toJSON());

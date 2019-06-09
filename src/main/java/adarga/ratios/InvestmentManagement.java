@@ -1,6 +1,10 @@
 package adarga.ratios;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
 
 import org.json.JSONObject;
 
@@ -13,36 +17,38 @@ import utils.Utils;
 public class InvestmentManagement {
 	private static final Logger log = Logger.getLogger(InvestmentManagement.class.getName());
 	
-	Item accountsReceivable;
-	Item accountsReceivableGrowth;
-	Item inventory;
-	Item inventoryGrowth;
-	Item accountsPayable;
-	Item currentAssets;
-	Item currentLiabilities;
-	Item cashAndMarketableSecurities;
-	Item shortTermDebtAndCurrentPortionOfLongTermDebt;
-	Item netWorkingCapital;
-	Item LTAssets;
-	Item goodwillAndIntangibles;
-	Item nonInterestBearingLTLiabilities;
-	Item netLTAssets;
-	Item netAssets;
-	Item longTermDebt;
-	Item accountsReceivableOverSales;
-	Item inventorySales;
-	Item accountsPayableSales;
-	Item daysReceivables;
-	Item daysInventory;
-	Item daysPayables;
-	Item salesOverWorkingCapital;
-	Item salesOverNetLTAssets;
-	Item salesOverNetAssets;
-	Item cashOverNetAssets;
-	Item cashOverReceivables;
+	Item accountsReceivable = null;
+	Item accountsReceivableGrowth = null;
+	Item inventory = null;
+	Item inventoryGrowth = null;
+	Item accountsPayable = null;
+	Item currentAssets = null;
+	Item currentLiabilities = null;
+	Item cashAndMarketableSecurities = null;
+	Item shortTermDebtAndCurrentPortionOfLongTermDebt = null;
+	Item netWorkingCapital = null;
+	Item LTAssets = null;
+	Item goodwillAndIntangibles = null;
+	Item nonInterestBearingLTLiabilities = null;
+	Item netLTAssets = null;
+	Item netAssets = null;
+	Item longTermDebt = null;
+	Item accountsReceivableOverSales = null;
+	Item inventorySales = null;
+	Item accountsPayableSales = null;
+	Item daysReceivables = null;
+	Item daysInventory = null;
+	Item daysPayables = null;
+	Item salesOverWorkingCapital = null;
+	Item salesOverNetLTAssets = null;
+	Item salesOverNetAssets = null;
+	Item cashOverNetAssets = null;
+	Item cashOverReceivables = null;
+	Item capitalLeases = null;
+	Item ltd = null;
 	
 	@SuppressWarnings("static-access")
-	public InvestmentManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) {
+	public void loadInvestmentManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) throws ClassNotFoundException, ServletException, IOException, SQLException {
 		Item revenue = is.Revenue();
 		Item COGS = is.costOfRevenue();
 		accountsReceivable = bs.Receivables();
@@ -60,8 +66,12 @@ public class InvestmentManagement {
 		netWorkingCapital = netWorkingCapital.sum(shortTermDebtAndCurrentPortionOfLongTermDebt);
 		LTAssets = bs.totalAssets().substract(currentAssets);
 		goodwillAndIntangibles = bs.Goodwill().sum(bs.IntagibleAssets());
-		
-		longTermDebt = bs.longTermDebt().sum(bs.capitalLeases());
+		capitalLeases = null;
+		ltd = null;
+		longTermDebt = null;
+		capitalLeases = bs.capitalLeases();
+		ltd = bs.longTermDebt();
+		longTermDebt = ltd.sum(capitalLeases);
 		nonInterestBearingLTLiabilities = bs.totalAssets().substract(longTermDebt);
 		netLTAssets = LTAssets.substract(nonInterestBearingLTLiabilities);
 		netAssets = LTAssets.sum(netWorkingCapital);
@@ -78,6 +88,10 @@ public class InvestmentManagement {
 		cashOverReceivables = cashAndMarketableSecurities.divide(accountsReceivable);
 	}
 	
+	public InvestmentManagement() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
 		json.put("accountsReceivable", accountsReceivable.toJSON());

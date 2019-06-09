@@ -39,7 +39,9 @@ public class CompanyInformation {
 		
 			HttpResponse res = (HttpResponse)request.execute();
 			String resString = res.parseAsString().replace("<pre>", "");
-			
+			if (companySymbol.equals("BRK.B")) {
+				
+			} else {
 			JSONObject json = new JSONObject(resString).getJSONObject(companySymbol);
 			//companyInformation.put("Price", Double.toString(json.getDouble("Price")));
 			
@@ -59,8 +61,8 @@ public class CompanyInformation {
 					}
 				}
 				
-				
 			}
+		}
 		
 					
 	}

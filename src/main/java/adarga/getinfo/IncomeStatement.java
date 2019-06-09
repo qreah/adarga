@@ -19,6 +19,7 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
 import adarga.getinfo.BalanceSheet.FinancialModelingPrepUrl;
+import utils.Utils;
 
 public class IncomeStatement {
 	
@@ -27,6 +28,11 @@ public class IncomeStatement {
     static JsonFactory JSON_FACTORY = new JacksonFactory();
     static Map<String, Item> incomeStatementItems = new HashMap<String, Item>();
     static String name;
+    Utils utils = new Utils();
+    
+    public IncomeStatement() {
+    	incomeStatementItems = new HashMap<String, Item>();
+    }
 	
 	@SuppressWarnings("unused")
 	public void execute(String companySymbol) throws IOException {
@@ -55,6 +61,21 @@ public class IncomeStatement {
 					
 	}
 	
+	public int getYear() {
+		int year;
+		if (incomeStatementItems.get("Revenue") != null) {
+    		year = incomeStatementItems.get("Revenue").lastYear();
+    	} else {
+    		if (incomeStatementItems.get("Net income") != null) {
+    			year = incomeStatementItems.get("Net income").lastYear();
+    		} else {
+    			year = incomeStatementItems.get("Income taxes").lastYear();
+    		}
+    	}
+		
+		return year;
+	}
+	
 	public Item get(String itemName) {
 		return incomeStatementItems.get(itemName);
 	}
@@ -76,7 +97,7 @@ public class IncomeStatement {
 			Item currentAssets = is.get("Total current assets");
 			int lastYear = currentAssets.lastYear();
 			Double value = currentAssets.getValue(lastYear);
-			System.out.println(value);
+			
 			
 		} catch (IOException e) {
 			
@@ -84,110 +105,140 @@ public class IncomeStatement {
 		}
     }
 	public Item InterestExpense() {
-		Item interestExpense = incomeStatementItems.get("Interest Expense");
-		if (interestExpense != null) {
-			
+		Item k = new Item();
+		Item k1 = incomeStatementItems.get("Interest Expense");
+		Item k2 = incomeStatementItems.get("Interest expenses");
+		if (k1 != null) {
+			k = k1;
+		} else if (k2 != null) {
+			k = k2;
 		} else {
-			interestExpense = incomeStatementItems.get("Interest expense");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Interest Expense");
+			log.info("Término que no aparece: Interest expenses");
+			k = utils.controlNull(incomeStatementItems.get("Interest Expense"), getYear());
 		}
 		
-		return interestExpense;
+		return k;
 	}
 	
 	public Item costOfRevenue() {
-		Item interestExpense = incomeStatementItems.get("Cost of revenue");
-		if (interestExpense != null) {
+		Item k = incomeStatementItems.get("Cost of revenue");
+		if (k != null) {
 			
 		} else {
-			interestExpense = incomeStatementItems.get("Cost of revenue");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Cost of revenue");
+			k = utils.controlNull(incomeStatementItems.get("Cost of revenue"), getYear());
 		}
 		
-		return interestExpense;
+		return k;
 	}
 	
 	
 	public Item Revenue() {
-		Item interestExpense = incomeStatementItems.get("Revenue");
-		if (interestExpense != null) {
+		Item k = incomeStatementItems.get("Revenue");
+		if (k != null) {
 			
 		} else {
-			interestExpense = incomeStatementItems.get("Revenue");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Revenue");
+			k = utils.controlNull(incomeStatementItems.get("Revenue"), getYear());
 		}
 		
-		return interestExpense;
+		return k;
 	}
 	
 	public Item provisionForIncomeTaxes() {
-		Item interestExpense = incomeStatementItems.get("Provision for income taxes");
-		if (interestExpense != null) {
+		Item k = incomeStatementItems.get("Provision for income taxes");
+		if (k != null) {
 			
 		} else {
-			interestExpense = incomeStatementItems.get("Provision for income taxes");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Provision for income taxes");
+			k = utils.controlNull(incomeStatementItems.get("Provision for income taxes"), getYear());
 		}
 		
-		return interestExpense;
+		return k;
 	}
 	
 	public Item netIncome() {
-		Item interestExpense = incomeStatementItems.get("Net income");
-		if (interestExpense != null) {
+		Item k = incomeStatementItems.get("Net income");
+		if (k != null) {
 			
 		} else {
-			interestExpense = incomeStatementItems.get("Net income");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Net income");
+			k = utils.controlNull(incomeStatementItems.get("Net income"), getYear());
 		}
 		
-		return interestExpense;
+		return k;
 	}
 	
 	
 	public Item SGA() {
-		Item interestExpense = incomeStatementItems.get("Sales, General and administrative");
-		if (interestExpense != null) {
+		Item k = incomeStatementItems.get("Sales, General and administrative");
+		if (k != null) {
 			
 		} else {
-			interestExpense = incomeStatementItems.get("Sales, General and administrative");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Sales, General and administrative");
+			k = utils.controlNull(incomeStatementItems.get("Sales, General and administrative"), getYear());
 		}
 		
-		return interestExpense;
+		return k;
 	}
 	
 	
 	public Item grossProfit() {
-		Item interestExpense = incomeStatementItems.get("Gross profit");
-		if (interestExpense != null) {
+		Item k = incomeStatementItems.get("Gross profit");
+		if (k != null) {
 			
 		} else {
-			interestExpense = incomeStatementItems.get("Gross profit");
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Gross profit");
+			k = utils.controlNull(incomeStatementItems.get("Gross profit"), getYear());
 		}
 		
-		return interestExpense;
+		return k;
 	}
 	
 	
 	
-	public Item manageTotalOperatingExpenses() {
-		Item totalOperatingExpenses = new Item();
-		
-		if (name.equals("XOM")) {
-			totalOperatingExpenses = incomeStatementItems.get("Total costs and expenses");
+	@SuppressWarnings("unused")
+	public Item OperatingExpenses() {
+		Item k = new Item();
+		Item k1 = incomeStatementItems.get("Total operating expenses");
+		Item k2 = incomeStatementItems.get("Total costs and expenses");
+		Item k3 = incomeStatementItems.get("Total expenses");
+		if (k1 != null) {
+			k = k1;
+		} else if (k2 != null) {
+			k = k2;
+		} else if (k3 != null) {
+			k = k3;
 		} else {
-			totalOperatingExpenses = incomeStatementItems.get("Total operating expenses");
-			
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Total operating expenses");
+			log.info("Término que no aparece: Total costs and expenses");
+			k = utils.controlNull(incomeStatementItems.get("Total operating expenses"), getYear());
 		}
 		
-		return totalOperatingExpenses;
+		return k;
 	}
 	
 	public Item OperatingIncome() {
 		Item operatingIncome = incomeStatementItems.get("Operating income");
-		Item revenue = incomeStatementItems.get("Revenue");
-		Item COGS = incomeStatementItems.get("Cost of revenue");
-		Item totalOperatingExpenses = manageTotalOperatingExpenses();
+		Item revenue = Revenue();
+		Item COGS = costOfRevenue();
+		Item totalOperatingExpenses = OperatingExpenses();
 		if (operatingIncome != null) {
 				
 		} else {
 			
 			operatingIncome = revenue.substract(COGS);
+			log.info("Empresa a monitorizar: " + name);
+			log.info("Término que no aparece: Operating income");
 			operatingIncome = operatingIncome.substract(totalOperatingExpenses);
 		}
 		return operatingIncome;
