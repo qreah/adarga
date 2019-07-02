@@ -16,7 +16,6 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
-
 import adarga.getinfo.BalanceSheet.FinancialModelingPrepUrl;
 
 public class CompanyInformation {
@@ -39,6 +38,7 @@ public class CompanyInformation {
 		
 			HttpResponse res = (HttpResponse)request.execute();
 			String resString = res.parseAsString().replace("<pre>", "");
+			
 			if (companySymbol.equals("BRK.B")) {
 				
 			} else {
@@ -64,12 +64,17 @@ public class CompanyInformation {
 			}
 		}
 		
-					
+				
 	}
     
     public Double getStockPrice() {
     	Double stockPrice = Double.parseDouble(companyInformation.get("Price"));
     	return stockPrice;
+    }
+    
+    public Double getMktCap() {
+    	Double MktCap = Double.parseDouble(companyInformation.get("MktCap"));
+    	return MktCap;
     }
     
     public Double numberOfShares() {
@@ -78,4 +83,14 @@ public class CompanyInformation {
     	Double numberOfShares = marketCapitalization / stockPrice;
     	return numberOfShares;
     }
+    
+    
+public static void main(String[] args) throws Exception {
+		
+		CompanyInformation ci = new CompanyInformation();
+		ci.execute("MMM");
+		
+		
+		
+	}
 }

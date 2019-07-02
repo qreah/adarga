@@ -1,0 +1,7 @@
+<cronentries>
+  <cron>
+    <url>/automatic</url>
+    <description>daily getting financials data</description>
+    <schedule>every 7 minutes from 00:00 to 7:30</schedule>
+  </cron>
+</cronentries>

@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import adarga.getinfo.BalanceSheet;
@@ -16,6 +17,36 @@ import adarga.getinfo.Item;
 
 public class OpportunityIdentification {
 	private static final Logger log = Logger.getLogger(BalanceSheet.class.getName());
+	
+	public JSONArray fcfYield() throws ClassNotFoundException, SQLException, ServletException, IOException {
+		
+		JSONArray array = new JSONArray();
+		DB db = new DB();
+		// Get the information from CompayValuation table
+		
+		String SQL = "SELECT Company, Sector, Symbol, FCFYield FROM apiadbossDB.CompanyValuation WHERE FCFYield > 0.08 ORDER BY FCFYield DESC";
+		ResultSet rs = db.ExecuteSELECT(SQL);
+		while (rs.next()) {
+			
+			String Company = rs.getString("Company");
+			String Sector = rs.getString("Sector");
+			String Symbol = rs.getString("Symbol");
+			Double FCFYield = rs.getDouble("FCFYield");
+			
+			JSONObject json = new JSONObject();
+			
+			json.put("Company", Company);
+			json.put("Sector", Sector);
+			json.put("Symbol", Symbol);
+			json.put("FCFYield", FCFYield);
+			
+			array.put(json);
+				
+		}
+				
+		return array;
+		
+	}
 	
 	public JSONObject Level1() throws ClassNotFoundException, SQLException, ServletException, IOException {
 		JSONObject json = new JSONObject();

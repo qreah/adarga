@@ -1,11 +1,16 @@
 package adarga.ratios;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
 
 import org.json.JSONObject;
 
 import adarga.getinfo.BalanceSheet;
 import adarga.getinfo.CashFlowStatement;
+import adarga.getinfo.CompanyInformation;
 import adarga.getinfo.IncomeStatement;
 import adarga.getinfo.Item;
 import utils.Utils;
@@ -18,16 +23,19 @@ public class CashManagement {
 	Item ChangeOperatingCashFlow = null;
 	Item investingCashFlow = null;
 	Item ChangeInvestingCashFlow = null;
+	Item financingCashFlow = null;
+	Item ChangeFinancingCashFlow = null;
 	Item CAPEX = null;
 	Item changeInCAPEX = null;
 	Item adquisitions = null;
 	Item changeInAdquisitions = null;
 	Item securitiesNet = null;
 	Item changeInSecurities = null;
-	Item financingCashFlow = null;
 	Item investing = null; //CAPEX and adquisitions
 	Item changeInInvesting = null;
 	Item FCF = null;
+	
+
 	Item changeInFCF = null;
 	Item dividends = null;
 	Item changeInDividends = null;
@@ -40,19 +48,31 @@ public class CashManagement {
 	Item plant = null;
 	Item plantReductions = null;
 	
+	Double FCFYield = null;  
+	Double DividendYield = null;		
+	Double RepurchasesYield = null;		
+	Double SecuritiesBuyingYield = null; 
+	Double DebtBuyingYield = null; 
+	Double CAPEXYield = null; 
+	Double AdquisitionsYield = null; 
+	Double InvestingYield = null;
+	
 	public CashManagement() {
 		
 	}
 	
 	@SuppressWarnings("static-access")
-	public void loadCashManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) {
+	public void loadCashManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs, CompanyInformation ci) throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
 		Item revenue = is.Revenue();
+		
 		
 		operatingCashFlow = cs.NetCashProvidedByOperatingActivities();
 		ChangeOperatingCashFlow = operatingCashFlow.changeInItem();
 		investingCashFlow = cs.NetCashUsedForInvestingActivities();
 		ChangeInvestingCashFlow = investingCashFlow.changeInItem();
+		financingCashFlow = cs.NetCashProvidedByUsedForFinancingActivities();
+		ChangeFinancingCashFlow = financingCashFlow.changeInItem();
 		
 		plant = cs.InvestmentsInPropertyPlantAndEquipment();
 		plantReductions = cs.PropertyPlantAndEquipmentReductions();
@@ -63,7 +83,7 @@ public class CashManagement {
 		
 		securitiesNet = cs.SecuritiesInvestment().substract(cs.PurchasesOfInvestments());
 		changeInSecurities = securitiesNet.changeInItem();
-		financingCashFlow = cs.NetCashProvidedByUsedForFinancingActivities();
+		
 		investing = CAPEX.sum(adquisitions); //CAPEX and adquisitions
 		
 		changeInInvesting = investing.changeInItem();
@@ -80,15 +100,39 @@ public class CashManagement {
 		changeInStockRepurchase = stockRepurchase.changeInItem();
 		debtRepayment = cs.DebtRepayment().substract(cs.DebtIssued());
 		changeInDebtRepayment = debtRepayment.changeInItem();
+		
+		Double MktCap = ci.getMktCap();
+		int year = FCF.lastYear();
+		FCFYield = FCF.getValue(year) * 1000000 / MktCap;  
+		DividendYield = dividends.getValue(year) * 1000000 / MktCap;
+		RepurchasesYield = (CommonStockRepurchased.getValue(year) - CommonStockIssued.getValue(year)) * 1000000 / MktCap;	
+		
+		SecuritiesBuyingYield = securitiesNet.getValue(year) * 1000000 / MktCap; 
+		DebtBuyingYield = debtRepayment.getValue(year) * 1000000 / MktCap; 
+		CAPEXYield = CAPEX.getValue(year) * 1000000 / MktCap; 
+		AdquisitionsYield = adquisitions.getValue(year) * 1000000 / MktCap; 
+		InvestingYield = (CAPEXYield + AdquisitionsYield);
 	
 	}
 	
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
+		
+		json.put("FCFYield", FCFYield);
+		json.put("DividendYield", DividendYield);
+		json.put("RepurchasesYield", RepurchasesYield);
+		json.put("SecuritiesBuyingYield", SecuritiesBuyingYield);
+		json.put("DebtBuyingYield", DebtBuyingYield);
+		json.put("CAPEXYield", CAPEXYield);
+		json.put("AdquisitionsYield", AdquisitionsYield);
+		json.put("InvestingYield", InvestingYield);
+		
 		json.put("operatingCashFlow", operatingCashFlow.toJSON());
 		json.put("ChangeOperatingCashFlow", ChangeOperatingCashFlow.toJSON());
 		json.put("investingCashFlow", investingCashFlow.toJSON());
 		json.put("ChangeInvestingCashFlow", ChangeInvestingCashFlow.toJSON());
+		json.put("financingCashFlow", financingCashFlow.toJSON());
+		json.put("ChangeFinancingCashFlow", ChangeInvestingCashFlow.toJSON());
 		
 		json.put("CAPEX", CAPEX.toJSON());
 		json.put("changeInCAPEX", changeInCAPEX.toJSON());
@@ -97,7 +141,7 @@ public class CashManagement {
 		
 		json.put("securitiesNet", securitiesNet.toJSON());
 		json.put("changeInSecurities", changeInSecurities.toJSON());
-		json.put("financingCashFlow", financingCashFlow.toJSON());
+		
 		json.put("investing", investing.toJSON());
 		
 		json.put("changeInInvesting", changeInInvesting.toJSON());
@@ -286,6 +330,112 @@ public class CashManagement {
 	public void setChangeInDebtRepayment(Item changeInDebtRepayment) {
 		this.changeInDebtRepayment = changeInDebtRepayment;
 	}
+	
+	public Double getFCFYield() {
+		return FCFYield;
+	}
+
+	public void setFCFYield(Double fCFYield) {
+		FCFYield = fCFYield;
+	}
+
+	public Double getDividendYield() {
+		return DividendYield;
+	}
+
+	public void setDividendYield(Double dividendYield) {
+		DividendYield = dividendYield;
+	}
+
+	public Double getRepurchasesYield() {
+		return RepurchasesYield;
+	}
+
+	public void setRepurchasesYield(Double repurchasesYield) {
+		RepurchasesYield = repurchasesYield;
+	}
+
+	public Double getSecuritiesBuyingYield() {
+		return SecuritiesBuyingYield;
+	}
+
+	public void setSecuritiesBuyingYield(Double securitiesBuyingYield) {
+		SecuritiesBuyingYield = securitiesBuyingYield;
+	}
+
+	public Double getDebtBuyingYield() {
+		return DebtBuyingYield;
+	}
+
+	public void setDebtBuyingYield(Double debtBuyingYield) {
+		DebtBuyingYield = debtBuyingYield;
+	}
+
+	public Double getCAPEXYield() {
+		return CAPEXYield;
+	}
+
+	public void setCAPEXYield(Double cAPEXYield) {
+		CAPEXYield = cAPEXYield;
+	}
+
+	public Double getAdquisitionsYield() {
+		return AdquisitionsYield;
+	}
+
+	public void setAdquisitionsYield(Double adquisitionsYield) {
+		AdquisitionsYield = adquisitionsYield;
+	}
+
+	public Double getInvestingYield() {
+		return InvestingYield;
+	}
+
+	public void setInvestingYield(Double investingYield) {
+		InvestingYield = investingYield;
+	}
+
+	public Item getChangeFinancingCashFlow() {
+		return ChangeFinancingCashFlow;
+	}
+
+	public void setChangeFinancingCashFlow(Item changeFinancingCashFlow) {
+		ChangeFinancingCashFlow = changeFinancingCashFlow;
+	}
+
+	public Item getCommonStockRepurchased() {
+		return CommonStockRepurchased;
+	}
+
+	public void setCommonStockRepurchased(Item commonStockRepurchased) {
+		CommonStockRepurchased = commonStockRepurchased;
+	}
+
+	public Item getCommonStockIssued() {
+		return CommonStockIssued;
+	}
+
+	public void setCommonStockIssued(Item commonStockIssued) {
+		CommonStockIssued = commonStockIssued;
+	}
+
+	public Item getPlant() {
+		return plant;
+	}
+
+	public void setPlant(Item plant) {
+		this.plant = plant;
+	}
+
+	public Item getPlantReductions() {
+		return plantReductions;
+	}
+
+	public void setPlantReductions(Item plantReductions) {
+		this.plantReductions = plantReductions;
+	}
+	
+	
 	
 	
 }

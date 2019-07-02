@@ -1,10 +1,15 @@
 package adarga.getinfo;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
 
 import org.json.JSONObject;
 
@@ -18,6 +23,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
+import adarga.analysis.QualityTest;
 import adarga.getinfo.IncomeStatement.FinancialModelingPrepUrl;
 import utils.Utils;
 
@@ -36,7 +42,7 @@ public class CashFlowStatement {
     }
     
 	
-	public void execute(String companySymbol) throws IOException {
+	public void execute(String companySymbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
 		name = companySymbol;
 		String urlRaw = "https://financialmodelingprep.com/api/financials/cash-flow-statement/";
 		HttpRequestFactory requestFactory 
@@ -54,6 +60,8 @@ public class CashFlowStatement {
 		
 		while (iter.hasNext()) {
 			String key = iter.next();
+			QualityTest q = new QualityTest();
+			q.getConcepts(key, companySymbol, "CF");
 			Item item = new Item();
 			item.setValues(json.getJSONObject(key));
 			cashFlowStatement.put(key, item);
@@ -88,223 +96,245 @@ public class CashFlowStatement {
 	    }
 	}
 	
-	public Item NetCashProvidedByOperatingActivities() {
-		Item NC = cashFlowStatement.get("Net cash provided by operating activities");
-		if (NC != null) {
-			
-		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Net cash provided by operating activities");
-			
-			NC = utils.controlNull(cashFlowStatement.get("Net cash provided for operating activities"), getYear());
-		}
+	public Item NetCashProvidedByOperatingActivities() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
-		return NC;
+		Item k = cashFlowStatement.get("Net cash provided by operating activities");
+		if (k != null) {	
+		} else {
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Net cash provided by operating activities");
+			qT.uploadRareCases(name, concepts, "CashFlowStatement");
+			k = utils.controlNull(cashFlowStatement.get("Net cash provided by operating activities"), getYear());
+		}
+		return k;
 	}
 	
-	public Item FCF() {
-		Item FCF = cashFlowStatement.get("Free cash flow");
-		if (FCF != null) {
-			
+	public Item FCF() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
+		Item k = cashFlowStatement.get("Free cash flow");
+		if (k != null) {	
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Free cash flow");
-			FCF = utils.controlNull(cashFlowStatement.get("Free cash flow"), getYear());
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Free cash flow");
+			qT.uploadRareCases(name, concepts, "CashFlowStatement");
+			k = utils.controlNull(cashFlowStatement.get("Free cash flow"), getYear());
 		}
 		
-		return FCF;
+		return k;
 	}
 	
-	public Item DividendPaid() {
-		Item k = new Item();
-		Item k1 = cashFlowStatement.get("Dividend paid");
-		Item k2 = cashFlowStatement.get("Cash dividends paid");
-		if (k1 != null) {
-			k = k1;
-		} else if (k2 != null) {
-			k = k2;
+	public Item DividendPaid() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
+		Item k = cashFlowStatement.get("Dividend paid");
+		if (k != null) {	
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Dividend paid");
-			log.info("Término que no aparece: Cash dividends paid");
-			k = utils.controlNull(cashFlowStatement.get("Dividend paid"), getYear());
+			k = cashFlowStatement.get("Cash dividends paid");
+			if (k != null) {
+			} else {
+				QualityTest qT = new QualityTest();
+				List<String> concepts = new ArrayList<String>();
+				concepts.add("Dividend paid");
+				concepts.add("Cash dividends paid");
+				qT.uploadRareCases(name, concepts, "CashFlowStatement");
+				k = utils.controlNull(cashFlowStatement.get("Dividend paid"), getYear());
+			}
 		}
 		
 		return k;
 	}
 	
 	
-	public Item NetCashUsedForInvestingActivities() {
-		Item NC = cashFlowStatement.get("Net cash used for investing activities");
-		if (NC != null) {
-			
-		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Net cash used for investing activities");
-			NC = utils.controlNull(cashFlowStatement.get("Net cash used for investing activities"), getYear());
-		}
+	public Item NetCashUsedForInvestingActivities() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
-		return NC;
+		Item k = cashFlowStatement.get("Net cash used for investing activities");
+		if (k != null) {	
+		} else {
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Net cash used for investing activities");
+			qT.uploadRareCases(name, concepts, "CashFlowStatement");
+			k = utils.controlNull(cashFlowStatement.get("Net cash used for investing activities"), getYear());
+		}		
+		return k;
 	}
 	
 	
 	
-	public Item NetCashProvidedByUsedForFinancingActivities() {
-		Item NC = cashFlowStatement.get("Net cash provided by (used for) financing activities");
-		if (NC != null) {
-			
-		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Net cash provided by (used for) financing activities");
-			NC = utils.controlNull(cashFlowStatement.get("Net cash provided by (used for) financing activities"), getYear());
-		}
+	public Item NetCashProvidedByUsedForFinancingActivities() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
-		return NC;
+		Item k = cashFlowStatement.get("Net cash provided by (used for) financing activities");
+		if (k != null) {	
+		} else {
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Net cash provided by (used for) financing activities");
+			qT.uploadRareCases(name, concepts, "CashFlowStatement");
+			k = utils.controlNull(cashFlowStatement.get("Net cash provided by (used for) financing activities"), getYear());
+		}		
+		
+		return k;
 	}
 	
-	public Item PurchasesOfInvestments() {
-		Item k = new Item();
-		Item k1 = cashFlowStatement.get("Purchases of investments");
+	public Item PurchasesOfInvestments() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
-		if (k1 != null) {
-			k = k1;
-		
+		Item k = cashFlowStatement.get("Purchases of investments");
+		if (k != null) {	
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Purchases of investments");
-			
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Purchases of investments");
+			qT.uploadRareCases(name, concepts, "CashFlowStatement");
 			k = utils.controlNull(cashFlowStatement.get("Purchases of investments"), getYear());
+		}	
+		
+		return k;
+	}
+	
+	public Item CommonStockIssued() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
+		Item k = cashFlowStatement.get("Common stock issued");
+		if (k != null) {	
+		} else {
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Common stock issued");
+			qT.uploadRareCases(name, concepts, "CashFlowStatement");
+			k = utils.controlNull(cashFlowStatement.get("Common stock issued"), getYear());
+		}	
+				
+		return k;
+	}
+	
+	
+	public Item DebtRepayment() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
+		Item k = cashFlowStatement.get("Debt repayment");
+		if (k != null) {	
+		} else {
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Debt repayment");
+			qT.uploadRareCases(name, concepts, "CashFlowStatement");
+			k = utils.controlNull(cashFlowStatement.get("Debt repayment"), getYear());
+		}	
+		
+		return k;
+	}
+	
+	public Item DebtIssued() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
+		Item k = cashFlowStatement.get("Debt issued");
+		if (k != null) {	
+		} else {
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Debt issued");
+			qT.uploadRareCases(name, concepts, "CashFlowStatement");
+			k = utils.controlNull(cashFlowStatement.get("Debt issued"), getYear());
+		}	
+		
+		return k;
+	}
+	
+	public Item CommonStockRepurchased() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
+		Item k = cashFlowStatement.get("Common stock repurchased");
+		if (k != null) {	
+			k = k.sum(utils.controlNull(cashFlowStatement.get("Common stock repurchased"), getYear()));
+		} else {
+			k = cashFlowStatement.get("Net repurchased");
+			if (k != null) {
+				k = k.sum(utils.controlNull(cashFlowStatement.get("Common stock repurchased"), getYear()));
+			} else {
+				k = cashFlowStatement.get("Repurchases of treasury stock");
+				if (k != null) {
+					} else {
+						QualityTest qT = new QualityTest();
+						List<String> concepts = new ArrayList<String>();
+						concepts.add("Common stock repurchased");
+						concepts.add("Net repurchased");
+						concepts.add("Repurchases of treasury stock");
+						qT.uploadRareCases(name, concepts, "IncomeSheet");
+						k = utils.controlNull(cashFlowStatement.get("Common stock repurchased"), getYear());
+			
+					}
+			}
 		}
 		
 		return k;
 	}
 	
-	public Item CommonStockIssued() {
-		Item NC = cashFlowStatement.get("Common stock issued");
-		
-		if (NC != null) {
-			
-		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Common stock issued");
-			NC = utils.controlNull(cashFlowStatement.get("Common stock issued"), getYear());
-			
-		}
-		
-		return NC;
-	}
 	
-	
-	public Item DebtRepayment() {
-		Item NC = cashFlowStatement.get("Debt repayment");
-		if (NC != null) {
-			
-		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Debt repayment");
-			NC = utils.controlNull(cashFlowStatement.get("Debt repayment"), getYear());
-		}
+	public Item AcquisitionsNet() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
-		return NC;
-	}
-	
-	public Item DebtIssued() {
-		Item NC = cashFlowStatement.get("Debt issued");
-		if (NC != null) {
-			
+		Item k = cashFlowStatement.get("Acquisitions, net");
+		if (k != null) {	
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Debt issued");
-			NC = utils.controlNull(cashFlowStatement.get("Debt issued"), getYear());
-		}
-		
-		return NC;
-	}
-	
-	public Item CommonStockRepurchased() {
-		Item k = new Item();
-		Item k1 = cashFlowStatement.get("Common stock repurchased");
-		Item k2 = cashFlowStatement.get("Net repurchased");
-		Item k3 = cashFlowStatement.get("Repurchases of treasury stock");
-		if (k1 != null) {
-			k = k1;
-		} else if (k2 != null) {
-			k = k2;
-		} else if (k3 != null) {
-			k = k3;
-		} else {
-				log.info("Empresa a monitorizar: " + name);
-				log.info("Término que no aparece: Common stock repurchased");
-				log.info("Término que no aparece: Net repurchased");
-				log.info("Término que no aparece: Repurchases of treasury stock");
-				k = utils.controlNull(cashFlowStatement.get("Common stock repurchased"), getYear());
-			}		
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Acquisitions, net");
+			qT.uploadRareCases(name, concepts, "CashFlowStatement");
+			k = utils.controlNull(cashFlowStatement.get("Acquisitions, net"), getYear());
+		}	
 		return k;
 	}
 	
-	
-	public Item AcquisitionsNet() {
-		Item NC = cashFlowStatement.get("Acquisitions, net");
-		if (NC != null) {
-			
-		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Acquisitions, net");
-			NC = utils.controlNull(cashFlowStatement.get("Acquisitions, net"), getYear());
-		}
+	public Item PropertyPlantAndEquipmentReductions() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
-		return NC;
-	}
-	
-	public Item PropertyPlantAndEquipmentReductions() {
 		Item k = cashFlowStatement.get("Property, plant, and equipment reductions");
-		if (k != null) {
-			
+		if (k != null) {	
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Property, plant, and equipment reductions");
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Property, plant, and equipment reductions");
+			qT.uploadRareCases(name, concepts, "CashFlowStatement");
 			k = utils.controlNull(cashFlowStatement.get("Property, plant, and equipment reductions"), getYear());
-		}
+		}	
+				
+		return k;
+	}
+	
+	
+	public Item InvestmentsInPropertyPlantAndEquipment() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
+		Item k = cashFlowStatement.get("Investments in property, plant, and equipment");
+		if (k != null) {	
+		} else {
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Investments in property, plant, and equipment");
+			qT.uploadRareCases(name, concepts, "CashFlowStatement");
+			k = utils.controlNull(cashFlowStatement.get("Investments in property, plant, and equipment"), getYear());
+		}	
 		
 		return k;
 	}
 	
 	
-	public Item InvestmentsInPropertyPlantAndEquipment() {
-		Item NC = cashFlowStatement.get("Investments in property, plant, and equipment");
-		if (NC != null) {
-			
-		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Investments in property, plant, and equipment");
-			NC = utils.controlNull(cashFlowStatement.get("Investments in property, plant, and equipment"), getYear());
-		}
+	
+	public Item SecuritiesInvestment() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
-		return NC;
-	}
-	
-	
-	
-	public Item SecuritiesInvestment() {
-		Item k = new Item();
-		Item k1 = cashFlowStatement.get("Sales/Maturities of investments");
-		Item k2 = cashFlowStatement.get("Other investing activities");
-		
-		if (k1 != null) {
-			k = k1;
-		} else if (k2 != null) {
-			k = k2;
+		Item k = cashFlowStatement.get("Sales/Maturities of investments");
+		if (k != null) {	
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Sales/Maturities of investments");
-			log.info("Término que no aparece: Other investing activities");
-			k = utils.controlNull(cashFlowStatement.get("Sales/Maturities of investments"), getYear());
+			k = cashFlowStatement.get("Other investing activities");
+			if (k != null) {
+			} else {
+				QualityTest qT = new QualityTest();
+				List<String> concepts = new ArrayList<String>();
+				concepts.add("Sales/Maturities of investments");
+				concepts.add("Other investing activities");
+				qT.uploadRareCases(name, concepts, "CashFlowStatement");
+				k = utils.controlNull(cashFlowStatement.get("Sales/Maturities of investments"), getYear());
+			}
 		}
 				
 		return k;
 	}
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ClassNotFoundException, ServletException, SQLException {
         try {
         	CashFlowStatement cs = new CashFlowStatement();
 			cs.execute("aapl");

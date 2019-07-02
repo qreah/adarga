@@ -20,24 +20,33 @@ public class Company {
 	
 	private static final Logger log = Logger.getLogger(Company.class.getName());
 	
-	public List<Object> getFinancialStatements(String companyName) throws IOException {
+	public List<Object> getFinancialStatements(String companyName) throws IOException, ClassNotFoundException, ServletException, SQLException {
 		List<Object> result = new ArrayList<Object>();
 		BalanceSheet bs = new BalanceSheet();
 		IncomeStatement is = new IncomeStatement();
 		CashFlowStatement cs = new CashFlowStatement();
 		CompanyInformation ci = new CompanyInformation();
 		//try {
-			bs.execute(companyName);
-			is.execute(companyName);
-			cs.execute(companyName);
-			ci.execute(companyName);
+			log.info("Company: " + companyName);
+			switch(companyName) {
+			  case "BRK.B":
+				result = null;
+			    break;
+			  
+			  default:
+				bs.execute(companyName);
+				is.execute(companyName);
+				cs.execute(companyName);
+				ci.execute(companyName);
+					
+					
+					
+				result.add(bs);
+				result.add(is);
+				result.add(cs);
+				result.add(ci);
+			}
 			
-			
-			
-			result.add(bs);
-			result.add(is);
-			result.add(cs);
-			result.add(ci);
 		
 			return result;
 			
@@ -57,7 +66,7 @@ public class Company {
 		FinancialManagement FM = new FinancialManagement();
 		FM.loadFinancialManagement(bs, is, cs);
 		CashManagement CM = new CashManagement();
-		CM.loadCashManagement(bs, is, cs);
+		CM.loadCashManagement(bs, is, cs, ci);
 		
 		GlobalManagement GM = new GlobalManagement();
 		GM.loadGlobalManagement(bs, is, cs, ci);

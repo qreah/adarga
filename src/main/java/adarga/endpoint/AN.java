@@ -53,14 +53,20 @@ public class AN extends HttpServlet {
 		IncomeStatement is = new IncomeStatement();
 		CashFlowStatement cs = new CashFlowStatement();
 		Company com = new Company();
-		List<Object> reports = com.getFinancialStatements(company);
+		List<Object> reports;
+		try {
+			reports = com.getFinancialStatements(company);
+		
 		CompanyInformation ci = new CompanyInformation();
 		bs = (BalanceSheet) reports.get(0);
 		is = (IncomeStatement) reports.get(1);
 		cs = (CashFlowStatement) reports.get(2);
 		ci = (CompanyInformation) reports.get(3);
+		
+		
 		JSONObject result;
-		try {
+		
+		
 			result = com.analysis(bs, is, cs, ci);
 			out.println(result.toString());	
 		} catch (ClassNotFoundException | SQLException e) {

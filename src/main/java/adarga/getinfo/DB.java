@@ -26,7 +26,7 @@ public class DB {
 	String instanceConnectionName = "devadboss-181207:europe-west1:apiadboss";
 	String roorPass = "rootadboss2018";
 	
-	public void DB() throws ClassNotFoundException, ServletException, IOException, SQLException {
+	public DB() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
 		conn = ConnectDB();
 		
@@ -126,7 +126,10 @@ public class DB {
 	}
 	
 	public ResultSet ExecuteSELECT(String SQL) throws SQLException, ClassNotFoundException, ServletException, IOException {
-		conn = ConnectDB();
+		//conn = ConnectDB();
+		if (conn.isClosed()) {
+			ConnectDB();
+		}
 		ResultSet rsfinal = null;
 		ResultSet rs = null;
 		if (conn == null) {
@@ -141,7 +144,13 @@ public class DB {
 	}
 	
 	public boolean Execute(String SQL) throws ClassNotFoundException, ServletException, IOException, SQLException  {
-		conn = ConnectDB();
+		
+		//conn = ConnectDB();
+		
+		if (conn.isClosed()) {
+			ConnectDB();
+		}
+		
 		
 		boolean executed = false;
 		Statement secuencia;
@@ -155,7 +164,7 @@ public class DB {
 			log.info("Error in 'Execute' function inside BD.java class");
 			e.printStackTrace();
 		} 
-		conn.close();
+		
 		return executed;
 	}
 

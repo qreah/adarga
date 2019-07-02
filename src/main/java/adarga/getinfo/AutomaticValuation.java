@@ -50,9 +50,15 @@ public class AutomaticValuation {
 		}
 		
 		
-		
+		log.info("round: " + round);
 		
 		for (int i = round; i < round + batch +1; i++) {
+			if (i < 500)  {
+				db.setRound(i + 1);
+			} else {
+				db.setRound(0);
+			}
+			
 			DB db2 = new DB();
 			JSONObject json = new JSONObject(array.get(i).toString());
 			String Name = json.getString("Name").replaceAll("'", "");
@@ -129,19 +135,22 @@ public class AutomaticValuation {
 					
 					result = com.analysis(bs, is, cs, ci);
 					
+					Double FCFYield = (Double) result.getJSONObject("CM").get("FCFYield");
+					
 					String SQL = "";
 					if (db.companyIncluded(Symbol)) {
 						
 						SQL = "UPDATE apiadbossDB.CompanyValuation "
 								+ "SET analysis = '" + result.toString()
-								+ "' WHERE Symbol = '" + Symbol + "'";
+								+ "', FCFYield = '" + FCFYield 
+								+ "', dateAnalized = NOW()" + " WHERE Symbol = '" + Symbol + "'";
 						
 						
 					} else {
 						
 						SQL = "INSERT INTO apiadbossDB.CompanyValuation "
-								+ "	(Symbol, Sector, Company, analysis)"
-								+ " VALUES ('" + Symbol + "', '" + Sector + "', '" + Name + "', '" + result.toString() + "')";
+								+ "	(Symbol, Sector, Company, analysis, FCFYield, dateAnalized)"
+								+ " VALUES ('" + Symbol + "', '" + Sector + "', '" + Name + "', '" + result.toString() + "' , '" +  FCFYield + "', NOW())";
 							 
 					}
 					

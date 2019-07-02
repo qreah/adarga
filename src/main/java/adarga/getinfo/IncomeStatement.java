@@ -1,10 +1,15 @@
 package adarga.getinfo;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
 
 import org.json.JSONObject;
 
@@ -18,6 +23,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
+import adarga.analysis.QualityTest;
 import adarga.getinfo.BalanceSheet.FinancialModelingPrepUrl;
 import utils.Utils;
 
@@ -35,7 +41,7 @@ public class IncomeStatement {
     }
 	
 	@SuppressWarnings("unused")
-	public void execute(String companySymbol) throws IOException {
+	public void execute(String companySymbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
 		name = companySymbol;
 		String urlRaw = "https://financialmodelingprep.com/api/financials/income-statement/";
 		HttpRequestFactory requestFactory 
@@ -54,6 +60,8 @@ public class IncomeStatement {
 		
 		while (iter.hasNext()) {
 			String key = iter.next();
+			QualityTest q = new QualityTest();
+			q.getConcepts(key, companySymbol, "IS");
 			Item item = new Item();
 			item.setValues(json.getJSONObject(key));
 			incomeStatementItems.put(key, item);
@@ -90,7 +98,7 @@ public class IncomeStatement {
 	    }
 	}
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ClassNotFoundException, ServletException, SQLException {
         try {
         	IncomeStatement is = new IncomeStatement();
 			is.execute("aapl");
@@ -104,71 +112,88 @@ public class IncomeStatement {
 			e.printStackTrace();
 		}
     }
-	public Item InterestExpense() {
-		Item k = new Item();
-		Item k1 = incomeStatementItems.get("Interest Expense");
-		Item k2 = incomeStatementItems.get("Interest expenses");
-		if (k1 != null) {
-			k = k1;
-		} else if (k2 != null) {
-			k = k2;
+	public Item InterestExpense() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
+		Item k = incomeStatementItems.get("Interest Expense");
+		if (k != null) {	
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Interest Expense");
-			log.info("Término que no aparece: Interest expenses");
-			k = utils.controlNull(incomeStatementItems.get("Interest Expense"), getYear());
+			k = incomeStatementItems.get("Interest expenses");
+			if (k != null) {
+			} else {
+				QualityTest qT = new QualityTest();
+				List<String> concepts = new ArrayList<String>();
+				concepts.add("Interest Expense");
+				concepts.add("Interest expenses");
+				qT.uploadRareCases(name, concepts, "IncomeSheet");
+				k = utils.controlNull(incomeStatementItems.get("Interest Expense"), getYear());
+			}
 		}
 		
 		return k;
 	}
 	
-	public Item costOfRevenue() {
+	public Item costOfRevenue() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
 		Item k = incomeStatementItems.get("Cost of revenue");
-		if (k != null) {
-			
+		if (k != null) {	
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Cost of revenue");
-			k = utils.controlNull(incomeStatementItems.get("Cost of revenue"), getYear());
+			k = incomeStatementItems.get("Operating expenses");
+			if (k != null) {
+				
+			} else {
+				QualityTest qT = new QualityTest();
+				List<String> concepts = new ArrayList<String>();
+				concepts.add("Cost of revenue");
+				concepts.add("Operating expenses");
+				qT.uploadRareCases(name, concepts, "IncomeSheet");
+				k = utils.controlNull(incomeStatementItems.get("Cost of revenue"), getYear());
+			 
+			}
 		}
 		
 		return k;
 	}
 	
 	
-	public Item Revenue() {
+	public Item Revenue() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
 		Item k = incomeStatementItems.get("Revenue");
-		if (k != null) {
-			
+		if (k != null) {	
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Revenue");
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Revenue");
+			qT.uploadRareCases(name, concepts, "IncomeSheet");
 			k = utils.controlNull(incomeStatementItems.get("Revenue"), getYear());
 		}
 		
 		return k;
 	}
 	
-	public Item provisionForIncomeTaxes() {
+	public Item provisionForIncomeTaxes() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
 		Item k = incomeStatementItems.get("Provision for income taxes");
-		if (k != null) {
-			
+		if (k != null) {	
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Provision for income taxes");
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Provision for income taxes");
+			qT.uploadRareCases(name, concepts, "IncomeSheet");
 			k = utils.controlNull(incomeStatementItems.get("Provision for income taxes"), getYear());
 		}
 		
 		return k;
 	}
 	
-	public Item netIncome() {
+	public Item netIncome() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
 		Item k = incomeStatementItems.get("Net income");
-		if (k != null) {
-			
+		if (k != null) {	
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Net income");
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Net income");
+			qT.uploadRareCases(name, concepts, "IncomeSheet");
 			k = utils.controlNull(incomeStatementItems.get("Net income"), getYear());
 		}
 		
@@ -176,27 +201,45 @@ public class IncomeStatement {
 	}
 	
 	
-	public Item SGA() {
+	public Item SGA() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
 		Item k = incomeStatementItems.get("Sales, General and administrative");
-		if (k != null) {
-			
+		if (k != null) {	
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Sales, General and administrative");
-			k = utils.controlNull(incomeStatementItems.get("Sales, General and administrative"), getYear());
+			Double i1 = 0.0;
+			Double i2 = 0.0;
+			Item k1 = incomeStatementItems.get("Operation and maintenance");
+			Item k2 = incomeStatementItems.get("Other operating expenses");
+			if (k1 != null) { i1 = 1.0;}
+			if (k2 != null) { i2 = 1.0;}
+			k = k1.multiplyNumber(i1);
+			k = k.sum(k2.multiplyNumber(i2));
+			
+			if (k!=null) {
+				
+			} else {
+				QualityTest qT = new QualityTest();
+				List<String> concepts = new ArrayList<String>();
+				concepts.add("Sales, General and administrative");
+				qT.uploadRareCases(name, concepts, "IncomeSheet");
+				k = utils.controlNull(incomeStatementItems.get("Sales, General and administrative"), getYear());
+
+			}
 		}
 		
 		return k;
 	}
 	
 	
-	public Item grossProfit() {
+	public Item grossProfit() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
 		Item k = incomeStatementItems.get("Gross profit");
-		if (k != null) {
-			
+		if (k != null) {	
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Gross profit");
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Gross profit");
+			qT.uploadRareCases(name, concepts, "IncomeSheet");
 			k = utils.controlNull(incomeStatementItems.get("Gross profit"), getYear());
 		}
 		
@@ -206,41 +249,45 @@ public class IncomeStatement {
 	
 	
 	@SuppressWarnings("unused")
-	public Item OperatingExpenses() {
-		Item k = new Item();
-		Item k1 = incomeStatementItems.get("Total operating expenses");
-		Item k2 = incomeStatementItems.get("Total costs and expenses");
-		Item k3 = incomeStatementItems.get("Total expenses");
-		if (k1 != null) {
-			k = k1;
-		} else if (k2 != null) {
-			k = k2;
-		} else if (k3 != null) {
-			k = k3;
+	public Item OperatingExpenses() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
+		Item k = incomeStatementItems.get("Total operating expenses");
+		if (k != null) {	
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Total operating expenses");
-			log.info("Término que no aparece: Total costs and expenses");
-			k = utils.controlNull(incomeStatementItems.get("Total operating expenses"), getYear());
+			k = incomeStatementItems.get("Total costs and expenses");
+			if (k != null) {
+			} else {
+				k = incomeStatementItems.get("Total expenses");
+				if (k != null) {
+					} else {
+						QualityTest qT = new QualityTest();
+						List<String> concepts = new ArrayList<String>();
+						concepts.add("Total operating expenses");
+						concepts.add("Total costs and expenses");
+						concepts.add("Total expenses");
+						qT.uploadRareCases(name, concepts, "IncomeSheet");
+						k = utils.controlNull(incomeStatementItems.get("Total operating expenses"), getYear());
+			
+					}
+			}
 		}
 		
 		return k;
 	}
 	
-	public Item OperatingIncome() {
-		Item operatingIncome = incomeStatementItems.get("Operating income");
-		Item revenue = Revenue();
-		Item COGS = costOfRevenue();
-		Item totalOperatingExpenses = OperatingExpenses();
-		if (operatingIncome != null) {
-				
+	public Item OperatingIncome() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
+		Item k = incomeStatementItems.get("Operating income");
+		if (k != null) {	
 		} else {
-			
-			operatingIncome = revenue.substract(COGS);
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Operating income");
-			operatingIncome = operatingIncome.substract(totalOperatingExpenses);
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Operating income");
+			qT.uploadRareCases(name, concepts, "IncomeSheet");
+			k = utils.controlNull(incomeStatementItems.get("Operating income"), getYear());
 		}
-		return operatingIncome;
+		
+		
+		return k;
 	}
 }

@@ -1,6 +1,10 @@
 package adarga.ratios;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
 
 import org.json.JSONObject;
 
@@ -33,7 +37,7 @@ public class OperatingManagement {
 	Item operatingCashFlow = null;
 	Item operatingCashFlowOverIncome = null;
 	
-	public void loadOperatingManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) {
+	public void loadOperatingManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs) throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
 		revenue = is.Revenue();
 		salesGrowth = revenue.changeInItem();

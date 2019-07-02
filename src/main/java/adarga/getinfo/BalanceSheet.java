@@ -43,7 +43,7 @@ public class BalanceSheet {
     	balanceSheetItems = new HashMap<String, Item>();
     }
 	
-	public void execute(String companySymbol) throws IOException {
+	public void execute(String companySymbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
 		name = companySymbol;
 		String urlRaw = "https://financialmodelingprep.com/api/financials/balance-sheet-statement/";
 		HttpRequestFactory requestFactory 
@@ -61,6 +61,8 @@ public class BalanceSheet {
 		
 		while (iter.hasNext()) {
 			String key = iter.next();
+			QualityTest q = new QualityTest();
+			q.getConcepts(key, companySymbol, "BS");
 			Item item = new Item();
 			item.setValues(json.getJSONObject(key));
 			balanceSheetItems.put(key, item);
@@ -97,43 +99,59 @@ public class BalanceSheet {
 	    }
 	}
 	
-	public Item Equity() {
+	public Item Equity() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		Item k = balanceSheetItems.get("Total stockholders' equity");
 		if (k != null) {
 			
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Total stockholders' equity");
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Total stockholders' equity");
+			qT.uploadRareCases(name, concepts, "BalanceSheet");
 			k = utils.controlNull(balanceSheetItems.get("Total stockholders' equity"), getYear());
 		}
 		return k;
 	}
 	
-	public Item Receivables() {
+	public Item Receivables() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		Item k = balanceSheetItems.get("Receivables");
 		if (k != null) {
 			
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Receivables");
-			k = utils.controlNull(balanceSheetItems.get("Receivables"), getYear());
+			k = balanceSheetItems.get("Premiums and other receivables");
+			if (k != null) {
+			} else {
+				QualityTest qT = new QualityTest();
+				List<String> concepts = new ArrayList<String>();
+				concepts.add("Receivables");
+				concepts.add("Premiums and other receivables");
+				qT.uploadRareCases(name, concepts, "BalanceSheet");
+				k = utils.controlNull(balanceSheetItems.get("Receivables"), getYear());
+			}
 		}
 		return k;
 	}
 	
-	public Item accountsPayable() {
+	public Item accountsPayable() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		Item k = balanceSheetItems.get("Accounts payable");
 		if (k != null) {
-			
+		
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Accounts payable");
+			k = balanceSheetItems.get("Payables and accrued expenses");
+			if (k != null) {
+		} else {
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Accounts payable");
+			concepts.add("Payables and accrued expenses");
+			qT.uploadRareCases(name, concepts, "BalanceSheet");
 			k = utils.controlNull(balanceSheetItems.get("Accounts payable"), getYear());
+		}
 		}
 		return k;
 	}
 	
-	public Item totalCurrentAssets() {
+	public Item totalCurrentAssets() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		Item k = balanceSheetItems.get("Total current assets");
 		if (k != null) {
 			
@@ -142,9 +160,11 @@ public class BalanceSheet {
 			if (k != null) {
 				
 			} else {
-				log.info("Empresa a monitorizar: " + name);
-				log.info("Término que no aparece: Total current assets");
-				log.info("Término que no aparece: Receivables");
+				QualityTest qT = new QualityTest();
+				List<String> concepts = new ArrayList<String>();
+				concepts.add("Total current assets");
+				concepts.add("Receivables");
+				qT.uploadRareCases(name, concepts, "BalanceSheet");
 				k = utils.controlNull(balanceSheetItems.get("Total current assets"), getYear());
 			}
 			
@@ -153,7 +173,7 @@ public class BalanceSheet {
 	}
 	
 	
-	public Item totalCurrentLiabilities() {
+	public Item totalCurrentLiabilities() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		Item k = balanceSheetItems.get("Total current liabilities");
 		if (k != null) {
 			
@@ -162,9 +182,11 @@ public class BalanceSheet {
 			if (k != null) {
 				
 			} else {
-				log.info("Empresa a monitorizar: " + name);
-				log.info("Término que no aparece: Total current liabilities");
-				log.info("Término que no aparece: Payables and accrued expenses");
+				QualityTest qT = new QualityTest();
+				List<String> concepts = new ArrayList<String>();
+				concepts.add("Total current liabilities");
+				concepts.add("Payables and accrued expenses");
+				qT.uploadRareCases(name, concepts, "BalanceSheet");
 				k = utils.controlNull(balanceSheetItems.get("Total current liabilities"), getYear());
 			}
 			
@@ -191,110 +213,149 @@ public class BalanceSheet {
 		return k;
 	}
 	
-	public Item longTermDebt() {
+	public Item longTermDebt() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		Item k = balanceSheetItems.get("Long-term debt");
 		
 		if (k != null) {
 			
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Long-term debt");
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Long-term debt");
+			qT.uploadRareCases(name, concepts, "BalanceSheet");
 			k = utils.controlNull(balanceSheetItems.get("Long-term debt"), getYear());
 		}
 		return k;
 	}
 	
-	public Item totalAssets() {
+	public Item totalAssets() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		Item k = balanceSheetItems.get("Total assets");
 		if (k != null) {
 			
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Total assets");
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Total assets");
+			qT.uploadRareCases(name, concepts, "BalanceSheet");
 			k = utils.controlNull(balanceSheetItems.get("Total assets"), getYear());
 		}
 		return k;
 	}
 	
-	public Item shortTermDebt() {
+	public Item shortTermDebt() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		Item k = balanceSheetItems.get("Short-term debt");
 		if (k != null) {
 			
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Short-term debt");
-			k = utils.controlNull(balanceSheetItems.get("Short-term debt"), getYear());
+			k = balanceSheetItems.get("Short-term borrowing");
+			if (k != null) {
+				
+			} else {
+				QualityTest qT = new QualityTest();
+				List<String> concepts = new ArrayList<String>();
+				concepts.add("Short-term debt");
+				concepts.add("Short-term borrowing");
+				qT.uploadRareCases(name, concepts, "BalanceSheet");
+				k = utils.controlNull(balanceSheetItems.get("Short-term debt"), getYear());
+			}
 		}
 		return k;
 	}
 	
-	public Item totalCash() {
+	public Item totalCash() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
 		Item k = new Item();
-		Item k1 = balanceSheetItems.get("Total cash");
-		//TODO: arreglarlo
-		//Item k2 = balanceSheetItems.get("Cash and cash equivalents").sum(balanceSheetItems.get("Restricted cash"));
+		k = balanceSheetItems.get("Total cash");
 		
-		if (k1 != null) {
-			k = k1;
+		if (k != null) {
+			
+		} else {
+			Double i1 = 0.0;
+			Double i2 = 0.0;
+			Double i3 = 0.0;
+			Item k1 = balanceSheetItems.get("Cash and cash equivalents");
+			if (k1 != null) { i1 = 1.0;}
+			Item k2 = balanceSheetItems.get("Restricted cash and cash equivalents");
+			if (k2 != null) { i2 = 1.0;}
+			Item k3 = balanceSheetItems.get("Restricted cash and cash equivalents");
+			if (k3 != null) { i3 = 1.0;}
+			k = k1.multiplyNumber(i1);
+			k = k.sum(k2.multiplyNumber(i2));
+			k = k.sum(k3.multiplyNumber(i3));
+			
+			if (k != null) {
 					
 		} else {
-				log.info("Empresa a monitorizar: " + name);
-				log.info("Término que no aparece: Total cash");
-				log.info("Término que no aparece: Cash and cash equivalents y Restricted cash");
-				k = utils.controlNull(balanceSheetItems.get("Total cash"), getYear());
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Total cash");
+			concepts.add("Cash and cash equivalents");
+			qT.uploadRareCases(name, concepts, "BalanceSheet");
+			k = utils.controlNull(balanceSheetItems.get("Total cash"), getYear());
+		}
 		}
 		return k;
 	}
 	
-	public Item Inventories() {
+	public Item Inventories() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		Item k = balanceSheetItems.get("Inventories");
 		if (k != null) {
 			
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Inventories");
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Inventories");
+			qT.uploadRareCases(name, concepts, "BalanceSheet");
 			k = utils.controlNull(balanceSheetItems.get("Inventories"), getYear());
 		}
 		return k;
 	}
 	
-	public Item Goodwill() {
+	public Item Goodwill() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		Item k = balanceSheetItems.get("Goodwill");
 		
 		if (k != null) {
 			
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Goodwill");
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Goodwill");
+			qT.uploadRareCases(name, concepts, "BalanceSheet");
 			k = utils.controlNull(balanceSheetItems.get("Goodwill"), getYear());
 		}
 				
 		return k;
 	}
 	
-	public Item IntagibleAssets() {
+	public Item IntagibleAssets() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		Item k = balanceSheetItems.get("Intangible assets");
 		
 		if (k != null) {
+		
+		} else {
+			k = balanceSheetItems.get("Other intangible assets");
+			if (k != null) {
 			
 		} else {
-			log.info("Empresa a monitorizar: " + name);
-			log.info("Término que no aparece: Intangible assets");
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Intangible assets");
+			concepts.add("Other intangible assets");
+			qT.uploadRareCases(name, concepts, "BalanceSheet");
+			
 			k = utils.controlNull(balanceSheetItems.get("Intangible assets"), getYear());
+		}
+		
 		}
 				
 		return k;
 	}
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ClassNotFoundException, ServletException, SQLException {
         try {
         	BalanceSheet bs = new BalanceSheet();
 			bs.execute("aapl");
-			Item currentAssets = get("Total current assets");
-			int lastYear = currentAssets.lastYear();
-			Double value = currentAssets.getValue(lastYear);
-			System.out.println(value);
+			
 			
 		} catch (IOException e) {
 			
