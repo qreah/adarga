@@ -47,7 +47,7 @@ public class OperatingManagement {
 		operatingMargin = operatingIncome.divide(revenue);
 		
 		grossMargin = is.costOfRevenue().divide(revenue);
-		SGA = is.SGA();
+		SGA = is.OperatingExpenses();
 		SGAOverSales = SGA.divide(revenue);
 		interestExpense = is.InterestExpense();
 		netIncome = is.netIncome();

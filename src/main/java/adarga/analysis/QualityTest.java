@@ -71,25 +71,52 @@ public class QualityTest {
 		  case "AMG Short-term debt":
 			    result = true;
 			    break;
-		  case "Luk Receivables":
+		  case "CCL Acquisitions, net":
 			    result = true;
 			    break;
-		  case "Luk Long-term debt":
-			    result = true;
-			    break;  
-		  case "XL Short-term debt":
+		  case "CHTR Acquisitions, net":
 			    result = true;
 			    break;
-		  case "XL Total current liabilities":
+		  case "CMG Acquisitions, net":
 			    result = true;
 			    break;
-		  case "XL Payables and accrued expenses":
+		  case "COG Acquisitions, net":
 			    result = true;
 			    break;
-		  case "XL Intangible assets":
+		  case "COP Acquisitions, net":
 			    result = true;
 			    break;
-		  case "ALGN Long-term debt":
+		  case "COST Acquisitions, net":
+			    result = true;
+			    break;
+		  case "CVX Acquisitions, net":
+			    result = true;
+			    break;
+		  case "CXO Acquisitions, net":
+			    result = true;
+			    break;
+		  case "DG Acquisitions, net":
+			    result = true;
+			    break;
+		  case "DISH Acquisitions, net":
+			    result = true;
+			    break;
+		  case "DVN Acquisitions, net":
+			    result = true;
+			    break;
+		  case "EOG Acquisitions, net":
+			    result = true;
+			    break;
+		  case "EXPD Acquisitions, net":
+			    result = true;
+			    break;
+		  case "KMX Acquisitions, net":
+			    result = true;
+			    break;
+		  case "XEC Acquisitions, net":
+			    result = true;
+			    break;
+		  case "XLN Acquisitions, net":
 			    result = true;
 			    break;
 		  case "EL Capital leases":
@@ -119,6 +146,31 @@ public class QualityTest {
 		  case "EQR Inventories":
 			    result = true;
 			    break;
+		  case "Luk Receivables":
+			    result = true;
+			    break;
+		  case "Luk Long-term debt":
+			    result = true;
+			    break;  
+		  case "XL Short-term debt":
+			    result = true;
+			    break;
+		  case "XL Total current liabilities":
+			    result = true;
+			    break;
+		  case "XL Payables and accrued expenses":
+			    result = true;
+			    break;
+		  case "XL Intangible assets":
+			    result = true;
+			    break;
+		  case "ALGN Long-term debt":
+			    result = true;
+			    break;
+		  case "A Capital leases":
+			    result = true;
+			    break;
+		  
 			    
 			    
 			    
@@ -131,7 +183,13 @@ public class QualityTest {
 		  case "AET":
 		    result = true;
 		    break;
+		  case "AFL":
+			    result = true;
+			    break;
 		  case "AIG":
+			    result = true;
+			    break;
+		  case "AIZ":
 			    result = true;
 			    break;
 		  case "ALL":
@@ -158,7 +216,16 @@ public class QualityTest {
 		  case "CFG":
 			    result = true;
 			    break;
+		  case "CMA":
+			    result = true;
+			    break;
+		  case "CVS":
+			    result = true;
+			    break;
 		  case "EQR":
+			    result = true;
+			    break;
+		  case "ESRX":
 			    result = true;
 			    break;
 		  case "FITB":
@@ -171,6 +238,12 @@ public class QualityTest {
 			    result = true;
 			    break;
 		  case "HIG":
+			    result = true;
+			    break;
+		  case "HUM":
+			    result = true;
+			    break;
+		  case "L":
 			    result = true;
 			    break;
 		  case "LNC":
@@ -227,7 +300,13 @@ public class QualityTest {
 		  case "SPGI":
 			    result = true;
 			    break;
+		  case "TMK":
+			    result = true;
+			    break;
 		  case "TRV":
+			    result = true;
+			    break;
+		  case "UNH":
 			    result = true;
 			    break;
 		  case "UNM":
@@ -238,16 +317,25 @@ public class QualityTest {
 			    break;
 		  case "WFC":
 			    result = true;
-			    break;
-		  
-		  
-		  
-		  
-		  
-		  
+			    break;	  
 		  default:
 		    
 		}
+		
+		
+		// Concepts that are so common that is easy that a company doesn't use it
+		switch(concept) {
+		  case "Capital leases":
+		    result = true;
+		    break;
+		  case "Cash dividends paid":
+			    result = true;
+			    break;
+		  default:
+		}
+		
+		
+		
 		return result;
 	}
 	

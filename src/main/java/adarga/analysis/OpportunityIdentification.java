@@ -48,6 +48,74 @@ public class OpportunityIdentification {
 		
 	}
 	
+	
+public JSONArray growth() throws ClassNotFoundException, SQLException, ServletException, IOException {
+		
+		JSONArray array = new JSONArray();
+		DB db = new DB();
+		// Get the information from CompayValuation table
+		String Google = "GOOG";
+		String Facebook = "FB";
+		String Microsoft = "MSFT";
+		String Amazon = "AMZN";
+		String Paypal = "PYPL";
+		String MMM = "MMM";
+		String Oracle = "ORCL";
+		String Expedia = "EXPE";
+		String TripAdvisor = "TRIP";
+		String Adobe = "ADBE";
+		String ActivisionBlizzard = "ATVI";
+		String TTWO = "TTWO";
+		String AMD = "AMD";
+		String NVDA = " NVDA";
+		String Intuit = "INTU";
+		String Match = "MTCH";
+		String SalesForce = "CRM";
+		
+		
+		String SQL = "SELECT Company, Sector, Symbol, FCFYield FROM apiadbossDB.CompanyValuation "
+				+ "WHERE Symbol = '" + Google
+				+ "' OR Symbol = '" + Facebook
+				+ "' OR Symbol = '" + Microsoft
+				+ "' OR Symbol = '" + Amazon
+				+ "' OR Symbol = '" + Paypal
+				+ "' OR Symbol = '" + MMM
+				+ "' OR Symbol = '" + Oracle
+				+ "' OR Symbol = '" + Expedia
+				+ "' OR Symbol = '" + TripAdvisor
+				+ "' OR Symbol = '" + Adobe
+				+ "' OR Symbol = '" + ActivisionBlizzard
+				+ "' OR Symbol = '" + TTWO
+				+ "' OR Symbol = '" + AMD
+				+ "' OR Symbol = '" + NVDA
+				+ "' OR Symbol = '" + Intuit
+				+ "' OR Symbol = '" + Match
+				+ "' OR Symbol = '" + SalesForce 
+				+ "' ORDER BY FCFYield DESC";
+		log.info(SQL);
+		ResultSet rs = db.ExecuteSELECT(SQL);
+		while (rs.next()) {
+			
+			String Company = rs.getString("Company");
+			String Sector = rs.getString("Sector");
+			String Symbol = rs.getString("Symbol");
+			Double FCFYield = rs.getDouble("FCFYield");
+			
+			JSONObject json = new JSONObject();
+			
+			json.put("Company", Company);
+			json.put("Sector", Sector);
+			json.put("Symbol", Symbol);
+			json.put("FCFYield", FCFYield);
+			
+			array.put(json);
+				
+		}
+				
+		return array;
+		
+	}
+	
 	public JSONObject Level1() throws ClassNotFoundException, SQLException, ServletException, IOException {
 		JSONObject json = new JSONObject();
 		DB db = new DB();

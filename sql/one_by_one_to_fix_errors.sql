@@ -1,2 +1,3 @@
-SELECT * FROM apiadbossDB.qualityTest
-ORDER BY actualDate DESC, companySymbol, report, concept;
+SELECT * FROM apiadbossDB.conceptsTable
+WHERE concept = 'Insurance premium'
+

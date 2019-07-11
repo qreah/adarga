@@ -153,12 +153,21 @@ public class BalanceSheet {
 	
 	public Item totalCurrentAssets() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		Item k = balanceSheetItems.get("Total current assets");
+		
+		//TODO: Valorar si tener un esquema en el que controles diferentes nombres 
+		// del item global y si no está sumar todos los sumandos posibles
+		// pero con el controlNUll por si no está ese item específico
+		
+		
 		if (k != null) {
 			
 		} else {
 			k = balanceSheetItems.get("Receivables");
 			if (k != null) {
-				
+				Item cash = utils.controlNull(balanceSheetItems.get("Cash and cash equivalents"), getYear());
+				Item cashRestricted = utils.controlNull(balanceSheetItems.get("Restricted cash"), getYear());
+				k = balanceSheetItems.get("Receivables").sum(cash);
+				k = k.sum(cashRestricted);
 			} else {
 				QualityTest qT = new QualityTest();
 				List<String> concepts = new ArrayList<String>();
