@@ -40,6 +40,19 @@ public class GlobalManagement {
 	Item beginningNetDebt2CapitalRatio = null;
 	Item afterTaxCostOfDebt = null;
 	
+	
+	// Variables that are not sent to the browser. Just to check
+	Item netAssets = null;
+	Item LTAssets = null;
+	Item netWorkingCapital = null;
+	Item currentAssets = null;
+	Item currentLiabilities = null;
+	Item cashAndMarketableSecurities = null;
+	Item shortTermDebtAndCurrentPortionOfLongTermDebt = null;
+	Item longTermDebt = null;
+	Item shortTermDebt = null;
+	Item netDebt = null;
+	
 	@SuppressWarnings("static-access")
 	public void loadGlobalManagement(BalanceSheet bs, IncomeStatement is, CashFlowStatement cs, CompanyInformation ci) throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
@@ -50,9 +63,10 @@ public class GlobalManagement {
 		NOPATMargin = NOPAT.divide(revenue);
 		salesOverAssets = is.Revenue().divide(bs.totalAssets());
 		operatingROA = NOPATMargin.multiply(salesOverAssets);
-		Item longTermDebt = bs.longTermDebt().sum(bs.capitalLeases());
+		longTermDebt = bs.longTermDebt().sum(bs.capitalLeases());
+		shortTermDebt = bs.shortTermDebt();
 		
-		Item netDebt = longTermDebt.sum(bs.shortTermDebt());
+		netDebt = longTermDebt.sum(shortTermDebt);
 		netDebt = netDebt.substract(bs.totalCash());
 		Item temp = taxRate.substractNumberAnte(1.0);
 		Item netInterestEarningsAfterTaxes = is.InterestExpense().multiply(temp);
@@ -69,11 +83,12 @@ public class GlobalManagement {
 		Item FCF = cs.FCF();
 		Item dividends = cs.DividendPaid();
 		
-		Double numberOfShares = ci.numberOfShares();
-		payOut = dividends.divideNumber(numberOfShares);
+		Double numberOfShares = ci.numberOfShares();	
+		payOut = dividends.divide(netIncome);
 		
 		
-		dividendYield = dividends.divideNumber(ci.getStockPrice());
+		Double marketValue = ci.getMktCap();
+		dividendYield = dividends.divideNumber(marketValue);
 		
 		FCFOverEquity = FCF.divide(equity);
 		FCFPerShare = FCF.divideNumber(numberOfShares);
@@ -83,20 +98,20 @@ public class GlobalManagement {
 		
 		growthRate = ROE.multiply(payOut.substractNumberAnte(1.0));
 		salesGrowthRate = revenue.changeInItem();
-		Item currentAssets = bs.totalCurrentAssets();
-		Item currentLiabilities = bs.totalCurrentLiabilities();
-		Item cashAndMarketableSecurities = bs.totalCash();
-		Item shortTermDebtAndCurrentPortionOfLongTermDebt = bs.shortTermDebt();
-		Item netWorkingCapital = currentAssets.substract(currentLiabilities);
+		currentAssets = bs.totalCurrentAssets();
+		currentLiabilities = bs.totalCurrentLiabilities();
+		cashAndMarketableSecurities = bs.totalCash();
+		shortTermDebtAndCurrentPortionOfLongTermDebt = bs.shortTermDebt();
+		netWorkingCapital = currentAssets.substract(currentLiabilities);
 		netWorkingCapital = netWorkingCapital.substract(cashAndMarketableSecurities);
 		int YearB = netWorkingCapital.lastYear();
 		netWorkingCapital = netWorkingCapital.sum(shortTermDebtAndCurrentPortionOfLongTermDebt);
 		beginningNetOperatingWCOverSales = netWorkingCapital.divide(revenue);
-		Item LTAssets = bs.totalAssets().substract(currentAssets);
+		LTAssets = bs.totalAssets().substract(currentAssets);
 		Item temp4 = LTAssets.substract(goodwillAndIntangibles);
 		beginningNetOperatingLTAssetsOverSales = temp4.divide(revenue);
-		Item netAssets = LTAssets.sum(netWorkingCapital);
-		beginningNetDebt2CapitalRatio = netAssets.divide(netDebt);
+		netAssets = LTAssets.sum(netWorkingCapital);
+		beginningNetDebt2CapitalRatio = netDebt.divide(netAssets);
 		
 	}
 	
@@ -130,6 +145,19 @@ public class GlobalManagement {
 		
 		return json;
 		
+	}
+	
+	public String print2Check() {
+		String result = null;
+		result = "netAssets: " + netAssets.toString() + "<br>LTAssets: " + LTAssets.toString() + "<br>";
+		result = result + "<br>netWorkingCapital: " + netWorkingCapital.toString() + "<br>currentAssets: " + currentAssets.toString();
+		result = result + "<br>currentLiabilities: " + currentLiabilities.toString();
+		result = result + "<br>cashAndMarketableSecurities: " + cashAndMarketableSecurities.toString();
+		result = result + "<br>shortTermDebtAndCurrentPortionOfLongTermDebt: " + shortTermDebtAndCurrentPortionOfLongTermDebt.toString();
+		result = result + "<br>longTermDebt: " + longTermDebt.toString();
+		result = result + "<br>shortTermDebt: " + shortTermDebt.toString();
+		result = result + "<br>netDebt: " + netDebt.toString();
+		return result;
 	}
 
 	public Item getOperatingROA() {

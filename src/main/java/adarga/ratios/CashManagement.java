@@ -51,7 +51,7 @@ public class CashManagement {
 	Double FCFYield = null;  
 	Double DividendYield = null;		
 	Double RepurchasesYield = null;		
-	Double SecuritiesBuyingYield = null; 
+	Double SecuritiesSaleYield = null; 
 	Double DebtBuyingYield = null; 
 	Double CAPEXYield = null; 
 	Double AdquisitionsYield = null; 
@@ -81,7 +81,7 @@ public class CashManagement {
 		adquisitions = cs.AcquisitionsNet();
 		changeInAdquisitions = adquisitions.changeInItem();
 		
-		securitiesNet = cs.SecuritiesInvestment().substract(cs.PurchasesOfInvestments());
+		securitiesNet = cs.SecuritiesSale().substract(cs.PurchasesOfInvestments());
 		changeInSecurities = securitiesNet.changeInItem();
 		
 		investing = CAPEX.sum(adquisitions); //CAPEX and adquisitions
@@ -98,19 +98,19 @@ public class CashManagement {
 		CommonStockIssued = cs.CommonStockIssued();
 		stockRepurchase = CommonStockRepurchased.substract(CommonStockIssued);
 		changeInStockRepurchase = stockRepurchase.changeInItem();
-		debtRepayment = cs.DebtRepayment().substract(cs.DebtIssued());
+		debtRepayment = cs.DebtIssued().substract(cs.DebtRepayment());
 		changeInDebtRepayment = debtRepayment.changeInItem();
 		
 		Double MktCap = ci.getMktCap();
 		int year = FCF.lastYear();
-		FCFYield = FCF.getValue(year) * 1000000 / MktCap;  
-		DividendYield = dividends.getValue(year) * 1000000 / MktCap;
-		RepurchasesYield = (CommonStockRepurchased.getValue(year) - CommonStockIssued.getValue(year)) * 1000000 / MktCap;	
+		FCFYield = FCF.getValue(year) / MktCap;  
+		DividendYield = dividends.getValue(year) / MktCap;
+		RepurchasesYield = (CommonStockRepurchased.getValue(year) - CommonStockIssued.getValue(year)) / MktCap;	
 		
-		SecuritiesBuyingYield = securitiesNet.getValue(year) * 1000000 / MktCap; 
-		DebtBuyingYield = debtRepayment.getValue(year) * 1000000 / MktCap; 
-		CAPEXYield = CAPEX.getValue(year) * 1000000 / MktCap; 
-		AdquisitionsYield = adquisitions.getValue(year) * 1000000 / MktCap; 
+		SecuritiesSaleYield = securitiesNet.getValue(year)  / MktCap; 
+		DebtBuyingYield = debtRepayment.getValue(year)  / MktCap; 
+		CAPEXYield = CAPEX.getValue(year)  / MktCap; 
+		AdquisitionsYield = adquisitions.getValue(year)  / MktCap; 
 		InvestingYield = (CAPEXYield + AdquisitionsYield);
 	
 	}
@@ -121,7 +121,7 @@ public class CashManagement {
 		json.put("FCFYield", FCFYield);
 		json.put("DividendYield", DividendYield);
 		json.put("RepurchasesYield", RepurchasesYield);
-		json.put("SecuritiesBuyingYield", SecuritiesBuyingYield);
+		json.put("SecuritiesSaleYield", SecuritiesSaleYield);
 		json.put("DebtBuyingYield", DebtBuyingYield);
 		json.put("CAPEXYield", CAPEXYield);
 		json.put("AdquisitionsYield", AdquisitionsYield);
@@ -355,12 +355,12 @@ public class CashManagement {
 		RepurchasesYield = repurchasesYield;
 	}
 
-	public Double getSecuritiesBuyingYield() {
-		return SecuritiesBuyingYield;
+	public Double getSecuritiesSaleYield() {
+		return SecuritiesSaleYield;
 	}
 
-	public void setSecuritiesBuyingYield(Double securitiesBuyingYield) {
-		SecuritiesBuyingYield = securitiesBuyingYield;
+	public void setSecuritiesSaleingYield(Double securitiesSaleYield) {
+		SecuritiesSaleYield = securitiesSaleYield;
 	}
 
 	public Double getDebtBuyingYield() {

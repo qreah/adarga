@@ -265,8 +265,10 @@ public class Item {
 			while (iter.hasNext()) {
 				int year = Integer.parseInt(iter.next());
 				if (item.getValue(year + delta) != 0) {
+					log.info("numerador: " + this.getValue(year));
+					log.info("denominador: " + item.getValue(year + delta));
 					operation = this.getValue(year) / item.getValue(year + delta);
-					
+					log.info("resultado: " + operation);
 				} 
 				newItem.setValue(year, operation);
 				

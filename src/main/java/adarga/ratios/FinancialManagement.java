@@ -50,13 +50,12 @@ public class FinancialManagement {
 		Item shortDebt = bs.shortTermDebt();
 		
 		netDebt = longTermDebt.sum(shortDebt);
-		netDebt = netDebt.substract(bs.totalAssets());
+		netDebt = netDebt.substract(bs.totalCash());
 		equity = bs.Equity();
 		debtToCapitalRatio = netDebt;
 		temp = netDebt.sum(equity);
 		debtToCapitalRatio = debtToCapitalRatio.divide(temp);
-		temp = netDebt.sum(equity);
-		netDebtToNetCapitalRatio = netDebt.divide(temp);
+		
 		Item revenue = is.Revenue();
 		Item salesOverAssets = is.Revenue().divide(bs.totalAssets());
 		Item NOPAT = is.netIncome().sum(is.InterestExpense().multiply(taxRate.substractNumberAnte(1.0)));
@@ -86,6 +85,13 @@ public class FinancialManagement {
 	public FinancialManagement() {
 		// TODO Auto-generated constructor stub
 	}
+	
+	public String print2Check() {
+		String result = null;
+		result = "netDebt: " + netDebt.toString();
+		result = result + "<br>equity: " + equity.toString();
+		return result;
+	}
 
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
@@ -94,7 +100,7 @@ public class FinancialManagement {
 		json.put("netDebt", netDebt.toJSON());
 		json.put("equity", equity.toJSON());
 		json.put("debtToCapitalRatio", debtToCapitalRatio.toJSON());
-		json.put("netDebtToNetCapitalRatio", netDebtToNetCapitalRatio.toJSON());
+		
 		json.put("spread", spread.toJSON());
 		json.put("netFinancialLeverage", netFinancialLeverage.toJSON());
 		json.put("financialLeverage", financialLeverage.toJSON());

@@ -114,19 +114,22 @@ public class IncomeStatement {
     }
 	public Item InterestExpense() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
-		Item k = incomeStatementItems.get("Interest Expense");
+		Item k1 = utils.controlNull(incomeStatementItems.get("Interest Expense"), getYear());
+		Item k2 = utils.controlNull(incomeStatementItems.get("Interest expenses"), getYear());
+		Item k3 = utils.controlNull(incomeStatementItems.get("Total interest expense"), getYear());
+		Item k = k1.sum(k2);
+		k = k.sum(k3);
+		
 		if (k != null) {	
 		} else {
-			k = incomeStatementItems.get("Interest expenses");
-			if (k != null) {
-			} else {
-				QualityTest qT = new QualityTest();
-				List<String> concepts = new ArrayList<String>();
-				concepts.add("Interest Expense");
-				concepts.add("Interest expenses");
-				qT.uploadRareCases(name, concepts, "IncomeSheet");
-				k = utils.controlNull(incomeStatementItems.get("Interest Expense"), getYear());
-			}
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Interest Expense");
+			concepts.add("Interest expenses");
+			concepts.add("Total interest expense");
+			qT.uploadRareCases(name, concepts, "IncomeSheet");
+			k = utils.controlNull(incomeStatementItems.get("Interest Expense"), getYear());
+			
 		}
 		
 		return k;
@@ -137,18 +140,11 @@ public class IncomeStatement {
 		Item k = incomeStatementItems.get("Cost of revenue");
 		if (k != null) {	
 		} else {
-			k = incomeStatementItems.get("Operating expenses");
-			if (k != null) {
-				
-			} else {
-				QualityTest qT = new QualityTest();
-				List<String> concepts = new ArrayList<String>();
-				concepts.add("Cost of revenue");
-				concepts.add("Operating expenses");
-				qT.uploadRareCases(name, concepts, "IncomeSheet");
-				k = utils.controlNull(incomeStatementItems.get("Cost of revenue"), getYear());
-			 
-			}
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Cost of revenue");
+			qT.uploadRareCases(name, concepts, "IncomeSheet");
+			k = utils.controlNull(incomeStatementItems.get("Cost of revenue"), getYear());
 		}
 		
 		return k;
@@ -160,11 +156,19 @@ public class IncomeStatement {
 		Item k = incomeStatementItems.get("Revenue");
 		if (k != null) {	
 		} else {
-			QualityTest qT = new QualityTest();
-			List<String> concepts = new ArrayList<String>();
-			concepts.add("Revenue");
-			qT.uploadRareCases(name, concepts, "IncomeSheet");
-			k = utils.controlNull(incomeStatementItems.get("Revenue"), getYear());
+			k = incomeStatementItems.get("Total revenues");
+			if (k != null) {	
+			} else {
+				k = incomeStatementItems.get("Total net revenue");
+				if (k != null) {	
+				} else {
+					QualityTest qT = new QualityTest();
+					List<String> concepts = new ArrayList<String>();
+					concepts.add("Revenue");
+					qT.uploadRareCases(name, concepts, "IncomeSheet");
+					k = utils.controlNull(incomeStatementItems.get("Revenue"), getYear());
+				}
+			}
 		}
 		
 		return k;
@@ -188,6 +192,7 @@ public class IncomeStatement {
 	public Item netIncome() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
 		Item k = incomeStatementItems.get("Net income");
+		
 		if (k != null) {	
 		} else {
 			QualityTest qT = new QualityTest();

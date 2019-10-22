@@ -331,6 +331,10 @@ public class QualityTest {
 		  case "Cash dividends paid":
 			    result = true;
 			    break;
+		  case "Cost of revenue":
+			    result = true;
+			    break;
+			    
 		  default:
 		}
 		

@@ -126,20 +126,19 @@ public class CashFlowStatement {
 	}
 	
 	public Item DividendPaid() throws ClassNotFoundException, ServletException, IOException, SQLException {
-		
-		Item k = cashFlowStatement.get("Dividend paid");
+		Item cashDividendsPaid = utils.controlNull(cashFlowStatement.get("Cash dividends paid"), getYear());
+		Item dividendPaid = utils.controlNull(cashFlowStatement.get("Dividend paid"), getYear());
+			
+		Item k = cashDividendsPaid.sum(dividendPaid);
 		if (k != null) {	
 		} else {
-			k = cashFlowStatement.get("Cash dividends paid");
-			if (k != null) {
-			} else {
 				QualityTest qT = new QualityTest();
 				List<String> concepts = new ArrayList<String>();
 				concepts.add("Dividend paid");
 				concepts.add("Cash dividends paid");
+				concepts.add("Preferred dividend");
 				qT.uploadRareCases(name, concepts, "CashFlowStatement");
 				k = utils.controlNull(cashFlowStatement.get("Dividend paid"), getYear());
-			}
 		}
 		
 		return k;
@@ -209,16 +208,24 @@ public class CashFlowStatement {
 	
 	
 	public Item DebtRepayment() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		Item k1 = utils.controlNull(cashFlowStatement.get("Debt repayment"), getYear());
+		Item k2 = utils.controlNull(cashFlowStatement.get("Long-term debt repayment"), getYear());
+		Item k3 = utils.controlNull(cashFlowStatement.get("Amortization of debt and issuance costs"), getYear());
+
 		
-		Item k = cashFlowStatement.get("Debt repayment");
+		Item k = k1.sum(k2);
+		k = k.sum(k3);
 		if (k != null) {	
 		} else {
+			
 			QualityTest qT = new QualityTest();
 			List<String> concepts = new ArrayList<String>();
 			concepts.add("Debt repayment");
+			concepts.add("Long-term debt repayment");
+			concepts.add("Amortization of debt and issuance costs");
 			qT.uploadRareCases(name, concepts, "CashFlowStatement");
 			k = utils.controlNull(cashFlowStatement.get("Debt repayment"), getYear());
-		}	
+		}
 		
 		return k;
 	}
@@ -228,11 +235,17 @@ public class CashFlowStatement {
 		Item k = cashFlowStatement.get("Debt issued");
 		if (k != null) {	
 		} else {
-			QualityTest qT = new QualityTest();
-			List<String> concepts = new ArrayList<String>();
-			concepts.add("Debt issued");
-			qT.uploadRareCases(name, concepts, "CashFlowStatement");
-			k = utils.controlNull(cashFlowStatement.get("Debt issued"), getYear());
+			Item shortTermDebt = utils.controlNull(cashFlowStatement.get("Short-term borrowing"), getYear());
+			k = cashFlowStatement.get("Long-term debt issued").sum(shortTermDebt);
+			if (k != null) {	
+			} else {
+				QualityTest qT = new QualityTest();
+				List<String> concepts = new ArrayList<String>();
+				concepts.add("Debt issued");
+				concepts.add("Long-term debt issued");
+				qT.uploadRareCases(name, concepts, "CashFlowStatement");
+				k = utils.controlNull(cashFlowStatement.get("Debt issued"), getYear());
+			}
 		}	
 		
 		return k;
@@ -314,7 +327,7 @@ public class CashFlowStatement {
 	
 	
 	
-	public Item SecuritiesInvestment() throws ClassNotFoundException, ServletException, IOException, SQLException {
+	public Item SecuritiesSale() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
 		Item k = cashFlowStatement.get("Sales/Maturities of investments");
 		if (k != null) {	

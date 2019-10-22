@@ -1,4 +1,4 @@
-package adarga.getinfo;
+	package adarga.getinfo;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -51,6 +51,7 @@ public class BalanceSheet {
 	      (HttpRequest request) -> {
 	        request.setParser(new JsonObjectParser(JSON_FACTORY));
 	    });
+		log.info(urlRaw + companySymbol);
 		FinancialModelingPrepUrl url = new FinancialModelingPrepUrl(urlRaw + companySymbol);
 		HttpRequest request = requestFactory.buildGetRequest(url);
 		HttpResponse res = (HttpResponse)request.execute();
@@ -133,20 +134,22 @@ public class BalanceSheet {
 	}
 	
 	public Item accountsPayable() throws ClassNotFoundException, ServletException, IOException, SQLException {
-		Item k = balanceSheetItems.get("Accounts payable");
-		if (k != null) {
 		
-		} else {
-			k = balanceSheetItems.get("Payables and accrued expenses");
-			if (k != null) {
+		Item k1 = utils.controlNull(balanceSheetItems.get("Accounts payable"), getYear());
+		Item k2 = utils.controlNull(balanceSheetItems.get("Payables"), getYear());
+		Item k3 = utils.controlNull(balanceSheetItems.get("Payables and accrued expenses"), getYear());
+		Item k = k1.sum(k2);
+		k = k.sum(k3);
+		
+		if (k != null) {
 		} else {
 			QualityTest qT = new QualityTest();
 			List<String> concepts = new ArrayList<String>();
 			concepts.add("Accounts payable");
 			concepts.add("Payables and accrued expenses");
+			concepts.add("Payables");
 			qT.uploadRareCases(name, concepts, "BalanceSheet");
 			k = utils.controlNull(balanceSheetItems.get("Accounts payable"), getYear());
-		}
 		}
 		return k;
 	}

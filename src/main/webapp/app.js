@@ -1,2 +1,2207 @@
-!function i(o,l,d){function c(t,e){if(!l[t]){if(!o[t]){var n="function"==typeof require&&require;if(!e&&n)return n(t,!0);if(m)return m(t,!0);var r=new Error("Cannot find module '"+t+"'");throw r.code="MODULE_NOT_FOUND",r}var a=l[t]={exports:{}};o[t][0].call(a.exports,function(e){return c(o[t][1][e]||e)},a,a.exports,i,o,l,d)}return l[t].exports}for(var m="function"==typeof require&&require,e=0;e<d.length;e++)c(d[e]);return c}({1:[function(e,t,n){var r,a;r=this,a=function(){var v,i,d,c,e,l={},y={},t={currentLocale:"en",zeroFormat:null,nullFormat:null,defaultFormat:"0,0",scalePercentBy100:!0},m={currentLocale:t.currentLocale,zeroFormat:t.zeroFormat,nullFormat:t.nullFormat,defaultFormat:t.defaultFormat,scalePercentBy100:t.scalePercentBy100};function o(e,t){this._input=e,this._value=t}return(v=function(e){var t,n,r,a;if(v.isNumeral(e))t=e.value();else if(0===e||void 0===e)t=0;else if(null===e||i.isNaN(e))t=null;else if("string"==typeof e)if(m.zeroFormat&&e===m.zeroFormat)t=0;else if(m.nullFormat&&e===m.nullFormat||!e.replace(/[^0-9]+/g,"").length)t=null;else{for(n in l)if((a="function"==typeof l[n].regexps.unformat?l[n].regexps.unformat():l[n].regexps.unformat)&&e.match(a)){r=l[n].unformat;break}t=(r=r||v._.stringToNumber)(e)}else t=Number(e)||null;return new o(e,t)}).version="2.0.6",v.isNumeral=function(e){return e instanceof o},v._=i={numberToFormat:function(e,t,n){var r,a,i,o,l,d,c,m,s=y[v.options.currentLocale],u=!1,p=!1,h="",g=1e12,f="",b=!1;if(e=e||0,i=Math.abs(e),v._.includes(t,"(")?(u=!0,t=t.replace(/[\(|\)]/g,"")):(v._.includes(t,"+")||v._.includes(t,"-"))&&(d=v._.includes(t,"+")?t.indexOf("+"):e<0?t.indexOf("-"):-1,t=t.replace(/[\+|\-]/g,"")),v._.includes(t,"a")&&(a=!!(a=t.match(/a(k|m|b|t)?/))&&a[1],v._.includes(t," a")&&(h=" "),t=t.replace(new RegExp(h+"a[kmbt]?"),""),g<=i&&!a||"t"===a?(h+=s.abbreviations.trillion,e/=g):i<g&&1e9<=i&&!a||"b"===a?(h+=s.abbreviations.billion,e/=1e9):i<1e9&&1e6<=i&&!a||"m"===a?(h+=s.abbreviations.million,e/=1e6):(i<1e6&&1e3<=i&&!a||"k"===a)&&(h+=s.abbreviations.thousand,e/=1e3)),v._.includes(t,"[.]")&&(p=!0,t=t.replace("[.]",".")),o=e.toString().split(".")[0],l=t.split(".")[1],c=t.indexOf(","),r=(t.split(".")[0].split(",")[0].match(/0/g)||[]).length,l?(o=(f=v._.includes(l,"[")?(l=(l=l.replace("]","")).split("["),v._.toFixed(e,l[0].length+l[1].length,n,l[1].length)):v._.toFixed(e,l.length,n)).split(".")[0],f=v._.includes(f,".")?s.delimiters.decimal+f.split(".")[1]:"",p&&0===Number(f.slice(1))&&(f="")):o=v._.toFixed(e,0,n),h&&!a&&1e3<=Number(o)&&h!==s.abbreviations.trillion)switch(o=String(Number(o)/1e3),h){case s.abbreviations.thousand:h=s.abbreviations.million;break;case s.abbreviations.million:h=s.abbreviations.billion;break;case s.abbreviations.billion:h=s.abbreviations.trillion}if(v._.includes(o,"-")&&(o=o.slice(1),b=!0),o.length<r)for(var C=r-o.length;0<C;C--)o="0"+o;return-1<c&&(o=o.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g,"$1"+s.delimiters.thousands)),0===t.indexOf(".")&&(o=""),m=o+f+(h||""),u?m=(u&&b?"(":"")+m+(u&&b?")":""):0<=d?m=0===d?(b?"-":"+")+m:m+(b?"-":"+"):b&&(m="-"+m),m},stringToNumber:function(e){var t,n,r,a=y[m.currentLocale],i=e,o={thousand:3,million:6,billion:9,trillion:12};if(m.zeroFormat&&e===m.zeroFormat)n=0;else if(m.nullFormat&&e===m.nullFormat||!e.replace(/[^0-9]+/g,"").length)n=null;else{for(t in n=1,"."!==a.delimiters.decimal&&(e=e.replace(/\./g,"").replace(a.delimiters.decimal,".")),o)if(r=new RegExp("[^a-zA-Z]"+a.abbreviations[t]+"(?:\\)|(\\"+a.currency.symbol+")?(?:\\))?)?$"),i.match(r)){n*=Math.pow(10,o[t]);break}n*=(e.split("-").length+Math.min(e.split("(").length-1,e.split(")").length-1))%2?1:-1,e=e.replace(/[^0-9\.]+/g,""),n*=Number(e)}return n},isNaN:function(e){return"number"==typeof e&&isNaN(e)},includes:function(e,t){return-1!==e.indexOf(t)},insert:function(e,t,n){return e.slice(0,n)+t+e.slice(n)},reduce:function(e,t){if(null===this)throw new TypeError("Array.prototype.reduce called on null or undefined");if("function"!=typeof t)throw new TypeError(t+" is not a function");var n,r=Object(e),a=r.length>>>0,i=0;if(3===arguments.length)n=arguments[2];else{for(;i<a&&!(i in r);)i++;if(a<=i)throw new TypeError("Reduce of empty array with no initial value");n=r[i++]}for(;i<a;i++)i in r&&(n=t(n,r[i],i,r));return n},multiplier:function(e){var t=e.toString().split(".");return t.length<2?1:Math.pow(10,t[1].length)},correctionFactor:function(){return Array.prototype.slice.call(arguments).reduce(function(e,t){var n=i.multiplier(t);return n<e?e:n},1)},toFixed:function(e,t,n,r){var a,i,o,l,d=e.toString().split("."),c=t-(r||0);return a=2===d.length?Math.min(Math.max(d[1].length,c),t):c,o=Math.pow(10,a),l=(n(e+"e+"+a)/o).toFixed(a),t-a<r&&(i=new RegExp("\\.?0{1,"+(r-(t-a))+"}$"),l=l.replace(i,"")),l}},v.options=m,v.formats=l,v.locales=y,v.locale=function(e){return e&&(m.currentLocale=e.toLowerCase()),m.currentLocale},v.localeData=function(e){if(!e)return y[m.currentLocale];if(e=e.toLowerCase(),!y[e])throw new Error("Unknown locale : "+e);return y[e]},v.reset=function(){for(var e in t)m[e]=t[e]},v.zeroFormat=function(e){m.zeroFormat="string"==typeof e?e:null},v.nullFormat=function(e){m.nullFormat="string"==typeof e?e:null},v.defaultFormat=function(e){m.defaultFormat="string"==typeof e?e:"0.0"},v.register=function(e,t,n){if(t=t.toLowerCase(),this[e+"s"][t])throw new TypeError(t+" "+e+" already registered.");return this[e+"s"][t]=n},v.validate=function(e,t){var n,r,a,i,o,l,d,c;if("string"!=typeof e&&(e+="",console.warn&&console.warn("Numeral.js: Value is not string. It has been co-erced to: ",e)),(e=e.trim()).match(/^\d+$/))return!0;if(""===e)return!1;try{d=v.localeData(t)}catch(e){d=v.localeData(v.locale())}return a=d.currency.symbol,o=d.abbreviations,n=d.delimiters.decimal,r="."===d.delimiters.thousands?"\\.":d.delimiters.thousands,(null===(c=e.match(/^[^\d]+/))||(e=e.substr(1),c[0]===a))&&((null===(c=e.match(/[^\d]+$/))||(e=e.slice(0,-1),c[0]===o.thousand||c[0]===o.million||c[0]===o.billion||c[0]===o.trillion))&&(l=new RegExp(r+"{2}"),!e.match(/[^\d.,]/g)&&(!(2<(i=e.split(n)).length)&&(i.length<2?!!i[0].match(/^\d+.*\d$/)&&!i[0].match(l):1===i[0].length?!!i[0].match(/^\d+$/)&&!i[0].match(l)&&!!i[1].match(/^\d+$/):!!i[0].match(/^\d+.*\d$/)&&!i[0].match(l)&&!!i[1].match(/^\d+$/)))))},v.fn=o.prototype={clone:function(){return v(this)},format:function(e,t){var n,r,a,i=this._value,o=e||m.defaultFormat;if(t=t||Math.round,0===i&&null!==m.zeroFormat)r=m.zeroFormat;else if(null===i&&null!==m.nullFormat)r=m.nullFormat;else{for(n in l)if(o.match(l[n].regexps.format)){a=l[n].format;break}r=(a=a||v._.numberToFormat)(i,o,t)}return r},value:function(){return this._value},input:function(){return this._input},set:function(e){return this._value=Number(e),this},add:function(e){var a=i.correctionFactor.call(null,this._value,e);return this._value=i.reduce([this._value,e],function(e,t,n,r){return e+Math.round(a*t)},0)/a,this},subtract:function(e){var a=i.correctionFactor.call(null,this._value,e);return this._value=i.reduce([e],function(e,t,n,r){return e-Math.round(a*t)},Math.round(this._value*a))/a,this},multiply:function(e){return this._value=i.reduce([this._value,e],function(e,t,n,r){var a=i.correctionFactor(e,t);return Math.round(e*a)*Math.round(t*a)/Math.round(a*a)},1),this},divide:function(e){return this._value=i.reduce([this._value,e],function(e,t,n,r){var a=i.correctionFactor(e,t);return Math.round(e*a)/Math.round(t*a)}),this},difference:function(e){return Math.abs(v(this._value).subtract(e).value())}},v.register("locale","en",{delimiters:{thousands:",",decimal:"."},abbreviations:{thousand:"k",million:"m",billion:"b",trillion:"t"},ordinal:function(e){var t=e%10;return 1==~~(e%100/10)?"th":1==t?"st":2==t?"nd":3==t?"rd":"th"},currency:{symbol:"$"}}),v.register("format","bps",{regexps:{format:/(BPS)/,unformat:/(BPS)/},format:function(e,t,n){var r,a=v._.includes(t," BPS")?" ":"";return e*=1e4,t=t.replace(/\s?BPS/,""),r=v._.numberToFormat(e,t,n),r=v._.includes(r,")")?((r=r.split("")).splice(-1,0,a+"BPS"),r.join("")):r+a+"BPS"},unformat:function(e){return+(1e-4*v._.stringToNumber(e)).toFixed(15)}}),c={base:1024,suffixes:["B","KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"]},e="("+(e=(d={base:1e3,suffixes:["B","KB","MB","GB","TB","PB","EB","ZB","YB"]}).suffixes.concat(c.suffixes.filter(function(e){return d.suffixes.indexOf(e)<0})).join("|")).replace("B","B(?!PS)")+")",v.register("format","bytes",{regexps:{format:/([0\s]i?b)/,unformat:new RegExp(e)},format:function(e,t,n){var r,a,i,o=v._.includes(t,"ib")?c:d,l=v._.includes(t," b")||v._.includes(t," ib")?" ":"";for(t=t.replace(/\s?i?b/,""),r=0;r<=o.suffixes.length;r++)if(a=Math.pow(o.base,r),i=Math.pow(o.base,r+1),null===e||0===e||a<=e&&e<i){l+=o.suffixes[r],0<a&&(e/=a);break}return v._.numberToFormat(e,t,n)+l},unformat:function(e){var t,n,r=v._.stringToNumber(e);if(r){for(t=d.suffixes.length-1;0<=t;t--){if(v._.includes(e,d.suffixes[t])){n=Math.pow(d.base,t);break}if(v._.includes(e,c.suffixes[t])){n=Math.pow(c.base,t);break}}r*=n||1}return r}}),v.register("format","currency",{regexps:{format:/(\$)/},format:function(e,t,n){var r,a,i=v.locales[v.options.currentLocale],o={before:t.match(/^([\+|\-|\(|\s|\$]*)/)[0],after:t.match(/([\+|\-|\)|\s|\$]*)$/)[0]};for(t=t.replace(/\s?\$\s?/,""),r=v._.numberToFormat(e,t,n),0<=e?(o.before=o.before.replace(/[\-\(]/,""),o.after=o.after.replace(/[\-\)]/,"")):e<0&&!v._.includes(o.before,"-")&&!v._.includes(o.before,"(")&&(o.before="-"+o.before),a=0;a<o.before.length;a++)switch(o.before[a]){case"$":r=v._.insert(r,i.currency.symbol,a);break;case" ":r=v._.insert(r," ",a+i.currency.symbol.length-1)}for(a=o.after.length-1;0<=a;a--)switch(o.after[a]){case"$":r=a===o.after.length-1?r+i.currency.symbol:v._.insert(r,i.currency.symbol,-(o.after.length-(1+a)));break;case" ":r=a===o.after.length-1?r+" ":v._.insert(r," ",-(o.after.length-(1+a)+i.currency.symbol.length-1))}return r}}),v.register("format","exponential",{regexps:{format:/(e\+|e-)/,unformat:/(e\+|e-)/},format:function(e,t,n){var r=("number"!=typeof e||v._.isNaN(e)?"0e+0":e.toExponential()).split("e");return t=t.replace(/e[\+|\-]{1}0/,""),v._.numberToFormat(Number(r[0]),t,n)+"e"+r[1]},unformat:function(e){var t=v._.includes(e,"e+")?e.split("e+"):e.split("e-"),n=Number(t[0]),r=Number(t[1]);return r=v._.includes(e,"e-")?r*=-1:r,v._.reduce([n,Math.pow(10,r)],function(e,t,n,r){var a=v._.correctionFactor(e,t);return e*a*(t*a)/(a*a)},1)}}),v.register("format","ordinal",{regexps:{format:/(o)/},format:function(e,t,n){var r=v.locales[v.options.currentLocale],a=v._.includes(t," o")?" ":"";return t=t.replace(/\s?o/,""),a+=r.ordinal(e),v._.numberToFormat(e,t,n)+a}}),v.register("format","percentage",{regexps:{format:/(%)/,unformat:/(%)/},format:function(e,t,n){var r,a=v._.includes(t," %")?" ":"";return v.options.scalePercentBy100&&(e*=100),t=t.replace(/\s?\%/,""),r=v._.numberToFormat(e,t,n),r=v._.includes(r,")")?((r=r.split("")).splice(-1,0,a+"%"),r.join("")):r+a+"%"},unformat:function(e){var t=v._.stringToNumber(e);return v.options.scalePercentBy100?.01*t:t}}),v.register("format","time",{regexps:{format:/(:)/,unformat:/(:)/},format:function(e,t,n){var r=Math.floor(e/60/60),a=Math.floor((e-60*r*60)/60),i=Math.round(e-60*r*60-60*a);return r+":"+(a<10?"0"+a:a)+":"+(i<10?"0"+i:i)},unformat:function(e){var t=e.split(":"),n=0;return 3===t.length?(n+=60*Number(t[0])*60,n+=60*Number(t[1]),n+=Number(t[2])):2===t.length&&(n+=60*Number(t[0]),n+=Number(t[1])),Number(n)}}),v},"function"==typeof define&&define.amd?define(a):"object"==typeof t&&t.exports?t.exports=a():r.numeral=a()},{}],2:[function(X,e,t){n.prototype.length=function(){return 5};function n(e){this.item=e}function j(e){var t="";for(var n in e)e.hasOwnProperty(n)&&(t=n);return t}$(document).ready(function(){$("#analizar").click(function(){var e=document.getElementById("company").value;console.log(e),$.get("https://api.adarga.org/analysis?com="+e,function(e){document.getElementById("VM").style.visibility="visible",document.getElementById("CMM").style.visibility="visible",document.getElementById("GMM").style.visibility="visible",document.getElementById("OMM").style.visibility="visible",document.getElementById("IMM").style.visibility="visible",document.getElementById("FMM").style.visibility="visible",document.getElementById("V").style.visibility="visible";var t=document.getElementById("tbodyV");document.getElementById("tableV").removeChild(t),document.getElementById("CM").style.visibility="visible";var n=document.getElementById("tbodyCM");document.getElementById("tableCM").removeChild(n),document.getElementById("GM").style.visibility="visible";var r=document.getElementById("tbodyGM");document.getElementById("tableGM").removeChild(r),document.getElementById("OM").style.visibility="visible";var a=document.getElementById("tbodyOM");document.getElementById("tableOM").removeChild(a),document.getElementById("IM").style.visibility="visible";var i=document.getElementById("tbodyIM");document.getElementById("tableIM").removeChild(i),document.getElementById("FM").style.visibility="visible";var o=document.getElementById("tbodyFM");document.getElementById("tableFM").removeChild(o);var l=JSON.parse(e);console.log(l);var d=X("../../node_modules/numeral/numeral"),c=["FCF Yield","Dividend Yield","Repurchases Yield","Securities Buying Yield","Debt Buying Yield","CAPEX Yield","Adquisitions Yield","Investing Yield"],m=[l.CM.FCFYield,l.CM.DividendYield,l.CM.RepurchasesYield,l.CM.SecuritiesBuyingYield,l.CM.DebtBuyingYield,l.CM.CAPEXYield,l.CM.AdquisitionsYield,l.CM.InvestingYield];(t=document.createElement("tbody")).setAttribute("id","tbodyV"),document.getElementById("tableV").appendChild(t),document.getElementById("col_1V").innerHTML="Yield";for(var s=0;s<m.length;s++){console.log(c[s]);var u=document.createElement("th").appendChild(document.createTextNode(c[s])),p=document.createElement("td"),h=document.createElement("tr");p.appendChild(u),h.appendChild(p);var g=m[s].toLocaleString(void 0,{style:"percent",minimumFractionDigits:2}),f=document.createElement("th").appendChild(document.createTextNode(g));(P=document.createElement("td")).id=c[s],P.appendChild(f),h.appendChild(P),document.getElementById("tbodyV").appendChild(h)}for(s=0;s<m.length;s++){(D=document.createElement("id")).setAttribute("class","table-responsive table-striped w-75 mx-auto"),(k=document.createElement("table")).setAttribute("class","table table-hover table-striped w-75 mx-auto"),(H=document.createElement("thead")).setAttribute("class","thead-dark"),(h=document.createElement("tr")).setAttribute("scope","col");var b=document.createElement("th").appendChild(document.createTextNode(""));(Y=document.createElement("th")).setAttribute("scope","col"),Y.appendChild(b);var C=document.createElement("th").appendChild(document.createTextNode("          "));($=document.createElement("th")).setAttribute("scope","col"),$.appendChild(C),h.appendChild(Y),h.appendChild($),H.appendChild(h),k.appendChild(H),D.appendChild(k);var v=document.createElement("tbody");for(s=0;s<m.length;s++){u=document.createElement("th").appendChild(document.createTextNode(c[s])),p=document.createElement("td"),h=document.createElement("tr");p.appendChild(u),h.appendChild(p);g=m[s].toLocaleString(void 0,{style:"percent",minimumFractionDigits:2}),f=document.createElement("th").appendChild(document.createTextNode(g));(P=document.createElement("td")).id=c[s],P.appendChild(f),h.appendChild(P),v.appendChild(h)}k.appendChild(v),document.getElementById("VM").appendChild(k)}var y=["FCF","Change In FCF","Operating Cash Flow","Change Operating Cash Flow","Investing Cash Flow","Change Investing Cash Flow","Financing Cash Flow","Change Financing Cash Flow","CAPEX","Change In CAPEX","Adquisitions","Change In Adquisitions","CAPEX + Adquisitions","Change In CAPEX + Adquisitions","Securities buying Net","Change In Securities","Dividends","Change In Dividends","Stock Repurchase Net","Change In Stock Repurchase","Debt Repayment Net","Change In Debt Repayment"],M=[l.CM.FCF,l.CM.changeInFCF,l.CM.operatingCashFlow,l.CM.ChangeOperatingCashFlow,l.CM.investingCashFlow,l.CM.ChangeInvestingCashFlow,l.CM.financingCashFlow,l.CM.ChangeFinancingCashFlow,l.CM.CAPEX,l.CM.changeInCAPEX,l.CM.adquisitions,l.CM.changeInAdquisitions,l.CM.investing,l.CM.changeInInvesting,l.CM.securitiesNet,l.CM.changeInSecurities,l.CM.dividends,l.CM.changeInDividends,l.CM.stockRepurchase,l.CM.changeInStockRepurchase,l.CM.debtRepayment,l.CM.changeInDebtRepayment];document.createElement("tbody");n.setAttribute("id","tbodyCM"),document.getElementById("tableCM").appendChild(n);var E=j(l.CM.operatingCashFlow);document.getElementById("col_1CM").innerHTML=String(E),document.getElementById("col_2CM").innerHTML=String(parseInt(E)-1),document.getElementById("col_3CM").innerHTML=String(parseInt(E)-2),document.getElementById("col_4CM").innerHTML=String(parseInt(E)-3),document.getElementById("col_5CM").innerHTML=String(parseInt(E)-4);for(s=0;s<M.length;s++){u=document.createElement("th").appendChild(document.createTextNode(y[s])),p=document.createElement("td"),h=document.createElement("tr");p.appendChild(u),h.appendChild(p);for(var I=0;I<5;I++){"number"==typeof(q=M[s][parseInt(E)-I])?(g=q.toLocaleString(void 0,{style:"percent",minimumFractionDigits:2}),"CAPEX"==y[s]&&(g=d(q).format("0,0")),"Securities buying Net"==y[s]&&(g=d(q).format("0,0")),"Investing (CAPEX + Adquisitions)"==y[s]&&(g=d(q).format("0,0")),"Dividends"==y[s]&&(g=d(q).format("0,0")),"Stock Repurchase Net"==y[s]&&(g=d(q).format("0,0")),"Debt Repayment Net"==y[s]&&(g=d(q).format("0,0"))):g=d(Number(q)).format("0,0"),1e6<q&&(g="Inf");f=document.createElement("th").appendChild(document.createTextNode(g));(P=document.createElement("td")).id=y[s]+I,P.appendChild(f),h.appendChild(P)}document.getElementById("tbodyCM").appendChild(h)}for(s=0;s<M.length;s++){(D=document.createElement("id")).setAttribute("class","table-responsive table-striped w-75 mx-auto"),(k=document.createElement("table")).setAttribute("class","table table-hover table-striped w-75 mx-auto"),(H=document.createElement("thead")).setAttribute("class","thead-dark"),(h=document.createElement("tr")).setAttribute("scope","col");b=document.createElement("th").appendChild(document.createTextNode(y[s]));(Y=document.createElement("th")).setAttribute("scope","col"),Y.appendChild(b);C=document.createElement("th").appendChild(document.createTextNode("          "));($=document.createElement("th")).setAttribute("scope","col"),$.appendChild(C),h.appendChild(Y),h.appendChild($),H.appendChild(h),k.appendChild(H),D.appendChild(k);for(v=document.createElement("tbody"),I=0;I<5;I++){"number"==typeof(q=(_=M[s])[parseInt(E)-I])?(g=q.toLocaleString(void 0,{style:"percent",minimumFractionDigits:2}),"CAPEX"==y[s]&&(g=d(q).format("0,0")),"Securities buying Net"==y[s]&&(g=d(q).format("0,0")),"Investing (CAPEX + Adquisitions)"==y[s]&&(g=d(q).format("0,0")),"Dividends"==y[s]&&(g=d(q).format("0,0")),"Stock Repurchase Net"==y[s]&&(g=d(q).format("0,0")),"Debt Repayment Net"==y[s]&&(g=d(q).format("0,0"))):g=d(Number(q)).format("0,0"),1e6<q&&(g="Inf");var F=(parseInt(E)-I).toString(),N=document.createElement("td").appendChild(document.createTextNode(F));(z=document.createElement("td")).appendChild(N);var O=document.createElement("td").appendChild(document.createTextNode(g));(V=document.createElement("td")).appendChild(O),(h=document.createElement("tr")).appendChild(z),h.appendChild(V),v.appendChild(h)}k.appendChild(v),document.getElementById("CMM").appendChild(k)}var x=["Operating ROA","Sales Over Assets","Financial Leverage Gain","ROE","Return On Tangible Equity","Pay Out","Dividend Yield","FCF Over Equity","FCF Per Share","Earnings Per Share","Operating Income Per Share","Growth Rate","Sales Growth Rate","NOPAT Margin","Beginning Net Operating WC Over Sales","Beginning Net Operating LT Assets Over Sales","Beginning Net Debt 2 Capital Ratio","After TaxCost Of Debt"],B=[l.GM.operatingROA,l.GM.salesOverAssets,l.GM.financialLeverageGain,l.GM.ROE,l.GM.returnOnTangibleEquity,l.GM.payOut,l.GM.dividendYield,l.GM.FCFOverEquity,l.GM.FCFPerShare,l.GM.earningsPerShare,l.GM.operatingIncomePerShare,l.GM.growthRate,l.GM.salesGrowthRate,l.GM.NOPATMargin,l.GM.beginningNetOperatingWCOverSales,l.GM.beginningNetOperatingLTAssetsOverSales,l.GM.beginningNetDebt2CapitalRatio,l.GM.afterTaxCostOfDebt];(r=document.createElement("tbody")).setAttribute("id","tbodyGM"),document.getElementById("tableGM").appendChild(r);E=j(l.CM.operatingCashFlow);document.getElementById("col_1GM").innerHTML=String(E),document.getElementById("col_2GM").innerHTML=String(parseInt(E)-1),document.getElementById("col_3GM").innerHTML=String(parseInt(E)-2),document.getElementById("col_4GM").innerHTML=String(parseInt(E)-3),document.getElementById("col_5GM").innerHTML=String(parseInt(E)-4);for(s=0;s<B.length;s++){u=document.createElement("th").appendChild(document.createTextNode(x[s])),p=document.createElement("td"),h=document.createElement("tr");p.appendChild(u),h.appendChild(p);for(I=0;I<5;I++){g="number"==typeof(q=B[s][parseInt(E)-I])?q.toLocaleString(void 0,{style:"percent",minimumFractionDigits:2}):d(Number(q)).format("0,0"),1e6<q&&(g="Inf");f=document.createElement("th").appendChild(document.createTextNode(g));(P=document.createElement("td")).id=x[s]+I,P.appendChild(f),h.appendChild(P)}document.getElementById("tbodyGM").appendChild(h)}for(s=0;s<B.length;s++){(D=document.createElement("id")).setAttribute("class","table-responsive table-striped w-75 mx-auto"),(k=document.createElement("table")).setAttribute("class","table table-hover table-striped w-75 mx-auto"),(H=document.createElement("thead")).setAttribute("class","thead-dark"),(h=document.createElement("tr")).setAttribute("scope","col");b=document.createElement("th").appendChild(document.createTextNode(x[s]));(Y=document.createElement("th")).setAttribute("scope","col"),Y.appendChild(b);C=document.createElement("th").appendChild(document.createTextNode("          "));($=document.createElement("th")).setAttribute("scope","col"),$.appendChild(C),h.appendChild(Y),h.appendChild($),H.appendChild(h),k.appendChild(H),D.appendChild(k);for(v=document.createElement("tbody"),I=0;I<5;I++){g="number"==typeof(q=(_=B[s])[parseInt(E)-I])?q.toLocaleString(void 0,{style:"percent",minimumFractionDigits:2}):d(Number(q)).format("0,0"),1e6<q&&(g="Inf");F=(parseInt(E)-I).toString(),N=document.createElement("td").appendChild(document.createTextNode(F));(z=document.createElement("td")).appendChild(N);O=document.createElement("td").appendChild(document.createTextNode(g));(V=document.createElement("td")).appendChild(O),(h=document.createElement("tr")).appendChild(z),h.appendChild(V),v.appendChild(h)}k.appendChild(v),document.getElementById("GMM").appendChild(k)}var T=["Revenue","Sales Growth","COGs","Operating Income","Gross Margin","SGA","SGA Growth","NOPAT","NOPAT Growth","NOPAT Margin","Tax Rate","Net Income","Income Over Revenue","Operating Cash Flow Over Income"],S=[l.OM.revenue,l.OM.salesGrowth,l.OM.COGS,l.OM.operatingIncome,l.OM.grossMargin,l.OM.SGA,l.OM.SGAOverSales,l.OM.NOPAT,l.OM.NOPATGrowth,l.OM.NOPATMargin,l.OM.taxRate,l.OM.netIncome,l.OM.incomeOverRevenue,l.OM.operatingCashFlowOverIncome],A=document.createElement("tbody");A.setAttribute("id","tbodyOM"),document.getElementById("tableOM").appendChild(A);E=j(l.OM.revenue);document.getElementById("col_1OM").innerHTML=String(E),document.getElementById("col_2OM").innerHTML=String(parseInt(E)-1),document.getElementById("col_3OM").innerHTML=String(parseInt(E)-2),document.getElementById("col_4OM").innerHTML=String(parseInt(E)-3),document.getElementById("col_5OM").innerHTML=String(parseInt(E)-4);for(s=0;s<S.length;s++){u=document.createElement("th").appendChild(document.createTextNode(T[s])),p=document.createElement("td"),h=document.createElement("tr");p.appendChild(u),h.appendChild(p);for(I=0;I<5;I++){var _=S[s];console.log("itemPaint2"),console.log(_),"number"==typeof(q=_[parseInt(E)-I])?(g=q.toLocaleString(void 0,{style:"percent",minimumFractionDigits:2}),console.log("itemPaint"),console.log(q),"Operating Income"==T[s]&&(g=d(q).format("0,0")),"NOPAT"==T[s]&&(g=d(q).format("0,0"))):g=d(Number(q)).format("0,0"),1e6<q&&(g="Inf");f=document.createElement("th").appendChild(document.createTextNode(g));(P=document.createElement("td")).id=T[s]+I,P.appendChild(f),h.appendChild(P)}document.getElementById("tbodyOM").appendChild(h)}for(s=0;s<S.length;s++){(D=document.createElement("id")).setAttribute("class","table-responsive table-striped w-75 mx-auto"),(k=document.createElement("table")).setAttribute("class","table table-hover table-striped w-75 mx-auto"),(H=document.createElement("thead")).setAttribute("class","thead-dark"),(h=document.createElement("tr")).setAttribute("scope","col");b=document.createElement("th").appendChild(document.createTextNode(T[s]));(Y=document.createElement("th")).setAttribute("scope","col"),Y.appendChild(b);C=document.createElement("th").appendChild(document.createTextNode("          "));($=document.createElement("th")).setAttribute("scope","col"),$.appendChild(C),h.appendChild(Y),h.appendChild($),H.appendChild(h),k.appendChild(H),D.appendChild(k);for(v=document.createElement("tbody"),I=0;I<5;I++){"number"==typeof(q=(_=S[s])[parseInt(E)-I])?(g=q.toLocaleString(void 0,{style:"percent",minimumFractionDigits:2}),"Operating Income"==T[s]&&(g=d(q).format("0,0")),"NOPAT"==T[s]&&(g=d(q).format("0,0"))):g=d(Number(q)).format("0,0"),1e6<q&&(g="Inf");F=(parseInt(E)-I).toString(),N=document.createElement("td").appendChild(document.createTextNode(F));(z=document.createElement("td")).appendChild(N);O=document.createElement("td").appendChild(document.createTextNode(g));(V=document.createElement("td")).appendChild(O),(h=document.createElement("tr")).appendChild(z),h.appendChild(V),v.appendChild(h)}k.appendChild(v),document.getElementById("OMM").appendChild(k)}var w=["Accounts Receivable Growth","Inventory Growth","Accounts Receivable Over Sales","Inventory Over Sales","Days Receivables","Days Inventory","Days Payables","Sales Over Working Capital","Sales Over Net LTAssets","Sales Over Net Assets","Cash Over NetAssets","Cash Over Receivables"],L=[l.IM.accountsReceivableGrowth,l.IM.inventoryGrowth,l.IM.accountsReceivableOverSales,l.IM.inventorySales,l.IM.daysReceivables,l.IM.daysInventory,l.IM.daysPayables,l.IM.salesOverWorkingCapital,l.IM.salesOverNetLTAssets,l.IM.salesOverNetAssets,l.IM.cashOverNetAssets,l.IM.cashOverReceivables];(i=document.createElement("tbody")).setAttribute("id","tbodyIM"),document.getElementById("tableIM").appendChild(i);E=j(l.IM.cashAndMarketableSecurities);document.getElementById("col_1IM").innerHTML=String(E),document.getElementById("col_2IM").innerHTML=String(parseInt(E)-1),document.getElementById("col_3IM").innerHTML=String(parseInt(E)-2),document.getElementById("col_4IM").innerHTML=String(parseInt(E)-3),document.getElementById("col_5IM").innerHTML=String(parseInt(E)-4);for(s=0;s<L.length;s++){u=document.createElement("th").appendChild(document.createTextNode(w[s])),p=document.createElement("td"),h=document.createElement("tr");p.appendChild(u),h.appendChild(p);for(I=0;I<5;I++){"number"==typeof(q=(_=L[s])[parseInt(E)-I])?(g=q.toLocaleString(void 0,{style:"percent",minimumFractionDigits:2}),"Days Receivables"==w[s]&&(g=d(q).format("0,0")),"Days Inventory"==w[s]&&(g=d(q).format("0,0")),"Days Payables"==w[s]&&(g=d(q).format("0,0")),"Sales Over Working Capital"==w[s]&&(g=d(q).format("0,0.00")),"Sales Over Net LTAssets"==w[s]&&(g=d(q).format("0,0.00")),"Sales Over Net Assets"==w[s]&&(g=d(q).format("0,0.00"))):g=d(Number(q)).format("0,0"),1e6<q&&(g="Inf");f=document.createElement("th").appendChild(document.createTextNode(g));(P=document.createElement("td")).id=w[s]+I,P.appendChild(f),h.appendChild(P)}document.getElementById("tbodyIM").appendChild(h)}for(s=0;s<L.length;s++){(D=document.createElement("id")).setAttribute("class","table-responsive table-striped w-75 mx-auto"),(k=document.createElement("table")).setAttribute("class","table table-hover table-striped w-75 mx-auto"),(H=document.createElement("thead")).setAttribute("class","thead-dark"),(h=document.createElement("tr")).setAttribute("scope","col");b=document.createElement("th").appendChild(document.createTextNode(w[s]));(Y=document.createElement("th")).setAttribute("scope","col"),Y.appendChild(b);C=document.createElement("th").appendChild(document.createTextNode("          "));($=document.createElement("th")).setAttribute("scope","col"),$.appendChild(C),h.appendChild(Y),h.appendChild($),H.appendChild(h),k.appendChild(H),D.appendChild(k);for(v=document.createElement("tbody"),I=0;I<5;I++){"number"==typeof(q=(_=L[s])[parseInt(E)-I])?(g=q.toLocaleString(void 0,{style:"percent",minimumFractionDigits:2}),"Days Receivables"==w[s]&&(g=d(q).format("0,0")),"Days Inventory"==w[s]&&(g=d(q).format("0,0")),"Days Payables"==w[s]&&(g=d(q).format("0,0")),"Sales Over Working Capital"==w[s]&&(g=d(q).format("0,0.00")),"Sales Over Net LTAssets"==w[s]&&(g=d(q).format("0,0.00")),"Sales Over Net Assets"==w[s]&&(g=d(q).format("0,0.00"))):g=d(Number(q)).format("0,0"),1e6<q&&(g="Inf");F=(parseInt(E)-I).toString(),N=document.createElement("td").appendChild(document.createTextNode(F));(z=document.createElement("td")).appendChild(N);O=document.createElement("td").appendChild(document.createTextNode(g));(V=document.createElement("td")).appendChild(O),(h=document.createElement("tr")).appendChild(z),h.appendChild(V),v.appendChild(h)}k.appendChild(v),document.getElementById("IMM").appendChild(k)}var R=["Debt To Capital Ratio","Net Debt To Net Capital Ratio","Spread","Net Financial Leverage","Financial Leverage","Current Ratio","Quick Ratio","Cash Ratio","Operating Income vs Interest Expense","Operating Cash Flow vs Interest expense"],G=[l.FM.debtToCapitalRatio,l.FM.netDebtToNetCapitalRatio,l.FM.spread,l.FM.netFinancialLeverage,l.FM.financialLeverage,l.FM.currentRatio,l.FM.quickRatio,l.FM.cashRatio,l.FM.interestCoverage_operatingIncomeVSinterestexpense,l.FM.interestCoverage_operatingCashFlowVSinterestexpense];(o=document.createElement("tbody")).setAttribute("id","tbodyFM"),document.getElementById("tableFM").appendChild(o);E=j(l.FM.equity);document.getElementById("col_1FM").innerHTML=String(E),document.getElementById("col_2FM").innerHTML=String(parseInt(E)-1),document.getElementById("col_3FM").innerHTML=String(parseInt(E)-2),document.getElementById("col_4FM").innerHTML=String(parseInt(E)-3),document.getElementById("col_5FM").innerHTML=String(parseInt(E)-4);for(s=0;s<G.length;s++){u=document.createElement("th").appendChild(document.createTextNode(R[s])),p=document.createElement("td"),h=document.createElement("tr");p.appendChild(u),h.appendChild(p);for(I=0;I<5;I++){"number"==typeof(q=(_=G[s])[parseInt(E)-I])?(g=q.toLocaleString(void 0,{style:"percent",minimumFractionDigits:2}),"Current Ratio"==R[s]&&(g=d(q).format("0,0.00")),"Quick Ratio"==R[s]&&(g=d(q).format("0,0.00")),"Cash Ratio"==R[s]&&(g=d(q).format("0,0.00")),"Operating Income vs Interest Expense"==R[s]&&(g=d(q).format("0,0.00")),"Operating Cash Flow vs Interest expense"==R[s]&&(g=d(q).format("0,0.00"))):g=d(Number(q)).format("0,0"),1e6<q&&(g="Inf");var P;f=document.createElement("th").appendChild(document.createTextNode(g));(P=document.createElement("td")).id=R[s]+I,P.appendChild(f),h.appendChild(P)}document.getElementById("tbodyFM").appendChild(h)}for(s=0;s<G.length;s++){var D,k,H;(D=document.createElement("id")).setAttribute("class","table-responsive table-striped w-75 mx-auto"),(k=document.createElement("table")).setAttribute("class","table table-hover table-striped w-75 mx-auto"),(H=document.createElement("thead")).setAttribute("class","thead-dark"),(h=document.createElement("tr")).setAttribute("scope","col");var Y;b=document.createElement("th").appendChild(document.createTextNode(R[s]));(Y=document.createElement("th")).setAttribute("scope","col"),Y.appendChild(b);var $;C=document.createElement("th").appendChild(document.createTextNode("          "));($=document.createElement("th")).setAttribute("scope","col"),$.appendChild(C),h.appendChild(Y),h.appendChild($),H.appendChild(h),k.appendChild(H),D.appendChild(k);for(v=document.createElement("tbody"),I=0;I<5;I++){var q;"number"==typeof(q=(_=G[s])[parseInt(E)-I])?(g=q.toLocaleString(void 0,{style:"percent",minimumFractionDigits:2}),"Current Ratio"==R[s]&&(g=d(q).format("0,0.00")),"Quick Ratio"==R[s]&&(g=d(q).format("0,0.00")),"Cash Ratio"==R[s]&&(g=d(q).format("0,0.00")),"Operating Income vs Interest Expense"==R[s]&&(g=d(q).format("0,0.00")),"Operating Cash Flow vs Interest expense"==R[s]&&(g=d(q).format("0,0.00"))):g=d(Number(q)).format("0,0"),1e6<q&&(g="Inf");var z;F=(parseInt(E)-I).toString(),N=document.createElement("td").appendChild(document.createTextNode(F));(z=document.createElement("td")).appendChild(N);var V;O=document.createElement("td").appendChild(document.createTextNode(g));(V=document.createElement("td")).appendChild(O),(h=document.createElement("tr")).appendChild(z),h.appendChild(V),v.appendChild(h)}k.appendChild(v),document.getElementById("FMM").appendChild(k)}})})})},{"../../node_modules/numeral/numeral":1}]},{},[2]);
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+/*! @preserve
+ * numeral.js
+ * version : 2.0.6
+ * author : Adam Draper
+ * license : MIT
+ * http://adamwdraper.github.com/Numeral-js/
+ */
+
+(function (global, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(factory);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = factory();
+    } else {
+        global.numeral = factory();
+    }
+}(this, function () {
+    /************************************
+        Variables
+    ************************************/
+
+    var numeral,
+        _,
+        VERSION = '2.0.6',
+        formats = {},
+        locales = {},
+        defaults = {
+            currentLocale: 'en',
+            zeroFormat: null,
+            nullFormat: null,
+            defaultFormat: '0,0',
+            scalePercentBy100: true
+        },
+        options = {
+            currentLocale: defaults.currentLocale,
+            zeroFormat: defaults.zeroFormat,
+            nullFormat: defaults.nullFormat,
+            defaultFormat: defaults.defaultFormat,
+            scalePercentBy100: defaults.scalePercentBy100
+        };
+
+
+    /************************************
+        Constructors
+    ************************************/
+
+    // Numeral prototype object
+    function Numeral(input, number) {
+        this._input = input;
+
+        this._value = number;
+    }
+
+    numeral = function(input) {
+        var value,
+            kind,
+            unformatFunction,
+            regexp;
+
+        if (numeral.isNumeral(input)) {
+            value = input.value();
+        } else if (input === 0 || typeof input === 'undefined') {
+            value = 0;
+        } else if (input === null || _.isNaN(input)) {
+            value = null;
+        } else if (typeof input === 'string') {
+            if (options.zeroFormat && input === options.zeroFormat) {
+                value = 0;
+            } else if (options.nullFormat && input === options.nullFormat || !input.replace(/[^0-9]+/g, '').length) {
+                value = null;
+            } else {
+                for (kind in formats) {
+                    regexp = typeof formats[kind].regexps.unformat === 'function' ? formats[kind].regexps.unformat() : formats[kind].regexps.unformat;
+
+                    if (regexp && input.match(regexp)) {
+                        unformatFunction = formats[kind].unformat;
+
+                        break;
+                    }
+                }
+
+                unformatFunction = unformatFunction || numeral._.stringToNumber;
+
+                value = unformatFunction(input);
+            }
+        } else {
+            value = Number(input)|| null;
+        }
+
+        return new Numeral(input, value);
+    };
+
+    // version number
+    numeral.version = VERSION;
+
+    // compare numeral object
+    numeral.isNumeral = function(obj) {
+        return obj instanceof Numeral;
+    };
+
+    // helper functions
+    numeral._ = _ = {
+        // formats numbers separators, decimals places, signs, abbreviations
+        numberToFormat: function(value, format, roundingFunction) {
+            var locale = locales[numeral.options.currentLocale],
+                negP = false,
+                optDec = false,
+                leadingCount = 0,
+                abbr = '',
+                trillion = 1000000000000,
+                billion = 1000000000,
+                million = 1000000,
+                thousand = 1000,
+                decimal = '',
+                neg = false,
+                abbrForce, // force abbreviation
+                abs,
+                min,
+                max,
+                power,
+                int,
+                precision,
+                signed,
+                thousands,
+                output;
+
+            // make sure we never format a null value
+            value = value || 0;
+
+            abs = Math.abs(value);
+
+            // see if we should use parentheses for negative number or if we should prefix with a sign
+            // if both are present we default to parentheses
+            if (numeral._.includes(format, '(')) {
+                negP = true;
+                format = format.replace(/[\(|\)]/g, '');
+            } else if (numeral._.includes(format, '+') || numeral._.includes(format, '-')) {
+                signed = numeral._.includes(format, '+') ? format.indexOf('+') : value < 0 ? format.indexOf('-') : -1;
+                format = format.replace(/[\+|\-]/g, '');
+            }
+
+            // see if abbreviation is wanted
+            if (numeral._.includes(format, 'a')) {
+                abbrForce = format.match(/a(k|m|b|t)?/);
+
+                abbrForce = abbrForce ? abbrForce[1] : false;
+
+                // check for space before abbreviation
+                if (numeral._.includes(format, ' a')) {
+                    abbr = ' ';
+                }
+
+                format = format.replace(new RegExp(abbr + 'a[kmbt]?'), '');
+
+                if (abs >= trillion && !abbrForce || abbrForce === 't') {
+                    // trillion
+                    abbr += locale.abbreviations.trillion;
+                    value = value / trillion;
+                } else if (abs < trillion && abs >= billion && !abbrForce || abbrForce === 'b') {
+                    // billion
+                    abbr += locale.abbreviations.billion;
+                    value = value / billion;
+                } else if (abs < billion && abs >= million && !abbrForce || abbrForce === 'm') {
+                    // million
+                    abbr += locale.abbreviations.million;
+                    value = value / million;
+                } else if (abs < million && abs >= thousand && !abbrForce || abbrForce === 'k') {
+                    // thousand
+                    abbr += locale.abbreviations.thousand;
+                    value = value / thousand;
+                }
+            }
+
+            // check for optional decimals
+            if (numeral._.includes(format, '[.]')) {
+                optDec = true;
+                format = format.replace('[.]', '.');
+            }
+
+            // break number and format
+            int = value.toString().split('.')[0];
+            precision = format.split('.')[1];
+            thousands = format.indexOf(',');
+            leadingCount = (format.split('.')[0].split(',')[0].match(/0/g) || []).length;
+
+            if (precision) {
+                if (numeral._.includes(precision, '[')) {
+                    precision = precision.replace(']', '');
+                    precision = precision.split('[');
+                    decimal = numeral._.toFixed(value, (precision[0].length + precision[1].length), roundingFunction, precision[1].length);
+                } else {
+                    decimal = numeral._.toFixed(value, precision.length, roundingFunction);
+                }
+
+                int = decimal.split('.')[0];
+
+                if (numeral._.includes(decimal, '.')) {
+                    decimal = locale.delimiters.decimal + decimal.split('.')[1];
+                } else {
+                    decimal = '';
+                }
+
+                if (optDec && Number(decimal.slice(1)) === 0) {
+                    decimal = '';
+                }
+            } else {
+                int = numeral._.toFixed(value, 0, roundingFunction);
+            }
+
+            // check abbreviation again after rounding
+            if (abbr && !abbrForce && Number(int) >= 1000 && abbr !== locale.abbreviations.trillion) {
+                int = String(Number(int) / 1000);
+
+                switch (abbr) {
+                    case locale.abbreviations.thousand:
+                        abbr = locale.abbreviations.million;
+                        break;
+                    case locale.abbreviations.million:
+                        abbr = locale.abbreviations.billion;
+                        break;
+                    case locale.abbreviations.billion:
+                        abbr = locale.abbreviations.trillion;
+                        break;
+                }
+            }
+
+
+            // format number
+            if (numeral._.includes(int, '-')) {
+                int = int.slice(1);
+                neg = true;
+            }
+
+            if (int.length < leadingCount) {
+                for (var i = leadingCount - int.length; i > 0; i--) {
+                    int = '0' + int;
+                }
+            }
+
+            if (thousands > -1) {
+                int = int.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + locale.delimiters.thousands);
+            }
+
+            if (format.indexOf('.') === 0) {
+                int = '';
+            }
+
+            output = int + decimal + (abbr ? abbr : '');
+
+            if (negP) {
+                output = (negP && neg ? '(' : '') + output + (negP && neg ? ')' : '');
+            } else {
+                if (signed >= 0) {
+                    output = signed === 0 ? (neg ? '-' : '+') + output : output + (neg ? '-' : '+');
+                } else if (neg) {
+                    output = '-' + output;
+                }
+            }
+
+            return output;
+        },
+        // unformats numbers separators, decimals places, signs, abbreviations
+        stringToNumber: function(string) {
+            var locale = locales[options.currentLocale],
+                stringOriginal = string,
+                abbreviations = {
+                    thousand: 3,
+                    million: 6,
+                    billion: 9,
+                    trillion: 12
+                },
+                abbreviation,
+                value,
+                i,
+                regexp;
+
+            if (options.zeroFormat && string === options.zeroFormat) {
+                value = 0;
+            } else if (options.nullFormat && string === options.nullFormat || !string.replace(/[^0-9]+/g, '').length) {
+                value = null;
+            } else {
+                value = 1;
+
+                if (locale.delimiters.decimal !== '.') {
+                    string = string.replace(/\./g, '').replace(locale.delimiters.decimal, '.');
+                }
+
+                for (abbreviation in abbreviations) {
+                    regexp = new RegExp('[^a-zA-Z]' + locale.abbreviations[abbreviation] + '(?:\\)|(\\' + locale.currency.symbol + ')?(?:\\))?)?$');
+
+                    if (stringOriginal.match(regexp)) {
+                        value *= Math.pow(10, abbreviations[abbreviation]);
+                        break;
+                    }
+                }
+
+                // check for negative number
+                value *= (string.split('-').length + Math.min(string.split('(').length - 1, string.split(')').length - 1)) % 2 ? 1 : -1;
+
+                // remove non numbers
+                string = string.replace(/[^0-9\.]+/g, '');
+
+                value *= Number(string);
+            }
+
+            return value;
+        },
+        isNaN: function(value) {
+            return typeof value === 'number' && isNaN(value);
+        },
+        includes: function(string, search) {
+            return string.indexOf(search) !== -1;
+        },
+        insert: function(string, subString, start) {
+            return string.slice(0, start) + subString + string.slice(start);
+        },
+        reduce: function(array, callback /*, initialValue*/) {
+            if (this === null) {
+                throw new TypeError('Array.prototype.reduce called on null or undefined');
+            }
+
+            if (typeof callback !== 'function') {
+                throw new TypeError(callback + ' is not a function');
+            }
+
+            var t = Object(array),
+                len = t.length >>> 0,
+                k = 0,
+                value;
+
+            if (arguments.length === 3) {
+                value = arguments[2];
+            } else {
+                while (k < len && !(k in t)) {
+                    k++;
+                }
+
+                if (k >= len) {
+                    throw new TypeError('Reduce of empty array with no initial value');
+                }
+
+                value = t[k++];
+            }
+            for (; k < len; k++) {
+                if (k in t) {
+                    value = callback(value, t[k], k, t);
+                }
+            }
+            return value;
+        },
+        /**
+         * Computes the multiplier necessary to make x >= 1,
+         * effectively eliminating miscalculations caused by
+         * finite precision.
+         */
+        multiplier: function (x) {
+            var parts = x.toString().split('.');
+
+            return parts.length < 2 ? 1 : Math.pow(10, parts[1].length);
+        },
+        /**
+         * Given a variable number of arguments, returns the maximum
+         * multiplier that must be used to normalize an operation involving
+         * all of them.
+         */
+        correctionFactor: function () {
+            var args = Array.prototype.slice.call(arguments);
+
+            return args.reduce(function(accum, next) {
+                var mn = _.multiplier(next);
+                return accum > mn ? accum : mn;
+            }, 1);
+        },
+        /**
+         * Implementation of toFixed() that treats floats more like decimals
+         *
+         * Fixes binary rounding issues (eg. (0.615).toFixed(2) === '0.61') that present
+         * problems for accounting- and finance-related software.
+         */
+        toFixed: function(value, maxDecimals, roundingFunction, optionals) {
+            var splitValue = value.toString().split('.'),
+                minDecimals = maxDecimals - (optionals || 0),
+                boundedPrecision,
+                optionalsRegExp,
+                power,
+                output;
+
+            // Use the smallest precision value possible to avoid errors from floating point representation
+            if (splitValue.length === 2) {
+              boundedPrecision = Math.min(Math.max(splitValue[1].length, minDecimals), maxDecimals);
+            } else {
+              boundedPrecision = minDecimals;
+            }
+
+            power = Math.pow(10, boundedPrecision);
+
+            // Multiply up by precision, round accurately, then divide and use native toFixed():
+            output = (roundingFunction(value + 'e+' + boundedPrecision) / power).toFixed(boundedPrecision);
+
+            if (optionals > maxDecimals - boundedPrecision) {
+                optionalsRegExp = new RegExp('\\.?0{1,' + (optionals - (maxDecimals - boundedPrecision)) + '}$');
+                output = output.replace(optionalsRegExp, '');
+            }
+
+            return output;
+        }
+    };
+
+    // avaliable options
+    numeral.options = options;
+
+    // avaliable formats
+    numeral.formats = formats;
+
+    // avaliable formats
+    numeral.locales = locales;
+
+    // This function sets the current locale.  If
+    // no arguments are passed in, it will simply return the current global
+    // locale key.
+    numeral.locale = function(key) {
+        if (key) {
+            options.currentLocale = key.toLowerCase();
+        }
+
+        return options.currentLocale;
+    };
+
+    // This function provides access to the loaded locale data.  If
+    // no arguments are passed in, it will simply return the current
+    // global locale object.
+    numeral.localeData = function(key) {
+        if (!key) {
+            return locales[options.currentLocale];
+        }
+
+        key = key.toLowerCase();
+
+        if (!locales[key]) {
+            throw new Error('Unknown locale : ' + key);
+        }
+
+        return locales[key];
+    };
+
+    numeral.reset = function() {
+        for (var property in defaults) {
+            options[property] = defaults[property];
+        }
+    };
+
+    numeral.zeroFormat = function(format) {
+        options.zeroFormat = typeof(format) === 'string' ? format : null;
+    };
+
+    numeral.nullFormat = function (format) {
+        options.nullFormat = typeof(format) === 'string' ? format : null;
+    };
+
+    numeral.defaultFormat = function(format) {
+        options.defaultFormat = typeof(format) === 'string' ? format : '0.0';
+    };
+
+    numeral.register = function(type, name, format) {
+        name = name.toLowerCase();
+
+        if (this[type + 's'][name]) {
+            throw new TypeError(name + ' ' + type + ' already registered.');
+        }
+
+        this[type + 's'][name] = format;
+
+        return format;
+    };
+
+
+    numeral.validate = function(val, culture) {
+        var _decimalSep,
+            _thousandSep,
+            _currSymbol,
+            _valArray,
+            _abbrObj,
+            _thousandRegEx,
+            localeData,
+            temp;
+
+        //coerce val to string
+        if (typeof val !== 'string') {
+            val += '';
+
+            if (console.warn) {
+                console.warn('Numeral.js: Value is not string. It has been co-erced to: ', val);
+            }
+        }
+
+        //trim whitespaces from either sides
+        val = val.trim();
+
+        //if val is just digits return true
+        if (!!val.match(/^\d+$/)) {
+            return true;
+        }
+
+        //if val is empty return false
+        if (val === '') {
+            return false;
+        }
+
+        //get the decimal and thousands separator from numeral.localeData
+        try {
+            //check if the culture is understood by numeral. if not, default it to current locale
+            localeData = numeral.localeData(culture);
+        } catch (e) {
+            localeData = numeral.localeData(numeral.locale());
+        }
+
+        //setup the delimiters and currency symbol based on culture/locale
+        _currSymbol = localeData.currency.symbol;
+        _abbrObj = localeData.abbreviations;
+        _decimalSep = localeData.delimiters.decimal;
+        if (localeData.delimiters.thousands === '.') {
+            _thousandSep = '\\.';
+        } else {
+            _thousandSep = localeData.delimiters.thousands;
+        }
+
+        // validating currency symbol
+        temp = val.match(/^[^\d]+/);
+        if (temp !== null) {
+            val = val.substr(1);
+            if (temp[0] !== _currSymbol) {
+                return false;
+            }
+        }
+
+        //validating abbreviation symbol
+        temp = val.match(/[^\d]+$/);
+        if (temp !== null) {
+            val = val.slice(0, -1);
+            if (temp[0] !== _abbrObj.thousand && temp[0] !== _abbrObj.million && temp[0] !== _abbrObj.billion && temp[0] !== _abbrObj.trillion) {
+                return false;
+            }
+        }
+
+        _thousandRegEx = new RegExp(_thousandSep + '{2}');
+
+        if (!val.match(/[^\d.,]/g)) {
+            _valArray = val.split(_decimalSep);
+            if (_valArray.length > 2) {
+                return false;
+            } else {
+                if (_valArray.length < 2) {
+                    return ( !! _valArray[0].match(/^\d+.*\d$/) && !_valArray[0].match(_thousandRegEx));
+                } else {
+                    if (_valArray[0].length === 1) {
+                        return ( !! _valArray[0].match(/^\d+$/) && !_valArray[0].match(_thousandRegEx) && !! _valArray[1].match(/^\d+$/));
+                    } else {
+                        return ( !! _valArray[0].match(/^\d+.*\d$/) && !_valArray[0].match(_thousandRegEx) && !! _valArray[1].match(/^\d+$/));
+                    }
+                }
+            }
+        }
+
+        return false;
+    };
+
+
+    /************************************
+        Numeral Prototype
+    ************************************/
+
+    numeral.fn = Numeral.prototype = {
+        clone: function() {
+            return numeral(this);
+        },
+        format: function(inputString, roundingFunction) {
+            var value = this._value,
+                format = inputString || options.defaultFormat,
+                kind,
+                output,
+                formatFunction;
+
+            // make sure we have a roundingFunction
+            roundingFunction = roundingFunction || Math.round;
+
+            // format based on value
+            if (value === 0 && options.zeroFormat !== null) {
+                output = options.zeroFormat;
+            } else if (value === null && options.nullFormat !== null) {
+                output = options.nullFormat;
+            } else {
+                for (kind in formats) {
+                    if (format.match(formats[kind].regexps.format)) {
+                        formatFunction = formats[kind].format;
+
+                        break;
+                    }
+                }
+
+                formatFunction = formatFunction || numeral._.numberToFormat;
+
+                output = formatFunction(value, format, roundingFunction);
+            }
+
+            return output;
+        },
+        value: function() {
+            return this._value;
+        },
+        input: function() {
+            return this._input;
+        },
+        set: function(value) {
+            this._value = Number(value);
+
+            return this;
+        },
+        add: function(value) {
+            var corrFactor = _.correctionFactor.call(null, this._value, value);
+
+            function cback(accum, curr, currI, O) {
+                return accum + Math.round(corrFactor * curr);
+            }
+
+            this._value = _.reduce([this._value, value], cback, 0) / corrFactor;
+
+            return this;
+        },
+        subtract: function(value) {
+            var corrFactor = _.correctionFactor.call(null, this._value, value);
+
+            function cback(accum, curr, currI, O) {
+                return accum - Math.round(corrFactor * curr);
+            }
+
+            this._value = _.reduce([value], cback, Math.round(this._value * corrFactor)) / corrFactor;
+
+            return this;
+        },
+        multiply: function(value) {
+            function cback(accum, curr, currI, O) {
+                var corrFactor = _.correctionFactor(accum, curr);
+                return Math.round(accum * corrFactor) * Math.round(curr * corrFactor) / Math.round(corrFactor * corrFactor);
+            }
+
+            this._value = _.reduce([this._value, value], cback, 1);
+
+            return this;
+        },
+        divide: function(value) {
+            function cback(accum, curr, currI, O) {
+                var corrFactor = _.correctionFactor(accum, curr);
+                return Math.round(accum * corrFactor) / Math.round(curr * corrFactor);
+            }
+
+            this._value = _.reduce([this._value, value], cback);
+
+            return this;
+        },
+        difference: function(value) {
+            return Math.abs(numeral(this._value).subtract(value).value());
+        }
+    };
+
+    /************************************
+        Default Locale && Format
+    ************************************/
+
+    numeral.register('locale', 'en', {
+        delimiters: {
+            thousands: ',',
+            decimal: '.'
+        },
+        abbreviations: {
+            thousand: 'k',
+            million: 'm',
+            billion: 'b',
+            trillion: 't'
+        },
+        ordinal: function(number) {
+            var b = number % 10;
+            return (~~(number % 100 / 10) === 1) ? 'th' :
+                (b === 1) ? 'st' :
+                (b === 2) ? 'nd' :
+                (b === 3) ? 'rd' : 'th';
+        },
+        currency: {
+            symbol: '$'
+        }
+    });
+
+    
+
+(function() {
+        numeral.register('format', 'bps', {
+            regexps: {
+                format: /(BPS)/,
+                unformat: /(BPS)/
+            },
+            format: function(value, format, roundingFunction) {
+                var space = numeral._.includes(format, ' BPS') ? ' ' : '',
+                    output;
+
+                value = value * 10000;
+
+                // check for space before BPS
+                format = format.replace(/\s?BPS/, '');
+
+                output = numeral._.numberToFormat(value, format, roundingFunction);
+
+                if (numeral._.includes(output, ')')) {
+                    output = output.split('');
+
+                    output.splice(-1, 0, space + 'BPS');
+
+                    output = output.join('');
+                } else {
+                    output = output + space + 'BPS';
+                }
+
+                return output;
+            },
+            unformat: function(string) {
+                return +(numeral._.stringToNumber(string) * 0.0001).toFixed(15);
+            }
+        });
+})();
+
+
+(function() {
+        var decimal = {
+            base: 1000,
+            suffixes: ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+        },
+        binary = {
+            base: 1024,
+            suffixes: ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+        };
+
+    var allSuffixes =  decimal.suffixes.concat(binary.suffixes.filter(function (item) {
+            return decimal.suffixes.indexOf(item) < 0;
+        }));
+        var unformatRegex = allSuffixes.join('|');
+        // Allow support for BPS (http://www.investopedia.com/terms/b/basispoint.asp)
+        unformatRegex = '(' + unformatRegex.replace('B', 'B(?!PS)') + ')';
+
+    numeral.register('format', 'bytes', {
+        regexps: {
+            format: /([0\s]i?b)/,
+            unformat: new RegExp(unformatRegex)
+        },
+        format: function(value, format, roundingFunction) {
+            var output,
+                bytes = numeral._.includes(format, 'ib') ? binary : decimal,
+                suffix = numeral._.includes(format, ' b') || numeral._.includes(format, ' ib') ? ' ' : '',
+                power,
+                min,
+                max;
+
+            // check for space before
+            format = format.replace(/\s?i?b/, '');
+
+            for (power = 0; power <= bytes.suffixes.length; power++) {
+                min = Math.pow(bytes.base, power);
+                max = Math.pow(bytes.base, power + 1);
+
+                if (value === null || value === 0 || value >= min && value < max) {
+                    suffix += bytes.suffixes[power];
+
+                    if (min > 0) {
+                        value = value / min;
+                    }
+
+                    break;
+                }
+            }
+
+            output = numeral._.numberToFormat(value, format, roundingFunction);
+
+            return output + suffix;
+        },
+        unformat: function(string) {
+            var value = numeral._.stringToNumber(string),
+                power,
+                bytesMultiplier;
+
+            if (value) {
+                for (power = decimal.suffixes.length - 1; power >= 0; power--) {
+                    if (numeral._.includes(string, decimal.suffixes[power])) {
+                        bytesMultiplier = Math.pow(decimal.base, power);
+
+                        break;
+                    }
+
+                    if (numeral._.includes(string, binary.suffixes[power])) {
+                        bytesMultiplier = Math.pow(binary.base, power);
+
+                        break;
+                    }
+                }
+
+                value *= (bytesMultiplier || 1);
+            }
+
+            return value;
+        }
+    });
+})();
+
+
+(function() {
+        numeral.register('format', 'currency', {
+        regexps: {
+            format: /(\$)/
+        },
+        format: function(value, format, roundingFunction) {
+            var locale = numeral.locales[numeral.options.currentLocale],
+                symbols = {
+                    before: format.match(/^([\+|\-|\(|\s|\$]*)/)[0],
+                    after: format.match(/([\+|\-|\)|\s|\$]*)$/)[0]
+                },
+                output,
+                symbol,
+                i;
+
+            // strip format of spaces and $
+            format = format.replace(/\s?\$\s?/, '');
+
+            // format the number
+            output = numeral._.numberToFormat(value, format, roundingFunction);
+
+            // update the before and after based on value
+            if (value >= 0) {
+                symbols.before = symbols.before.replace(/[\-\(]/, '');
+                symbols.after = symbols.after.replace(/[\-\)]/, '');
+            } else if (value < 0 && (!numeral._.includes(symbols.before, '-') && !numeral._.includes(symbols.before, '('))) {
+                symbols.before = '-' + symbols.before;
+            }
+
+            // loop through each before symbol
+            for (i = 0; i < symbols.before.length; i++) {
+                symbol = symbols.before[i];
+
+                switch (symbol) {
+                    case '$':
+                        output = numeral._.insert(output, locale.currency.symbol, i);
+                        break;
+                    case ' ':
+                        output = numeral._.insert(output, ' ', i + locale.currency.symbol.length - 1);
+                        break;
+                }
+            }
+
+            // loop through each after symbol
+            for (i = symbols.after.length - 1; i >= 0; i--) {
+                symbol = symbols.after[i];
+
+                switch (symbol) {
+                    case '$':
+                        output = i === symbols.after.length - 1 ? output + locale.currency.symbol : numeral._.insert(output, locale.currency.symbol, -(symbols.after.length - (1 + i)));
+                        break;
+                    case ' ':
+                        output = i === symbols.after.length - 1 ? output + ' ' : numeral._.insert(output, ' ', -(symbols.after.length - (1 + i) + locale.currency.symbol.length - 1));
+                        break;
+                }
+            }
+
+
+            return output;
+        }
+    });
+})();
+
+
+(function() {
+        numeral.register('format', 'exponential', {
+        regexps: {
+            format: /(e\+|e-)/,
+            unformat: /(e\+|e-)/
+        },
+        format: function(value, format, roundingFunction) {
+            var output,
+                exponential = typeof value === 'number' && !numeral._.isNaN(value) ? value.toExponential() : '0e+0',
+                parts = exponential.split('e');
+
+            format = format.replace(/e[\+|\-]{1}0/, '');
+
+            output = numeral._.numberToFormat(Number(parts[0]), format, roundingFunction);
+
+            return output + 'e' + parts[1];
+        },
+        unformat: function(string) {
+            var parts = numeral._.includes(string, 'e+') ? string.split('e+') : string.split('e-'),
+                value = Number(parts[0]),
+                power = Number(parts[1]);
+
+            power = numeral._.includes(string, 'e-') ? power *= -1 : power;
+
+            function cback(accum, curr, currI, O) {
+                var corrFactor = numeral._.correctionFactor(accum, curr),
+                    num = (accum * corrFactor) * (curr * corrFactor) / (corrFactor * corrFactor);
+                return num;
+            }
+
+            return numeral._.reduce([value, Math.pow(10, power)], cback, 1);
+        }
+    });
+})();
+
+
+(function() {
+        numeral.register('format', 'ordinal', {
+        regexps: {
+            format: /(o)/
+        },
+        format: function(value, format, roundingFunction) {
+            var locale = numeral.locales[numeral.options.currentLocale],
+                output,
+                ordinal = numeral._.includes(format, ' o') ? ' ' : '';
+
+            // check for space before
+            format = format.replace(/\s?o/, '');
+
+            ordinal += locale.ordinal(value);
+
+            output = numeral._.numberToFormat(value, format, roundingFunction);
+
+            return output + ordinal;
+        }
+    });
+})();
+
+
+(function() {
+        numeral.register('format', 'percentage', {
+        regexps: {
+            format: /(%)/,
+            unformat: /(%)/
+        },
+        format: function(value, format, roundingFunction) {
+            var space = numeral._.includes(format, ' %') ? ' ' : '',
+                output;
+
+            if (numeral.options.scalePercentBy100) {
+                value = value * 100;
+            }
+
+            // check for space before %
+            format = format.replace(/\s?\%/, '');
+
+            output = numeral._.numberToFormat(value, format, roundingFunction);
+
+            if (numeral._.includes(output, ')')) {
+                output = output.split('');
+
+                output.splice(-1, 0, space + '%');
+
+                output = output.join('');
+            } else {
+                output = output + space + '%';
+            }
+
+            return output;
+        },
+        unformat: function(string) {
+            var number = numeral._.stringToNumber(string);
+            if (numeral.options.scalePercentBy100) {
+                return number * 0.01;
+            }
+            return number;
+        }
+    });
+})();
+
+
+(function() {
+        numeral.register('format', 'time', {
+        regexps: {
+            format: /(:)/,
+            unformat: /(:)/
+        },
+        format: function(value, format, roundingFunction) {
+            var hours = Math.floor(value / 60 / 60),
+                minutes = Math.floor((value - (hours * 60 * 60)) / 60),
+                seconds = Math.round(value - (hours * 60 * 60) - (minutes * 60));
+
+            return hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
+        },
+        unformat: function(string) {
+            var timeArray = string.split(':'),
+                seconds = 0;
+
+            // turn hours and minutes into seconds and add them all up
+            if (timeArray.length === 3) {
+                // hours
+                seconds = seconds + (Number(timeArray[0]) * 60 * 60);
+                // minutes
+                seconds = seconds + (Number(timeArray[1]) * 60);
+                // seconds
+                seconds = seconds + Number(timeArray[2]);
+            } else if (timeArray.length === 2) {
+                // minutes
+                seconds = seconds + (Number(timeArray[0]) * 60);
+                // seconds
+                seconds = seconds + Number(timeArray[1]);
+            }
+            return Number(seconds);
+        }
+    });
+})();
+
+return numeral;
+}));
+
+},{}],2:[function(require,module,exports){
+//import $ from "jquery";
+var FinancialResults = (function () {
+    function FinancialResults() {
+        this.CM = new CashManagement();
+        this.GM = new GlobalManagement();
+        this.FM = new FinancialManagement();
+        this.IM = new InvestmentManagement();
+        this.OM = new OperatingManagement();
+    }
+    return FinancialResults;
+}());
+var CashManagement = (function () {
+    function CashManagement() {
+        this.operatingCashFlow = new Item(new ItemElements);
+        this.ChangeOperatingCashFlow = new Item(new ItemElements);
+        this.investingCashFlow = new Item(new ItemElements);
+        this.ChangeInvestingCashFlow = new Item(new ItemElements);
+        this.financingCashFlow = new Item(new ItemElements);
+        this.ChangeFinancingCashFlow = new Item(new ItemElements);
+        this.CAPEX = new Item(new ItemElements);
+        this.changeInCAPEX = new Item(new ItemElements);
+        this.adquisitions = new Item(new ItemElements);
+        this.changeInAdquisitions = new Item(new ItemElements);
+        this.securitiesNet = new Item(new ItemElements);
+        this.changeInSecurities = new Item(new ItemElements);
+        this.investing = new Item(new ItemElements);
+        this.changeInInvesting = new Item(new ItemElements);
+        this.FCF = new Item(new ItemElements);
+        this.changeInFCF = new Item(new ItemElements);
+        this.dividends = new Item(new ItemElements);
+        this.changeInDividends = new Item(new ItemElements);
+        this.stockRepurchase = new Item(new ItemElements);
+        this.changeInStockRepurchase = new Item(new ItemElements);
+        this.debtRepayment = new Item(new ItemElements);
+        this.changeInDebtRepayment = new Item(new ItemElements);
+        this.FCFYield = null;
+        this.DividendYield = null;
+        this.RepurchasesYield = null;
+        this.SecuritiesSaleYield = null;
+        this.DebtBuyingYield = null;
+        this.CAPEXYield = null;
+        this.AdquisitionsYield = null;
+        this.InvestingYield = null;
+    }
+    return CashManagement;
+}());
+var FinancialManagement = (function () {
+    function FinancialManagement() {
+        this.netInterestEarningsAfterTaxes = new Item(new ItemElements);
+        this.longTermDebt = new Item(new ItemElements);
+        this.netDebt = new Item(new ItemElements);
+        this.equity = new Item(new ItemElements);
+        this.debtToCapitalRatio = new Item(new ItemElements);
+        this.netDebtToNetCapitalRatio = new Item(new ItemElements);
+        this.spread = new Item(new ItemElements);
+        this.netFinancialLeverage = new Item(new ItemElements);
+        this.financialLeverage = new Item(new ItemElements);
+        this.currentRatio = new Item(new ItemElements);
+        this.quickRatio = new Item(new ItemElements);
+        this.cashRatio = new Item(new ItemElements);
+        this.interestCoverage_operatingIncomeVSinterestexpense = new Item(new ItemElements);
+        this.interestCoverage_operatingCashFlowVSinterestexpense = new Item(new ItemElements);
+    }
+    return FinancialManagement;
+}());
+var GlobalManagement = (function () {
+    function GlobalManagement() {
+        this.operatingROA = new Item(new ItemElements);
+        this.salesOverAssets = new Item(new ItemElements);
+        this.financialLeverageGain = new Item(new ItemElements);
+        this.ROE = new Item(new ItemElements);
+        this.returnOnTangibleEquity = new Item(new ItemElements);
+        this.payOut = new Item(new ItemElements);
+        this.dividendYield = new Item(new ItemElements);
+        this.FCFOverEquity = new Item(new ItemElements);
+        this.FCFPerShare = new Item(new ItemElements);
+        this.earningsPerShare = new Item(new ItemElements);
+        this.operatingIncomePerShare = new Item(new ItemElements);
+        this.growthRate = new Item(new ItemElements);
+        this.salesGrowthRate = new Item(new ItemElements);
+        this.NOPATMargin = new Item(new ItemElements);
+        this.beginningNetOperatingWCOverSales = new Item(new ItemElements);
+        this.beginningNetOperatingLTAssetsOverSales = new Item(new ItemElements);
+        this.beginningNetDebt2CapitalRatio = new Item(new ItemElements);
+        this.afterTaxCostOfDebt = new Item(new ItemElements);
+    }
+    return GlobalManagement;
+}());
+var InvestmentManagement = (function () {
+    function InvestmentManagement() {
+        this.LTAssets = new Item(new ItemElements);
+        this.accountsPayable = new Item(new ItemElements);
+        this.accountsPayableSales = new Item(new ItemElements);
+        this.accountsReceivable = new Item(new ItemElements);
+        this.accountsReceivableGrowth = new Item(new ItemElements);
+        this.accountsReceivableOverSales = new Item(new ItemElements);
+        this.cashAndMarketableSecurities = new Item(new ItemElements);
+        this.cashOverNetAssets = new Item(new ItemElements);
+        this.cashOverReceivables = new Item(new ItemElements);
+        this.currentAssets = new Item(new ItemElements);
+        this.currentLiabilities = new Item(new ItemElements);
+        this.daysInventory = new Item(new ItemElements);
+        this.daysPayables = new Item(new ItemElements);
+        this.daysReceivables = new Item(new ItemElements);
+        this.goodwillAndIntangibles = new Item(new ItemElements);
+        this.inventory = new Item(new ItemElements);
+        this.inventoryGrowth = new Item(new ItemElements);
+        this.inventorySales = new Item(new ItemElements);
+        this.longTermDebt = new Item(new ItemElements);
+        this.netAssets = new Item(new ItemElements);
+        this.netLTAssets = new Item(new ItemElements);
+        this.netWorkingCapital = new Item(new ItemElements);
+        this.nonInterestBearingLTLiabilities = new Item(new ItemElements);
+        this.salesOverNetAssets = new Item(new ItemElements);
+        this.salesOverNetLTAssets = new Item(new ItemElements);
+        this.salesOverWorkingCapital = new Item(new ItemElements);
+        this.shortTermDebtAndCurrentPortionOfLongTermDebt = new Item(new ItemElements);
+    }
+    return InvestmentManagement;
+}());
+var OperatingManagement = (function () {
+    function OperatingManagement() {
+        this.revenue = new Item(new ItemElements);
+        this.salesGrowth = new Item(new ItemElements);
+        this.COGS = new Item(new ItemElements);
+        this.operatingIncome = new Item(new ItemElements);
+        this.grossMargin = new Item(new ItemElements);
+        this.SGA = new Item(new ItemElements);
+        this.SGAOverSales = new Item(new ItemElements);
+        this.NOPAT = new Item(new ItemElements);
+        this.NOPATGrowth = new Item(new ItemElements);
+        this.NOPATMargin = new Item(new ItemElements);
+        this.operatingMargin = new Item(new ItemElements);
+        this.provisionForIncomeTaxes = new Item(new ItemElements);
+        this.taxRate = new Item(new ItemElements);
+        this.interestExpense = new Item(new ItemElements);
+        this.netIncome = new Item(new ItemElements);
+        this.incomeOverRevenue = new Item(new ItemElements);
+        this.operatingCashFlow = new Item(new ItemElements);
+        this.operatingCashFlowOverIncome = new Item(new ItemElements);
+    }
+    return OperatingManagement;
+}());
+var Item = (function () {
+    function Item(item) {
+        this.item = item;
+    }
+    Item.prototype.length = function () {
+        return 5;
+    };
+    return Item;
+}());
+var ItemElements = (function () {
+    function ItemElements() {
+        this.item1 = 0;
+        this.item2 = 0;
+        this.item3 = 0;
+        this.item4 = 0;
+        this.item5 = 0;
+    }
+    return ItemElements;
+}());
+function lastYear(json) {
+    var ly = "";
+    for (var keyFR in json) {
+        if (json.hasOwnProperty(keyFR)) {
+            ly = keyFR;
+        }
+    }
+    return ly;
+}
+//import * as numeral from '../../node_modules/numeral/numeral';
+$(document).ready(function () {
+    $("#analizar").click(function () {
+        var company = document.getElementById("company").value;
+        console.log(company);
+        $.get("https://api.adarga.org/analysis?com=" + company, function (data) {
+            /***********************
+            
+                    Construct the HTML code needed
+        
+                */
+            /**
+        
+                MOBILE
+        
+            */
+            var VM = document.getElementById("VM");
+            VM.style.visibility = "visible";
+            var CMM = document.getElementById("CMM");
+            CMM.style.visibility = "visible";
+            var GMM = document.getElementById("GMM");
+            GMM.style.visibility = "visible";
+            var OMM = document.getElementById("OMM");
+            OMM.style.visibility = "visible";
+            var IMM = document.getElementById("IMM");
+            IMM.style.visibility = "visible";
+            var FMM = document.getElementById("FMM");
+            FMM.style.visibility = "visible";
+            /**
+        
+                DESKTOP
+        
+            */
+            var V = document.getElementById("V");
+            V.style.visibility = "visible";
+            var bodyV = document.getElementById("tbodyV");
+            var tableV = document.getElementById("tableV");
+            tableV.removeChild(bodyV);
+            var CM = document.getElementById("CM");
+            CM.style.visibility = "visible";
+            var bodyCM = document.getElementById("tbodyCM");
+            var tableCM = document.getElementById("tableCM");
+            tableCM.removeChild(bodyCM);
+            var GM = document.getElementById("GM");
+            GM.style.visibility = "visible";
+            var bodyGM = document.getElementById("tbodyGM");
+            var tableGM = document.getElementById("tableGM");
+            tableGM.removeChild(bodyGM);
+            var OM = document.getElementById("OM");
+            OM.style.visibility = "visible";
+            var bodyOM = document.getElementById("tbodyOM");
+            var tableOM = document.getElementById("tableOM");
+            tableOM.removeChild(bodyOM);
+            var IM = document.getElementById("IM");
+            IM.style.visibility = "visible";
+            var bodyIM = document.getElementById("tbodyIM");
+            var tableIM = document.getElementById("tableIM");
+            tableIM.removeChild(bodyIM);
+            var FM = document.getElementById("FM");
+            FM.style.visibility = "visible";
+            var bodyFM = document.getElementById("tbodyFM");
+            var tableFM = document.getElementById("tableFM");
+            tableFM.removeChild(bodyFM);
+            var fr = JSON.parse(data);
+            console.log(fr);
+            //require('typescript-require');
+            var numeral = require('../../node_modules/numeral/numeral');
+            /***********************
+       
+               Valuation
+   
+           */
+            var itemNameV = ["FCF Yield",
+                "Dividend Yield",
+                "Repurchases Yield",
+                "Securities Sale Yield",
+                "Debt Issuance Yield",
+                "CAPEX Yield",
+                "Adquisitions Yield",
+                "Investing Yield",
+            ];
+            var itemNumbersV = [fr.CM.FCFYield,
+                fr.CM.DividendYield,
+                fr.CM.RepurchasesYield,
+                fr.CM.SecuritiesSaleYield,
+                fr.CM.DebtBuyingYield,
+                fr.CM.CAPEXYield,
+                fr.CM.AdquisitionsYield,
+                fr.CM.InvestingYield,
+            ];
+            var bodyV = document.createElement("tbody");
+            bodyV.setAttribute("id", "tbodyV");
+            var dummy7 = document.getElementById("tableV");
+            dummy7.appendChild(bodyV);
+            var col_1V = document.getElementById("col_1V");
+            col_1V.innerHTML = "Yield";
+            for (var j = 0; j < itemNumbersV.length; j++) {
+                console.log(itemNameV[j]);
+                console.log(itemNumbersV[j]);
+                var th = document.createElement("th").appendChild(document.createTextNode(itemNameV[j]));
+                var td = document.createElement("td");
+                var tr = document.createElement("tr");
+                td.appendChild(th);
+                tr.appendChild(td);
+                var convertido = itemNumbersV[j].toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 1 });
+                var thi = document.createElement("th").appendChild(document.createTextNode(convertido));
+                var tdi = document.createElement("td");
+                tdi.id = itemNameV[j];
+                tdi.appendChild(thi);
+                tr.appendChild(tdi);
+                var dummy8 = document.getElementById("tbodyV");
+                dummy8.appendChild(tr);
+            }
+            /**
+   
+               MOBILE Valuation
+   
+           */
+            for (var j = 0; j < itemNumbersV.length; j++) {
+                // Creating table and the header
+                var id = document.createElement("id");
+                id.setAttribute("class", "table-responsive table-striped w-75 mx-auto");
+                var table = document.createElement("table");
+                table.setAttribute("class", "table table-hover table-striped w-75 mx-auto");
+                var thead = document.createElement("thead");
+                thead.setAttribute("class", "thead-dark");
+                var tr = document.createElement("tr");
+                tr.setAttribute("scope", "col");
+                var itenName = document.createElement("th").appendChild(document.createTextNode(""));
+                var tHeader = document.createElement("th");
+                tHeader.setAttribute("scope", "col");
+                tHeader.appendChild(itenName);
+                var noChar = document.createElement("th").appendChild(document.createTextNode("          "));
+                var tHeader2 = document.createElement("th");
+                tHeader2.setAttribute("scope", "col");
+                tHeader2.appendChild(noChar);
+                tr.appendChild(tHeader);
+                tr.appendChild(tHeader2);
+                thead.appendChild(tr);
+                table.appendChild(thead);
+                id.appendChild(table);
+                // Creating rows of the table per year
+                var tbody = document.createElement("tbody");
+                for (var j = 0; j < itemNumbersV.length; j++) {
+                    var th = document.createElement("th").appendChild(document.createTextNode(itemNameV[j]));
+                    var td = document.createElement("td");
+                    var tr = document.createElement("tr");
+                    td.appendChild(th);
+                    tr.appendChild(td);
+                    var convertido = itemNumbersV[j].toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 1 });
+                    var thi = document.createElement("th").appendChild(document.createTextNode(convertido));
+                    var tdi = document.createElement("td");
+                    tdi.id = itemNameV[j];
+                    tdi.appendChild(thi);
+                    tr.appendChild(tdi);
+                    tbody.appendChild(tr);
+                }
+                table.appendChild(tbody);
+                var dummy10 = document.getElementById("VM");
+                dummy10.appendChild(table);
+            }
+            /***********************
+       
+               Cash Management
+   
+           */
+            var itemNameCM = [
+                "FCF",
+                "Change In FCF",
+                "Operating Cash Flow",
+                "Change Operating Cash Flow",
+                "Investing Cash Flow",
+                "Change Investing Cash Flow",
+                "Financing Cash Flow",
+                "Change Financing Cash Flow",
+                "CAPEX",
+                "Change In CAPEX",
+                "Adquisitions",
+                "Change In Adquisitions",
+                "CAPEX + Adquisitions",
+                "Change In CAPEX + Adquisitions",
+                "Securities Sale Net",
+                "Change In Securities",
+                "Dividends",
+                "Change In Dividends",
+                "Stock Repurchase Net",
+                "Change In Stock Repurchase",
+                "Debt Issuance Net",
+                "Change In Debt Repayment",
+            ];
+            var itemNumbersCM = [
+                fr.CM.FCF,
+                fr.CM.changeInFCF,
+                fr.CM.operatingCashFlow,
+                fr.CM.ChangeOperatingCashFlow,
+                fr.CM.investingCashFlow,
+                fr.CM.ChangeInvestingCashFlow,
+                fr.CM.financingCashFlow,
+                fr.CM.ChangeFinancingCashFlow,
+                fr.CM.CAPEX,
+                fr.CM.changeInCAPEX,
+                fr.CM.adquisitions,
+                fr.CM.changeInAdquisitions,
+                fr.CM.investing,
+                fr.CM.changeInInvesting,
+                fr.CM.securitiesNet,
+                fr.CM.changeInSecurities,
+                fr.CM.dividends,
+                fr.CM.changeInDividends,
+                fr.CM.stockRepurchase,
+                fr.CM.changeInStockRepurchase,
+                fr.CM.debtRepayment,
+                fr.CM.changeInDebtRepayment,
+            ];
+            var bodyCMM = document.createElement("tbody");
+            bodyCM.setAttribute("id", "tbodyCM");
+            var dummy7 = document.getElementById("tableCM");
+            dummy7.appendChild(bodyCM);
+            var lastyear = lastYear(fr.CM.operatingCashFlow);
+            var col_1CM = document.getElementById("col_1CM");
+            col_1CM.innerHTML = String(lastyear);
+            var col_2CM = document.getElementById("col_2CM");
+            col_2CM.innerHTML = String(parseInt(lastyear) - 1);
+            var col_3CM = document.getElementById("col_3CM");
+            col_3CM.innerHTML = String(parseInt(lastyear) - 2);
+            var col_4CM = document.getElementById("col_4CM");
+            col_4CM.innerHTML = String(parseInt(lastyear) - 3);
+            var col_5CM = document.getElementById("col_5CM");
+            col_5CM.innerHTML = String(parseInt(lastyear) - 4);
+            for (var j = 0; j < itemNumbersCM.length; j++) {
+                var th = document.createElement("th").appendChild(document.createTextNode(itemNameCM[j]));
+                var td = document.createElement("td");
+                var tr = document.createElement("tr");
+                td.appendChild(th);
+                tr.appendChild(td);
+                for (var i = 0; i < 5; i++) {
+                    var convertido;
+                    var itemPaint4 = itemNumbersCM[j];
+                    itemPaint = itemPaint4[parseInt(lastyear) - i];
+                    if ((typeof itemPaint) == 'number') {
+                        convertido = itemPaint.toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 1 });
+                        if (itemNameCM[j] == "CAPEX") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameCM[j] == "Securities Sale Net") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameCM[j] == "Adquisitions") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameCM[j] == "CAPEX + Adquisitions") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameCM[j] == "Investing (CAPEX + Adquisitions)") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameCM[j] == "Dividends") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameCM[j] == "Stock Repurchase Net") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameCM[j] == "Debt Issuance Net") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                    }
+                    else {
+                        convertido = numeral(Number(itemPaint)).format('0,0');
+                    }
+                    if (itemPaint > 1000000) {
+                        convertido = "Inf";
+                    }
+                    var thi = document.createElement("th").appendChild(document.createTextNode(convertido));
+                    var tdi = document.createElement("td");
+                    tdi.id = itemNameCM[j] + i;
+                    tdi.appendChild(thi);
+                    tr.appendChild(tdi);
+                }
+                var dummy8 = document.getElementById("tbodyCM");
+                dummy8.appendChild(tr);
+            }
+            /**
+   
+               MOBILE Cash Management
+   
+           */
+            for (var j = 0; j < itemNumbersCM.length; j++) {
+                // Creating table and the header
+                var id = document.createElement("id");
+                id.setAttribute("class", "table-responsive table-striped w-75 mx-auto");
+                var table = document.createElement("table");
+                table.setAttribute("class", "table table-hover table-striped w-75 mx-auto");
+                var thead = document.createElement("thead");
+                thead.setAttribute("class", "thead-dark");
+                var tr = document.createElement("tr");
+                tr.setAttribute("scope", "col");
+                var itenName = document.createElement("th").appendChild(document.createTextNode(itemNameCM[j]));
+                var tHeader = document.createElement("th");
+                tHeader.setAttribute("scope", "col");
+                tHeader.appendChild(itenName);
+                var noChar = document.createElement("th").appendChild(document.createTextNode("          "));
+                var tHeader2 = document.createElement("th");
+                tHeader2.setAttribute("scope", "col");
+                tHeader2.appendChild(noChar);
+                tr.appendChild(tHeader);
+                tr.appendChild(tHeader2);
+                thead.appendChild(tr);
+                table.appendChild(thead);
+                id.appendChild(table);
+                // Creating rows of the table per year
+                var tbody = document.createElement("tbody");
+                for (var i = 0; i < 5; i++) {
+                    var convertido;
+                    var itemPaint2 = itemNumbersCM[j];
+                    var itemPaint = itemPaint2[parseInt(lastyear) - i];
+                    if ((typeof itemPaint) == 'number') {
+                        convertido = itemPaint.toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 1 });
+                        if (itemNameCM[j] == "CAPEX") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameCM[j] == "Adquisitions") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameCM[j] == "CAPEX + Adquisitions") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameCM[j] == "Securities Sale Net") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameCM[j] == "Investing (CAPEX + Adquisitions)") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameCM[j] == "Dividends") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameCM[j] == "Stock Repurchase Net") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameCM[j] == "Debt Issuance Net") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                    }
+                    else {
+                        convertido = numeral(Number(itemPaint)).format('0,0');
+                    }
+                    if (itemPaint > 1000000) {
+                        convertido = "Inf";
+                    }
+                    var yeari = parseInt(lastyear) - i;
+                    var yeariS = yeari.toString();
+                    var year = document.createElement("td").appendChild(document.createTextNode(yeariS));
+                    var tdYear = document.createElement("td");
+                    tdYear.appendChild(year);
+                    var value = document.createElement("td").appendChild(document.createTextNode(convertido));
+                    var tdValue = document.createElement("td");
+                    tdValue.appendChild(value);
+                    var tr = document.createElement("tr");
+                    tr.appendChild(tdYear);
+                    tr.appendChild(tdValue);
+                    tbody.appendChild(tr);
+                }
+                table.appendChild(tbody);
+                var dummy10 = document.getElementById("CMM");
+                dummy10.appendChild(table);
+            }
+            /***********************
+        
+                Global Management
+    
+            */
+            var itemNameGM = ["Operating ROA",
+                "Sales Over Assets",
+                "Financial Leverage Gain",
+                "ROE",
+                "Return On Tangible Equity",
+                "Pay Out",
+                "Dividend Yield",
+                "FCF Over Equity",
+                "FCF Per Share",
+                "Earnings Per Share",
+                "Operating Income Per Share",
+                "Growth Rate",
+                "Sales Growth Rate",
+                "NOPAT Margin",
+                "Beginning Net Operating WC Over Sales",
+                "Beginning Net Operating LT Assets Over Sales",
+                "Beginning Net Debt 2 Capital Ratio",
+                "After TaxCost Of Debt",
+            ];
+            var itemNumbersGM = [fr.GM.operatingROA,
+                fr.GM.salesOverAssets,
+                fr.GM.financialLeverageGain,
+                fr.GM.ROE,
+                fr.GM.returnOnTangibleEquity,
+                fr.GM.payOut,
+                fr.GM.dividendYield,
+                fr.GM.FCFOverEquity,
+                fr.GM.FCFPerShare,
+                fr.GM.earningsPerShare,
+                fr.GM.operatingIncomePerShare,
+                fr.GM.growthRate,
+                fr.GM.salesGrowthRate,
+                fr.GM.NOPATMargin,
+                fr.GM.beginningNetOperatingWCOverSales,
+                fr.GM.beginningNetOperatingLTAssetsOverSales,
+                fr.GM.beginningNetDebt2CapitalRatio,
+                fr.GM.afterTaxCostOfDebt,
+            ];
+            var bodyGM = document.createElement("tbody");
+            bodyGM.setAttribute("id", "tbodyGM");
+            var dummy9 = document.getElementById("tableGM");
+            dummy9.appendChild(bodyGM);
+            var lastyear = lastYear(fr.CM.operatingCashFlow);
+            var col_1GM = document.getElementById("col_1GM");
+            col_1GM.innerHTML = String(lastyear);
+            var col_2GM = document.getElementById("col_2GM");
+            col_2GM.innerHTML = String(parseInt(lastyear) - 1);
+            var col_3GM = document.getElementById("col_3GM");
+            col_3GM.innerHTML = String(parseInt(lastyear) - 2);
+            var col_4GM = document.getElementById("col_4GM");
+            col_4GM.innerHTML = String(parseInt(lastyear) - 3);
+            var col_5GM = document.getElementById("col_5GM");
+            col_5GM.innerHTML = String(parseInt(lastyear) - 4);
+            for (var j = 0; j < itemNumbersGM.length; j++) {
+                var th = document.createElement("th").appendChild(document.createTextNode(itemNameGM[j]));
+                var td = document.createElement("td");
+                var tr = document.createElement("tr");
+                td.appendChild(th);
+                tr.appendChild(td);
+                for (var i = 0; i < 5; i++) {
+                    var convertido;
+                    var itemPaint5 = itemNumbersGM[j];
+                    itemPaint = itemPaint5[parseInt(lastyear) - i];
+                    if ((typeof itemPaint) == 'number') {
+                        convertido = itemPaint.toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 1 });
+                        if (itemNameGM[j] == "FCF Per Share") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameGM[j] == "Earnings Per Share") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameGM[j] == "Operating Income Per Share") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                    }
+                    else {
+                        convertido = numeral(Number(itemPaint)).format('0,0');
+                    }
+                    if (itemPaint > 1000000) {
+                        convertido = "Inf";
+                    }
+                    var thi = document.createElement("th").appendChild(document.createTextNode(convertido));
+                    var tdi = document.createElement("td");
+                    tdi.id = itemNameGM[j] + i;
+                    tdi.appendChild(thi);
+                    tr.appendChild(tdi);
+                }
+                var dummy10 = document.getElementById("tbodyGM");
+                dummy10.appendChild(tr);
+            }
+            /**
+   
+               MOBILE Global Management
+   
+           */
+            for (var j = 0; j < itemNumbersGM.length; j++) {
+                // Creating table and the header
+                var id = document.createElement("id");
+                id.setAttribute("class", "table-responsive table-striped w-75 mx-auto");
+                var table = document.createElement("table");
+                table.setAttribute("class", "table table-hover table-striped w-75 mx-auto");
+                var thead = document.createElement("thead");
+                thead.setAttribute("class", "thead-dark");
+                var tr = document.createElement("tr");
+                tr.setAttribute("scope", "col");
+                var itenName = document.createElement("th").appendChild(document.createTextNode(itemNameGM[j]));
+                var tHeader = document.createElement("th");
+                tHeader.setAttribute("scope", "col");
+                tHeader.appendChild(itenName);
+                var noChar = document.createElement("th").appendChild(document.createTextNode("          "));
+                var tHeader2 = document.createElement("th");
+                tHeader2.setAttribute("scope", "col");
+                tHeader2.appendChild(noChar);
+                tr.appendChild(tHeader);
+                tr.appendChild(tHeader2);
+                thead.appendChild(tr);
+                table.appendChild(thead);
+                id.appendChild(table);
+                // Creating rows of the table per year
+                var tbody = document.createElement("tbody");
+                for (var i = 0; i < 5; i++) {
+                    var convertido;
+                    var itemPaint2 = itemNumbersGM[j];
+                    var itemPaint = itemPaint2[parseInt(lastyear) - i];
+                    if ((typeof itemPaint) == 'number') {
+                        convertido = itemPaint.toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 1 });
+                        if (itemNameGM[j] == "FCF Per Share") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameGM[j] == "Earnings Per Share") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameGM[j] == "Operating Income Per Share") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                    }
+                    else {
+                        convertido = numeral(Number(itemPaint)).format('0,0');
+                    }
+                    if (itemPaint > 1000000) {
+                        convertido = "Inf";
+                    }
+                    var yeari = parseInt(lastyear) - i;
+                    var yeariS = yeari.toString();
+                    var year = document.createElement("td").appendChild(document.createTextNode(yeariS));
+                    var tdYear = document.createElement("td");
+                    tdYear.appendChild(year);
+                    var value = document.createElement("td").appendChild(document.createTextNode(convertido));
+                    var tdValue = document.createElement("td");
+                    tdValue.appendChild(value);
+                    var tr = document.createElement("tr");
+                    tr.appendChild(tdYear);
+                    tr.appendChild(tdValue);
+                    tbody.appendChild(tr);
+                }
+                table.appendChild(tbody);
+                var dummy10 = document.getElementById("GMM");
+                dummy10.appendChild(table);
+            }
+            /***********************
+        
+                Operating Management
+    
+            */
+            var itemNameOM = ["Revenue",
+                "Sales Growth",
+                "COGs",
+                "Operating Income",
+                "Gross Margin",
+                "SGA",
+                "SGA Growth",
+                "NOPAT",
+                "NOPAT Growth",
+                "NOPAT Margin",
+                "Tax Rate",
+                "Net Income",
+                "Income Over Revenue",
+                "Operating Cash Flow Over Income"
+            ];
+            var itemNumbersOM = [fr.OM.revenue,
+                fr.OM.salesGrowth,
+                fr.OM.COGS,
+                fr.OM.operatingIncome,
+                fr.OM.grossMargin,
+                fr.OM.SGA,
+                fr.OM.SGAOverSales,
+                fr.OM.NOPAT,
+                fr.OM.NOPATGrowth,
+                fr.OM.NOPATMargin,
+                fr.OM.taxRate,
+                fr.OM.netIncome,
+                fr.OM.incomeOverRevenue,
+                fr.OM.operatingCashFlowOverIncome
+            ];
+            var body = document.createElement("tbody");
+            body.setAttribute("id", "tbodyOM");
+            var dummy = document.getElementById("tableOM");
+            dummy.appendChild(body);
+            var lastyear = lastYear(fr.OM.revenue);
+            var col_1OM = document.getElementById("col_1OM");
+            col_1OM.innerHTML = String(lastyear);
+            var col_2OM = document.getElementById("col_2OM");
+            col_2OM.innerHTML = String(parseInt(lastyear) - 1);
+            var col_3OM = document.getElementById("col_3OM");
+            col_3OM.innerHTML = String(parseInt(lastyear) - 2);
+            var col_4OM = document.getElementById("col_4OM");
+            col_4OM.innerHTML = String(parseInt(lastyear) - 3);
+            var col_5OM = document.getElementById("col_5OM");
+            col_5OM.innerHTML = String(parseInt(lastyear) - 4);
+            //  itemNumbersOM
+            for (var j = 0; j < itemNumbersOM.length; j++) {
+                var th = document.createElement("th").appendChild(document.createTextNode(itemNameOM[j]));
+                var td = document.createElement("td");
+                var tr = document.createElement("tr");
+                td.appendChild(th);
+                tr.appendChild(td);
+                for (var i = 0; i < 5; i++) {
+                    var convertido;
+                    var itemPaint2 = itemNumbersOM[j];
+                    console.log("itemPaint2");
+                    console.log(itemPaint2);
+                    var itemPaint = itemPaint2[parseInt(lastyear) - i];
+                    if ((typeof itemPaint) == 'number') {
+                        convertido = itemPaint.toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 1 });
+                        if (itemNameOM[j] == "Operating Income") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameOM[j] == "NOPAT") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                    }
+                    else {
+                        convertido = numeral(Number(itemPaint)).format('0,0');
+                    }
+                    if (itemPaint > 1000000) {
+                        convertido = "Inf";
+                    }
+                    var thi = document.createElement("th").appendChild(document.createTextNode(convertido));
+                    var tdi = document.createElement("td");
+                    tdi.id = itemNameOM[j] + i;
+                    tdi.appendChild(thi);
+                    tr.appendChild(tdi);
+                }
+                var dummy3 = document.getElementById("tbodyOM");
+                dummy3.appendChild(tr);
+            }
+            /**
+    
+                MOBILE Operating Management
+    
+            */
+            for (var j = 0; j < itemNumbersOM.length; j++) {
+                // Creating table and the header
+                var id = document.createElement("id");
+                id.setAttribute("class", "table-responsive table-striped w-75 mx-auto");
+                var table = document.createElement("table");
+                table.setAttribute("class", "table table-hover table-striped w-75 mx-auto");
+                var thead = document.createElement("thead");
+                thead.setAttribute("class", "thead-dark");
+                var tr = document.createElement("tr");
+                tr.setAttribute("scope", "col");
+                var itenName = document.createElement("th").appendChild(document.createTextNode(itemNameOM[j]));
+                var tHeader = document.createElement("th");
+                tHeader.setAttribute("scope", "col");
+                tHeader.appendChild(itenName);
+                var noChar = document.createElement("th").appendChild(document.createTextNode("          "));
+                var tHeader2 = document.createElement("th");
+                tHeader2.setAttribute("scope", "col");
+                tHeader2.appendChild(noChar);
+                tr.appendChild(tHeader);
+                tr.appendChild(tHeader2);
+                thead.appendChild(tr);
+                table.appendChild(thead);
+                id.appendChild(table);
+                // Creating rows of the table per year
+                var tbody = document.createElement("tbody");
+                for (var i = 0; i < 5; i++) {
+                    var convertido;
+                    var itemPaint2 = itemNumbersOM[j];
+                    var itemPaint = itemPaint2[parseInt(lastyear) - i];
+                    if ((typeof itemPaint) == 'number') {
+                        convertido = itemPaint.toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 1 });
+                        if (itemNameOM[j] == "Operating Income") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameOM[j] == "NOPAT") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                    }
+                    else {
+                        convertido = numeral(Number(itemPaint)).format('0,0');
+                    }
+                    if (itemPaint > 1000000) {
+                        convertido = "Inf";
+                    }
+                    var yeari = parseInt(lastyear) - i;
+                    var yeariS = yeari.toString();
+                    var year = document.createElement("td").appendChild(document.createTextNode(yeariS));
+                    var tdYear = document.createElement("td");
+                    tdYear.appendChild(year);
+                    var value = document.createElement("td").appendChild(document.createTextNode(convertido));
+                    var tdValue = document.createElement("td");
+                    tdValue.appendChild(value);
+                    var tr = document.createElement("tr");
+                    tr.appendChild(tdYear);
+                    tr.appendChild(tdValue);
+                    tbody.appendChild(tr);
+                }
+                table.appendChild(tbody);
+                var dummy10 = document.getElementById("OMM");
+                dummy10.appendChild(table);
+            }
+            /***********************
+        
+                Investment Management
+    
+            */
+            var itemNameIM = ["Accounts Receivable Growth",
+                "Inventory Growth",
+                "Accounts Receivable Over Sales",
+                "Inventory Over Sales",
+                "Days Receivables",
+                "Days Inventory",
+                "Days Payables",
+                "Sales Over Working Capital",
+                "Sales Over Net LTAssets",
+                "Sales Over Net Assets",
+                "Cash Over NetAssets",
+                "Cash Over Receivables",
+            ];
+            var itemNumbersIM = [fr.IM.accountsReceivableGrowth,
+                fr.IM.inventoryGrowth,
+                fr.IM.accountsReceivableOverSales,
+                fr.IM.inventorySales,
+                fr.IM.daysReceivables,
+                fr.IM.daysInventory,
+                fr.IM.daysPayables,
+                fr.IM.salesOverWorkingCapital,
+                fr.IM.salesOverNetLTAssets,
+                fr.IM.salesOverNetAssets,
+                fr.IM.cashOverNetAssets,
+                fr.IM.cashOverReceivables,
+            ];
+            var bodyIM = document.createElement("tbody");
+            bodyIM.setAttribute("id", "tbodyIM");
+            var dummy2 = document.getElementById("tableIM");
+            dummy2.appendChild(bodyIM);
+            var lastyear = lastYear(fr.IM.cashAndMarketableSecurities);
+            var col_1IM = document.getElementById("col_1IM");
+            col_1IM.innerHTML = String(lastyear);
+            var col_2IM = document.getElementById("col_2IM");
+            col_2IM.innerHTML = String(parseInt(lastyear) - 1);
+            var col_3IM = document.getElementById("col_3IM");
+            col_3IM.innerHTML = String(parseInt(lastyear) - 2);
+            var col_4IM = document.getElementById("col_4IM");
+            col_4IM.innerHTML = String(parseInt(lastyear) - 3);
+            var col_5IM = document.getElementById("col_5IM");
+            col_5IM.innerHTML = String(parseInt(lastyear) - 4);
+            for (var j = 0; j < itemNumbersIM.length; j++) {
+                var th = document.createElement("th").appendChild(document.createTextNode(itemNameIM[j]));
+                var td = document.createElement("td");
+                var tr = document.createElement("tr");
+                td.appendChild(th);
+                tr.appendChild(td);
+                for (var i = 0; i < 5; i++) {
+                    var convertido;
+                    var itemPaint2 = itemNumbersIM[j];
+                    itemPaint = itemPaint2[parseInt(lastyear) - i];
+                    if ((typeof itemPaint) == 'number') {
+                        convertido = itemPaint.toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 1 });
+                        if (itemNameIM[j] == "Days Receivables") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameIM[j] == "Days Inventory") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameIM[j] == "Days Payables") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameIM[j] == "Sales Over Working Capital") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                        if (itemNameIM[j] == "Sales Over Net LTAssets") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                        if (itemNameIM[j] == "Sales Over Net Assets") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                    }
+                    else {
+                        convertido = numeral(Number(itemPaint)).format('0,0');
+                    }
+                    if (itemPaint > 1000000) {
+                        convertido = "Inf";
+                    }
+                    var thi = document.createElement("th").appendChild(document.createTextNode(convertido));
+                    var tdi = document.createElement("td");
+                    tdi.id = itemNameIM[j] + i;
+                    tdi.appendChild(thi);
+                    tr.appendChild(tdi);
+                }
+                var dummy4 = document.getElementById("tbodyIM");
+                dummy4.appendChild(tr);
+            }
+            /**
+    
+                MOBILE Investment Management
+    
+            */
+            for (var j = 0; j < itemNumbersIM.length; j++) {
+                // Creating table and the header
+                var id = document.createElement("id");
+                id.setAttribute("class", "table-responsive table-striped w-75 mx-auto");
+                var table = document.createElement("table");
+                table.setAttribute("class", "table table-hover table-striped w-75 mx-auto");
+                var thead = document.createElement("thead");
+                thead.setAttribute("class", "thead-dark");
+                var tr = document.createElement("tr");
+                tr.setAttribute("scope", "col");
+                var itenName = document.createElement("th").appendChild(document.createTextNode(itemNameIM[j]));
+                var tHeader = document.createElement("th");
+                tHeader.setAttribute("scope", "col");
+                tHeader.appendChild(itenName);
+                var noChar = document.createElement("th").appendChild(document.createTextNode("          "));
+                var tHeader2 = document.createElement("th");
+                tHeader2.setAttribute("scope", "col");
+                tHeader2.appendChild(noChar);
+                tr.appendChild(tHeader);
+                tr.appendChild(tHeader2);
+                thead.appendChild(tr);
+                table.appendChild(thead);
+                id.appendChild(table);
+                // Creating rows of the table per year
+                var tbody = document.createElement("tbody");
+                for (var i = 0; i < 5; i++) {
+                    var convertido;
+                    var itemPaint2 = itemNumbersIM[j];
+                    var itemPaint = itemPaint2[parseInt(lastyear) - i];
+                    if ((typeof itemPaint) == 'number') {
+                        convertido = itemPaint.toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 1 });
+                        if (itemNameIM[j] == "Days Receivables") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameIM[j] == "Days Inventory") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameIM[j] == "Days Payables") {
+                            convertido = numeral(itemPaint).format('0,0');
+                        }
+                        if (itemNameIM[j] == "Sales Over Working Capital") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                        if (itemNameIM[j] == "Sales Over Net LTAssets") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                        if (itemNameIM[j] == "Sales Over Net Assets") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                    }
+                    else {
+                        convertido = numeral(Number(itemPaint)).format('0,0');
+                    }
+                    if (itemPaint > 1000000) {
+                        convertido = "Inf";
+                    }
+                    var yeari = parseInt(lastyear) - i;
+                    var yeariS = yeari.toString();
+                    var year = document.createElement("td").appendChild(document.createTextNode(yeariS));
+                    var tdYear = document.createElement("td");
+                    tdYear.appendChild(year);
+                    var value = document.createElement("td").appendChild(document.createTextNode(convertido));
+                    var tdValue = document.createElement("td");
+                    tdValue.appendChild(value);
+                    var tr = document.createElement("tr");
+                    tr.appendChild(tdYear);
+                    tr.appendChild(tdValue);
+                    tbody.appendChild(tr);
+                }
+                table.appendChild(tbody);
+                var dummy10 = document.getElementById("IMM");
+                dummy10.appendChild(table);
+            }
+            /***********************
+        
+                Financial Management
+    
+            */
+            var itemNameFM = ["Debt To Capital Ratio",
+                "Spread",
+                "Net Financial Leverage (NFL)",
+                "Financial Leverage (Spread X NFL)",
+                "Current Ratio (CA / CL)",
+                "Quick Ratio (AR + C / CL)",
+                "Cash Ratio (C / CL)",
+                "Operating Income vs Interest Expense",
+                "Operating Cash Flow vs Interest expense",
+            ];
+            var itemNumbersFM = [fr.FM.debtToCapitalRatio,
+                fr.FM.spread,
+                fr.FM.netFinancialLeverage,
+                fr.FM.financialLeverage,
+                fr.FM.currentRatio,
+                fr.FM.quickRatio,
+                fr.FM.cashRatio,
+                fr.FM.interestCoverage_operatingIncomeVSinterestexpense,
+                fr.FM.interestCoverage_operatingCashFlowVSinterestexpense,
+            ];
+            var bodyFM = document.createElement("tbody");
+            bodyFM.setAttribute("id", "tbodyFM");
+            var dummy5 = document.getElementById("tableFM");
+            dummy5.appendChild(bodyFM);
+            var lastyear = lastYear(fr.FM.equity);
+            var col_1FM = document.getElementById("col_1FM");
+            col_1FM.innerHTML = String(lastyear);
+            var col_2FM = document.getElementById("col_2FM");
+            col_2FM.innerHTML = String(parseInt(lastyear) - 1);
+            var col_3FM = document.getElementById("col_3FM");
+            col_3FM.innerHTML = String(parseInt(lastyear) - 2);
+            var col_4FM = document.getElementById("col_4FM");
+            col_4FM.innerHTML = String(parseInt(lastyear) - 3);
+            var col_5FM = document.getElementById("col_5FM");
+            col_5FM.innerHTML = String(parseInt(lastyear) - 4);
+            for (var j = 0; j < itemNumbersFM.length; j++) {
+                var th = document.createElement("th").appendChild(document.createTextNode(itemNameFM[j]));
+                var td = document.createElement("td");
+                var tr = document.createElement("tr");
+                td.appendChild(th);
+                tr.appendChild(td);
+                for (var i = 0; i < 5; i++) {
+                    var convertido;
+                    var itemPaint2 = itemNumbersFM[j];
+                    itemPaint = itemPaint2[parseInt(lastyear) - i];
+                    if ((typeof itemPaint) == 'number') {
+                        convertido = itemPaint.toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 1 });
+                        if (itemNameFM[j] == "Current Ratio (CA / CL)") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                        if (itemNameFM[j] == "Quick Ratio (AR + C / CL)") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                        if (itemNameFM[j] == "Cash Ratio (C / CL)") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                        if (itemNameFM[j] == "Operating Income vs Interest Expense") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                        if (itemNameFM[j] == "Operating Cash Flow vs Interest expense") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                    }
+                    else {
+                        convertido = numeral(Number(itemPaint)).format('0,0');
+                    }
+                    if (itemPaint > 1000000) {
+                        convertido = "Inf";
+                    }
+                    var thi = document.createElement("th").appendChild(document.createTextNode(convertido));
+                    var tdi = document.createElement("td");
+                    tdi.id = itemNameFM[j] + i;
+                    tdi.appendChild(thi);
+                    tr.appendChild(tdi);
+                }
+                var dummy6 = document.getElementById("tbodyFM");
+                dummy6.appendChild(tr);
+            }
+            /**
+   
+               MOBILE Financial Management
+   
+           */
+            for (var j = 0; j < itemNumbersFM.length; j++) {
+                // Creating table and the header
+                var id = document.createElement("id");
+                id.setAttribute("class", "table-responsive table-striped w-75 mx-auto");
+                var table = document.createElement("table");
+                table.setAttribute("class", "table table-hover table-striped w-75 mx-auto");
+                var thead = document.createElement("thead");
+                thead.setAttribute("class", "thead-dark");
+                var tr = document.createElement("tr");
+                tr.setAttribute("scope", "col");
+                var itenName = document.createElement("th").appendChild(document.createTextNode(itemNameFM[j]));
+                var tHeader = document.createElement("th");
+                tHeader.setAttribute("scope", "col");
+                tHeader.appendChild(itenName);
+                var noChar = document.createElement("th").appendChild(document.createTextNode("          "));
+                var tHeader2 = document.createElement("th");
+                tHeader2.setAttribute("scope", "col");
+                tHeader2.appendChild(noChar);
+                tr.appendChild(tHeader);
+                tr.appendChild(tHeader2);
+                thead.appendChild(tr);
+                table.appendChild(thead);
+                id.appendChild(table);
+                // Creating rows of the table per year
+                var tbody = document.createElement("tbody");
+                for (var i = 0; i < 5; i++) {
+                    var convertido;
+                    var itemPaint2 = itemNumbersFM[j];
+                    var itemPaint = itemPaint2[parseInt(lastyear) - i];
+                    if ((typeof itemPaint) == 'number') {
+                        convertido = itemPaint.toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 1 });
+                        if (itemNameFM[j] == "Current Ratio") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                        if (itemNameFM[j] == "Quick Ratio") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                        if (itemNameFM[j] == "Cash Ratio") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                        if (itemNameFM[j] == "Operating Income vs Interest Expense") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                        if (itemNameFM[j] == "Operating Cash Flow vs Interest expense") {
+                            convertido = numeral(itemPaint).format('0,0.00');
+                        }
+                    }
+                    else {
+                        convertido = numeral(Number(itemPaint)).format('0,0');
+                    }
+                    if (itemPaint > 1000000) {
+                        convertido = "Inf";
+                    }
+                    var yeari = parseInt(lastyear) - i;
+                    var yeariS = yeari.toString();
+                    var year = document.createElement("td").appendChild(document.createTextNode(yeariS));
+                    var tdYear = document.createElement("td");
+                    tdYear.appendChild(year);
+                    var value = document.createElement("td").appendChild(document.createTextNode(convertido));
+                    var tdValue = document.createElement("td");
+                    tdValue.appendChild(value);
+                    var tr = document.createElement("tr");
+                    tr.appendChild(tdYear);
+                    tr.appendChild(tdValue);
+                    tbody.appendChild(tr);
+                }
+                table.appendChild(tbody);
+                var dummy10 = document.getElementById("FMM");
+                dummy10.appendChild(table);
+            }
+        });
+    });
+});
+function paint() {
+    console.log("XXXXXXX");
+}
+
+},{"../../node_modules/numeral/numeral":1}]},{},[2])
+
 //# sourceMappingURL=app.js.map

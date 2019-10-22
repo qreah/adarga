@@ -53,7 +53,7 @@ public class OperatingManagement {
 		netIncome = is.netIncome();
 		incomeOverRevenue = netIncome.divide(revenue);
 		operatingCashFlow = cs.get("Net cash provided by operating activities");
-		operatingCashFlowOverIncome = operatingCashFlow.divide(revenue);
+		operatingCashFlowOverIncome = operatingCashFlow.divide(netIncome);
 		provisionForIncomeTaxes = is.provisionForIncomeTaxes();
 		taxRate = provisionForIncomeTaxes.divide(is.netIncome()); 
 		

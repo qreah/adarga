@@ -73,12 +73,12 @@ public class CompanyInformation {
     }
     
     public Double getMktCap() {
-    	Double MktCap = Double.parseDouble(companyInformation.get("MktCap"));
+    	Double MktCap = Double.parseDouble(companyInformation.get("MktCap")) / 1000000;
     	return MktCap;
     }
     
     public Double numberOfShares() {
-    	Double marketCapitalization = Double.parseDouble(companyInformation.get("MktCap"));
+    	Double marketCapitalization = Double.parseDouble(companyInformation.get("MktCap")) /1000000;
     	Double stockPrice = Double.parseDouble(companyInformation.get("Price"));
     	Double numberOfShares = marketCapitalization / stockPrice;
     	return numberOfShares;

@@ -86,6 +86,22 @@
 <artifactId>appengine-api-1.0-sdk</artifactId>
 <version>1.9.68</version>
 </dependency>
+
+ <!-- Adwords -->
+
+	<dependency>
+      <groupId>com.google.api-ads</groupId>
+      <artifactId>ads-lib</artifactId>
+      <version>RELEASE</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.google.api-ads</groupId>
+      <artifactId>adwords-axis</artifactId>
+      <version>RELEASE</version>
+    </dependency>
+    
+    
 <!-- Test Dependencies -->
     <dependency>
       <groupId>junit</groupId>
