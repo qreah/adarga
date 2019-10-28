@@ -373,7 +373,7 @@ public class QualityTest {
 		//String SQLDelete = "DELETE FROM apiadbossDB.conceptsTable;";
 		//db.Execute(SQLDelete);
 		String SQLInsert = "INSERT INTO apiadbossDB.conceptsTable (concept, company, report) VALUES ('" + key + "', '" + company + "', '" + report + "');";
-		log.info(SQLInsert);
+		//log.info(SQLInsert);
 		db.Execute(SQLInsert);
 		db.close();
 		

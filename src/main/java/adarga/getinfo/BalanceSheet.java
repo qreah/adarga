@@ -43,7 +43,8 @@ public class BalanceSheet {
     	balanceSheetItems = new HashMap<String, Item>();
     }
 	
-	public void execute(String companySymbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
+	public boolean execute(String companySymbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
+		boolean result = true;
 		name = companySymbol;
 		String urlRaw = "https://financialmodelingprep.com/api/financials/balance-sheet-statement/";
 		HttpRequestFactory requestFactory 
@@ -54,10 +55,18 @@ public class BalanceSheet {
 		log.info(urlRaw + companySymbol);
 		FinancialModelingPrepUrl url = new FinancialModelingPrepUrl(urlRaw + companySymbol);
 		HttpRequest request = requestFactory.buildGetRequest(url);
+		
 		HttpResponse res = (HttpResponse)request.execute();
 		String resString = res.parseAsString().replace("<pre>", "");
 		
+			
 		JSONObject json = new JSONObject(resString).getJSONObject(companySymbol);
+		
+		if (json.toString().equals("{}")) {
+			
+			return false;
+		}
+		
 		Iterator<String> iter = json.keys();
 		
 		while (iter.hasNext()) {
@@ -68,6 +77,7 @@ public class BalanceSheet {
 			item.setValues(json.getJSONObject(key));
 			balanceSheetItems.put(key, item);
 		}
+		return result;
 					
 	}
 	
@@ -276,28 +286,23 @@ public class BalanceSheet {
 	
 	public Item totalCash() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
+		Item init = balanceSheetItems.get("Total assets");
+		int lastYear = init.lastYear();
+		int numYears = init.size();
 		Item k = new Item();
-		k = balanceSheetItems.get("Total cash");
+		k.setZero(numYears, lastYear);
+		Item kk = k;
 		
-		if (k != null) {
+		Item k1 = balanceSheetItems.get("Total cash");
+		if (k1 != null) {k = k.sum(k1);}
+		Item k2 = balanceSheetItems.get("Cash and cash equivalents");  
+		if (k2 != null) {k = k.sum(k2);}
+		Item k3 = balanceSheetItems.get("Restricted cash and cash equivalents");
+		if (k3 != null) {k = k.sum(k3);}                            
+		Item k4 = balanceSheetItems.get("Restricted cash and cash equivalents");	
+		if (k4 != null) {k = k.sum(k4);} 	
 			
-		} else {
-			Double i1 = 0.0;
-			Double i2 = 0.0;
-			Double i3 = 0.0;
-			Item k1 = balanceSheetItems.get("Cash and cash equivalents");
-			if (k1 != null) { i1 = 1.0;}
-			Item k2 = balanceSheetItems.get("Restricted cash and cash equivalents");
-			if (k2 != null) { i2 = 1.0;}
-			Item k3 = balanceSheetItems.get("Restricted cash and cash equivalents");
-			if (k3 != null) { i3 = 1.0;}
-			k = k1.multiplyNumber(i1);
-			k = k.sum(k2.multiplyNumber(i2));
-			k = k.sum(k3.multiplyNumber(i3));
-			
-			if (k != null) {
-					
-		} else {
+		if (kk.equals(k)) {
 			QualityTest qT = new QualityTest();
 			List<String> concepts = new ArrayList<String>();
 			concepts.add("Total cash");
@@ -305,7 +310,7 @@ public class BalanceSheet {
 			qT.uploadRareCases(name, concepts, "BalanceSheet");
 			k = utils.controlNull(balanceSheetItems.get("Total cash"), getYear());
 		}
-		}
+		
 		return k;
 	}
 	

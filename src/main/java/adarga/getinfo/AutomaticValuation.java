@@ -2,6 +2,7 @@ package adarga.getinfo;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -25,10 +26,12 @@ public class AutomaticValuation {
 	private static final Logger log = Logger.getLogger(AutomaticValuation.class.getName());
 	static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     static JsonFactory JSON_FACTORY = new JacksonFactory();
+    int rows = 7936;
     
     public void getCompanies() throws IOException, SQLException, ClassNotFoundException, ServletException {	
 		
-		String urlRaw = "https://api.adarga.org/sp500.json";
+		//String urlRaw = "https://api.adarga.org/tickers.json";
+		String urlRaw = "https://financialmodelingprep.com/api/v3/company/stock/list";
 		HttpRequestFactory requestFactory 
 	    = HTTP_TRANSPORT.createRequestFactory(
 	      (HttpRequest request) -> {
@@ -38,12 +41,13 @@ public class AutomaticValuation {
 		HttpRequest request = requestFactory.buildGetRequest(url);
 		HttpResponse res = (HttpResponse)request.execute();
 		String resString = res.parseAsString();
-		JSONArray array = new JSONArray(resString);
+		JSONObject jsonObject = new JSONObject(resString);
+		JSONArray array = jsonObject.getJSONArray("symbolsList");
 		DB db = new DB();
 		int round = db.getRound();
-		int batch = 50;
-		if ((round + batch) > 500) {
-			batch = 500 - round;
+		int batch = 80;
+		if ((round + batch) > rows) {
+			batch = rows - round;
 			db.setRound(0);
 		} else {
 			db.setRound(round + batch);
@@ -51,9 +55,12 @@ public class AutomaticValuation {
 		
 		
 		log.info("round: " + round);
+		int temp = round + batch +1;
+		log.info("final: " + temp);
 		
 		for (int i = round; i < round + batch +1; i++) {
-			if (i < 500)  {
+			log.info("i: " + i);
+			if (i < rows)  {
 				db.setRound(i + 1);
 			} else {
 				db.setRound(0);
@@ -61,9 +68,9 @@ public class AutomaticValuation {
 			
 			DB db2 = new DB();
 			JSONObject json = new JSONObject(array.get(i).toString());
-			String Name = json.getString("Name").replaceAll("'", "");
-			String Sector = json.getString("Sector");		
-			String Symbol = json.getString("Symbol");
+			String Name = json.getString("name").replaceAll("'", "");
+			//String Sector = json.getString("Sector");		
+			String Symbol = json.getString("symbol");
 			
 			BalanceSheet bs = new BalanceSheet();
 			IncomeStatement is = new IncomeStatement();
@@ -71,61 +78,63 @@ public class AutomaticValuation {
 			CompanyInformation ci = new CompanyInformation();
 			
 			Company com = new Company();
-			
+			//try {
 			List<Object> reports = com.getFinancialStatements(Symbol);
+		
+			if (reports.get(0).equals("out")) {
+			} else {
+				
 			
-			switch(Symbol) {
-			  case "BEN":  
-			    break;
-			  case "AIZ":
-			    break;
-			  case "DTE":
-				break;
-			  case "EW":
+				switch(Symbol) {
+				  case "BEN":  
+				    break;
+				  case "AIZ":
+				    break;
+				  case "DTE":
 					break;
-			  case "GRMN":
-					break;
-			  case "IPGP":
-					break;
-			  case "MCD":
-					break;
-			  case "SCG":
-					break;
-			  case "ALXN":
-					break;
-			  case "CVS":
-					break;
-			  case "HBI":
-					break;
-			  case "IRM":
-					break;
-			  case "STX":
-					break;
-			  case "AGN":
-					break;
-			  case "BDX":
-					break;
-			  case "EVHC":
-					break;
-			  case "HIG":
-					break;
-			  case "EXC":
-					break;
-			  case "AMP":
-					break;
-			  case "IR":
-					break;
-			  case "MAS":
-					break;
-			  case "DISCA":
-					break;
-			  case "FAST":
-					break;
-			  case "FL":
-					break;
-			  default:
-			    
-			
+				  case "EW":
+						break;
+				  case "GRMN":
+						break;
+				  case "IPGP":
+						break;
+				  case "MCD":
+						break;
+				  case "SCG":
+						break;
+				  case "ALXN":
+						break;
+				  case "CVS":
+						break;
+				  case "HBI":
+						break;
+				  case "IRM":
+						break;
+				  case "STX":
+						break;
+				  case "AGN":
+						break;
+				  case "BDX":
+						break;
+				  case "EVHC":
+						break;
+				  case "HIG":
+						break;
+				  case "EXC":
+						break;
+				  case "AMP":
+						break;
+				  case "IR":
+						break;
+				  case "MAS":
+						break;
+				  case "DISCA":
+						break;
+				  case "FAST":
+						break;
+				  case "FL":
+						break;
+				  default:
 				
 					JSONObject result = new JSONObject();
 					bs = (BalanceSheet) reports.get(0);
@@ -150,14 +159,19 @@ public class AutomaticValuation {
 						
 						SQL = "INSERT INTO apiadbossDB.CompanyValuation "
 								+ "	(Symbol, Sector, Company, analysis, FCFYield, dateAnalized)"
-								+ " VALUES ('" + Symbol + "', '" + Sector + "', '" + Name + "', '" + result.toString() + "' , '" +  FCFYield + "', NOW())";
+								+ " VALUES ('" + Symbol + "', '', '" + Name + "', '" + result.toString() + "' , '" +  FCFYield + "', NOW())";
 							 
 					}
 					
 					db2.Execute(SQL);	
 					
+				}
+					
 			}
-		}
+		//} catch (Exception e) {
+		//      log.info("No data: " + Symbol);
+		//}
+	}
 		
 	}
 }

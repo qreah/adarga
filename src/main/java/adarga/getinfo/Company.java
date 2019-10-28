@@ -34,12 +34,15 @@ public class Company {
 			    break;
 			  
 			  default:
-				bs.execute(companyName);
-				is.execute(companyName);
-				cs.execute(companyName);
+				  
+				boolean bsb = bs.execute(companyName);
+				boolean isb = is.execute(companyName);
+				boolean csb = cs.execute(companyName);
 				ci.execute(companyName);
-					
-					
+				
+				if (!bsb) {result.add("out"); return result;}
+				if (!isb) {result.add("out"); return result;} 
+				if (!csb) {result.add("out"); return result;} 
 					
 				result.add(bs);
 				result.add(is);

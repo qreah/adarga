@@ -150,6 +150,12 @@ public class DB {
 		if (conn.isClosed()) {
 			ConnectDB();
 		}
+		//	log.info(SQL);
+		boolean equity = SQL.contains("tockholders");
+		if (equity) {
+			SQL = SQL.replace("tockholders'", "tockholders");
+		}
+			
 		
 		
 		boolean executed = false;
@@ -157,6 +163,7 @@ public class DB {
 		try {
 			
 			secuencia = conn.createStatement();
+			//log.info(SQL);
 			secuencia.executeUpdate(SQL);
 			executed = true;
 		} catch (SQLException e) {

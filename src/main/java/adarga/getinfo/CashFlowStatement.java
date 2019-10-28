@@ -42,7 +42,8 @@ public class CashFlowStatement {
     }
     
 	
-	public void execute(String companySymbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
+	public boolean execute(String companySymbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
+		boolean result = true;
 		name = companySymbol;
 		String urlRaw = "https://financialmodelingprep.com/api/financials/cash-flow-statement/";
 		HttpRequestFactory requestFactory 
@@ -56,6 +57,13 @@ public class CashFlowStatement {
 		String resString = res.parseAsString().replace("<pre>", "");
 		
 		JSONObject json = new JSONObject(resString).getJSONObject(companySymbol);
+		
+		if (json.toString().equals("{}")) {
+			
+			return false;
+		}
+		
+		
 		Iterator<String> iter = json.keys();
 		
 		while (iter.hasNext()) {
@@ -66,6 +74,8 @@ public class CashFlowStatement {
 			item.setValues(json.getJSONObject(key));
 			cashFlowStatement.put(key, item);
 		}
+		
+		return result;
 					
 	}
 	
@@ -232,22 +242,32 @@ public class CashFlowStatement {
 	
 	public Item DebtIssued() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
-		Item k = cashFlowStatement.get("Debt issued");
-		if (k != null) {	
-		} else {
-			Item shortTermDebt = utils.controlNull(cashFlowStatement.get("Short-term borrowing"), getYear());
-			k = cashFlowStatement.get("Long-term debt issued").sum(shortTermDebt);
-			if (k != null) {	
-			} else {
-				QualityTest qT = new QualityTest();
-				List<String> concepts = new ArrayList<String>();
-				concepts.add("Debt issued");
-				concepts.add("Long-term debt issued");
-				qT.uploadRareCases(name, concepts, "CashFlowStatement");
-				k = utils.controlNull(cashFlowStatement.get("Debt issued"), getYear());
-			}
-		}	
+		Item init = cashFlowStatement.get("Free cash flow");
+		if (init == null) {
+			init = cashFlowStatement.get("Cash at end of period");
+		}
+		if (init == null) {
+			init = cashFlowStatement.get("Net cash provided by operating activities");
+		}
+		int lastYear = init.lastYear();
+		int numYears = init.size();
+		Item k = new Item();
+		k.setZero(numYears, lastYear);
+		Item kk = k;
 		
+		Item k1 = cashFlowStatement.get("Debt issued");
+		if (k1 != null) {k = k.sum(k1);}
+		Item k2 = cashFlowStatement.get("Long-term debt issued");
+		if (k2 != null) {k = k.sum(k2);}
+		
+		if (kk.equals(k)) {
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Debt issued");
+			concepts.add("Long-term debt issued");
+			qT.uploadRareCases(name, concepts, "CashFlowStatement");
+			k = utils.controlNull(cashFlowStatement.get("Debt issued"), getYear());
+		}		
 		return k;
 	}
 	
@@ -344,6 +364,19 @@ public class CashFlowStatement {
 			}
 		}
 				
+		return k;
+	}
+	
+	public Item operatingCashFlow() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		Item k = cashFlowStatement.get("Net cash provided by operating activities");
+		if (k != null) {
+		} else {
+			QualityTest qT = new QualityTest();
+			List<String> concepts = new ArrayList<String>();
+			concepts.add("Net cash provided by operating activities");
+			qT.uploadRareCases(name, concepts, "CashFlowStatement");
+			k = utils.controlNull(cashFlowStatement.get("Net cash provided by operating activities"), getYear());
+		}
 		return k;
 	}
 	

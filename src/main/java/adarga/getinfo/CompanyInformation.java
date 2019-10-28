@@ -36,9 +36,10 @@ public class CompanyInformation {
 		FinancialModelingPrepUrl url = new FinancialModelingPrepUrl(urlRaw + companySymbol);
 		HttpRequest request = requestFactory.buildGetRequest(url);
 		
-			HttpResponse res = (HttpResponse)request.execute();
-			String resString = res.parseAsString().replace("<pre>", "");
-			
+		
+		
+			HttpResponse res = (HttpResponse)request.execute();			
+			String resString = res.parseAsString().replace("<pre>", "");	
 			if (companySymbol.equals("BRK.B")) {
 				
 			} else {
@@ -62,7 +63,8 @@ public class CompanyInformation {
 				}
 				
 			}
-		}
+		  }	
+		
 		
 				
 	}

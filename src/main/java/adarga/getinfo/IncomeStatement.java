@@ -41,7 +41,8 @@ public class IncomeStatement {
     }
 	
 	@SuppressWarnings("unused")
-	public void execute(String companySymbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
+	public boolean execute(String companySymbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
+		boolean result = true;
 		name = companySymbol;
 		String urlRaw = "https://financialmodelingprep.com/api/financials/income-statement/";
 		HttpRequestFactory requestFactory 
@@ -54,7 +55,13 @@ public class IncomeStatement {
 		HttpResponse res = (HttpResponse)request.execute();
 		String resString = res.parseAsString().replace("<pre>", "");
 		
+		
 		JSONObject json = new JSONObject(resString).getJSONObject(companySymbol);
+		
+		if (json.toString().equals("{}")) {
+			
+			return false;
+		}
 		
 		Iterator<String> iter = json.keys();
 		
@@ -66,6 +73,8 @@ public class IncomeStatement {
 			item.setValues(json.getJSONObject(key));
 			incomeStatementItems.put(key, item);
 		}
+		
+		return result;
 					
 	}
 	
@@ -77,6 +86,8 @@ public class IncomeStatement {
     		if (incomeStatementItems.get("Net income") != null) {
     			year = incomeStatementItems.get("Net income").lastYear();
     		} else {
+    			log.info(incomeStatementItems.toString());
+    			log.info(incomeStatementItems.get("Income taxes").toString());
     			year = incomeStatementItems.get("Income taxes").lastYear();
     		}
     	}
