@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import adarga.analysis.OpportunityIdentification;
+import adarga.getinfo.BalanceSheet;
 
 /**
  * Servlet implementation class Level1
@@ -22,6 +24,7 @@ import adarga.analysis.OpportunityIdentification;
 @WebServlet("/fcfyield")
 public class fcfyield extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final Logger log = Logger.getLogger(fcfyield.class.getName());
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -43,8 +46,11 @@ public class fcfyield extends HttpServlet {
 			int len = array.length();
 			for (int i=0; i<len; i++) {
 				JSONObject json = (JSONObject) array.get(i);
+				log.info(json.toString());
 				out.write(json.getString("Company") + "<BR>");
 				out.write(json.getString("Sector") + "<BR>");
+				out.write(json.getString("Industry") + "<BR>");
+				out.write(json.getString("Description") + "<BR>");
 				out.write(json.getString("Symbol") + "<BR>");
 				out.write(json.getDouble("FCFYield") + "<BR>");
 				out.write("<BR>");

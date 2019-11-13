@@ -24,25 +24,36 @@ public class OpportunityIdentification {
 		DB db = new DB();
 		// Get the information from CompayValuation table
 		
-		String SQL = "SELECT Company, Sector, Symbol, FCFYield FROM apiadbossDB.CompanyValuation WHERE FCFYield > 0.08 ORDER BY FCFYield DESC";
+		String SQL = "SELECT Company, Sector, Symbol, Industry, Description, FCFYield FROM apiadbossDB.CompanyValuation WHERE FCFYield > 0.08 ORDER BY FCFYield DESC";
 		ResultSet rs = db.ExecuteSELECT(SQL);
 		while (rs.next()) {
 			
 			String Company = rs.getString("Company");
 			String Sector = rs.getString("Sector");
+			if (Sector.equals(null)) { Sector = ""; }
+			String Industry = rs.getString("Industry");
+			if (Industry == null) { Industry = ""; }
+			String Description = rs.getString("Description");
+			if (Description == null) { Description = ""; }
 			String Symbol = rs.getString("Symbol");
 			Double FCFYield = rs.getDouble("FCFYield");
+			
+			log.info(Company + "   " + Sector + "   " +  Industry + "   " +  Description + "   " +  Symbol + "   " +  FCFYield);
 			
 			JSONObject json = new JSONObject();
 			
 			json.put("Company", Company);
 			json.put("Sector", Sector);
+			json.put("Industry", Industry);
+			json.put("Description", Description);
 			json.put("Symbol", Symbol);
 			json.put("FCFYield", FCFYield);
 			
 			array.put(json);
 				
 		}
+		
+		log.info(array.toString());
 				
 		return array;
 		
@@ -98,6 +109,8 @@ public JSONArray growth() throws ClassNotFoundException, SQLException, ServletEx
 			
 			String Company = rs.getString("Company");
 			String Sector = rs.getString("Sector");
+			String Industry = rs.getString("Industry");
+			String Description = rs.getString("Description");
 			String Symbol = rs.getString("Symbol");
 			Double FCFYield = rs.getDouble("FCFYield");
 			
@@ -105,6 +118,8 @@ public JSONArray growth() throws ClassNotFoundException, SQLException, ServletEx
 			
 			json.put("Company", Company);
 			json.put("Sector", Sector);
+			json.put("Industry", Industry);
+			json.put("Description", Description);
 			json.put("Symbol", Symbol);
 			json.put("FCFYield", FCFYield);
 			

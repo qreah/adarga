@@ -56,6 +56,8 @@ public class CompanyInformation {
 					try {
 						String info = (String) json.get(key);
 						companyInformation.put(key, info);
+						log.info(info);
+						log.info(key);
 					} catch (Exception e) {
 						Double info = json.getDouble(key);
 						companyInformation.put(key, Double.toString(info));

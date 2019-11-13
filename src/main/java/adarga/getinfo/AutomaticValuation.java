@@ -145,6 +145,9 @@ public class AutomaticValuation {
 					result = com.analysis(bs, is, cs, ci);
 					
 					Double FCFYield = (Double) result.getJSONObject("CM").get("FCFYield");
+					String Industry = ci.companyInformation.get("industry");
+					String Sector = ci.companyInformation.get("sector");
+					String Description = ci.companyInformation.get("description");
 					
 					String SQL = "";
 					if (db.companyIncluded(Symbol)) {
@@ -152,14 +155,18 @@ public class AutomaticValuation {
 						SQL = "UPDATE apiadbossDB.CompanyValuation "
 								+ "SET analysis = '" + result.toString()
 								+ "', FCFYield = '" + FCFYield 
-								+ "', dateAnalized = NOW()" + " WHERE Symbol = '" + Symbol + "'";
+								+ "', Industry = '" + Industry 
+								+ "', Sector = '" + Sector 
+								+ "', Description = '" + Description 
+								+ "', dateAnalized = NOW()" 
+								+ " WHERE Symbol = '" + Symbol + "'";
 						
 						
 					} else {
 						
 						SQL = "INSERT INTO apiadbossDB.CompanyValuation "
-								+ "	(Symbol, Sector, Company, analysis, FCFYield, dateAnalized)"
-								+ " VALUES ('" + Symbol + "', '', '" + Name + "', '" + result.toString() + "' , '" +  FCFYield + "', NOW())";
+								+ "	(Symbol, Sector, Company, Industry, Description, analysis, FCFYield, dateAnalized)"
+								+ " VALUES ('" + Symbol + "', '" + Sector + "', '" + Name + "', '" + Industry + "', '" + Description + "', '" + result.toString() + "' , '" +  FCFYield + "', NOW())";
 							 
 					}
 					

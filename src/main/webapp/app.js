@@ -1621,13 +1621,13 @@ $(document).ready(function () {
                     if ((typeof itemPaint) == 'number') {
                         convertido = itemPaint.toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 1 });
                         if (itemNameGM[j] == "FCF Per Share") {
-                            convertido = numeral(itemPaint).format('0,0');
+                            convertido = numeral(itemPaint).format('0,0.00');
                         }
                         if (itemNameGM[j] == "Earnings Per Share") {
-                            convertido = numeral(itemPaint).format('0,0');
+                            convertido = numeral(itemPaint).format('0,0.00');
                         }
                         if (itemNameGM[j] == "Operating Income Per Share") {
-                            convertido = numeral(itemPaint).format('0,0');
+                            convertido = numeral(itemPaint).format('0,0.00');
                         }
                     }
                     else {
@@ -1682,13 +1682,13 @@ $(document).ready(function () {
                     if ((typeof itemPaint) == 'number') {
                         convertido = itemPaint.toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 1 });
                         if (itemNameGM[j] == "FCF Per Share") {
-                            convertido = numeral(itemPaint).format('0,0');
+                            convertido = numeral(itemPaint).format('0,0.00');
                         }
                         if (itemNameGM[j] == "Earnings Per Share") {
-                            convertido = numeral(itemPaint).format('0,0');
+                            convertido = numeral(itemPaint).format('0,0.00');
                         }
                         if (itemNameGM[j] == "Operating Income Per Share") {
-                            convertido = numeral(itemPaint).format('0,0');
+                            convertido = numeral(itemPaint).format('0,0.00');
                         }
                     }
                     else {
