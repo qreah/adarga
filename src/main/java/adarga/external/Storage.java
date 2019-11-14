@@ -20,6 +20,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
+import adarga.external.CompanyProfile.Profile;
 import adarga.getinfo.BalanceSheet;
 import adarga.getinfo.CashFlowStatement;
 import adarga.getinfo.Company;
@@ -34,29 +35,40 @@ public class Storage {
 	static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     static JsonFactory JSON_FACTORY = new JacksonFactory();
 	int rows = 7936;
-	int batch = 80;
+	int batch = 10;
 	
 	public void store(String symbol, 
 			String concept, 
 			Double ratio, 
-			String finYear, 
-			String companyName,
-			String sector,
-			String industry,
-			String description,
-			DB db) throws ClassNotFoundException, SQLException, ServletException, IOException {
+			String finYear
+			) throws ClassNotFoundException, SQLException, ServletException, IOException {
+		
+		
+		Profile profile = new CompanyProfile().getProfile(symbol);
+		String companyName = profile.getCompanyName();
+		String sector = profile.getSector();
+		String industry = profile.getIndustry();
+		String description = profile.getDescription();
 		
 		if (exists(symbol, concept, finYear)) {
 		
-			update(symbol, ratio, finYear, db, concept, companyName, sector, industry, description);
+			update(symbol, ratio, finYear, concept, companyName, sector, industry, description);
 		} else {
-			insert(symbol, ratio, finYear, db, concept, companyName, sector, industry, description);
+			insert(symbol, ratio, finYear, concept, companyName, sector, industry, description);
 		}
 	}
 	
 	
 	
-	static public void update(String symbol, Double ratio, String finYear, DB db, String concept) throws ClassNotFoundException, ServletException, IOException, SQLException {
+	static public void update(String symbol, 
+			Double ratio, 
+			String finYear, 
+			String concept,
+			String companyName,
+			String sector,
+			String industry,
+			String description
+			) throws ClassNotFoundException, ServletException, IOException, SQLException {
 		qreah q = new qreah();
 		String SQL = "UPDATE apiadbossDB.adargaConcepts" + 
 				" SET symbol='" + symbol 
@@ -64,24 +76,44 @@ public class Storage {
 				+ "', concept= '" + concept 
 				+ "', finantialDate='" + finYear 
 				+ "', reportDate='" + q.today() 
+				+ "', companyName='" + companyName 
+				+ "', sector='" + sector 
+				+ "', industry='" + industry 
+				+ "', description='" + description 
 				+ "'"
 				+ " WHERE "
 				+ "symbol='" + symbol + "' AND "
 				+ "concept='" + concept + "' AND "
 				+ "finantialDate='" + finYear 
 				+ "';";
-		
+		DB db = new DB();
 		db.Execute(SQL);
 		db.close();
 	}
 	
-	static public void insert(String symbol, Double ratio, String finYear, DB db, String concept) throws ClassNotFoundException, ServletException, IOException, SQLException {
+	static public void insert(String symbol, 
+			Double ratio, 
+			String finYear, 
+			String concept,
+			String companyName,
+			String sector,
+			String industry,
+			String description
+			) throws ClassNotFoundException, ServletException, IOException, SQLException {
 		qreah q = new qreah();
 		String SQL = "INSERT INTO apiadbossDB.adargaConcepts" + 
-				" VALUES ('" + symbol + "', '" + concept + "', '" 
-				+ ratio + "', '" + finYear + "', '" + q.today() 
+				" VALUES ('" 
+				+ symbol + "', '" 
+				+ concept + "', '" 
+				+ ratio + "', '" 
+				+ finYear + "', '" 
+				+ q.today()  + "', '" 
+				+ companyName  + "', '" 
+				+ sector  + "', '" 
+				+ industry  + "', '" 
+				+ description  
 				+ "');";
-		
+		DB db = new DB();
 		db.Execute(SQL);
 		db.close();
 	}
@@ -125,20 +157,17 @@ public class Storage {
 		} else {
 			db.setRound(round + batch);
 		}
-		
-		
-		log.info("round: " + round);
+		db.close();
 		int temp = round + batch +1;
-		log.info("final: " + temp);
 		
 		for (int i = round; i < round + batch +1; i++) {
-			log.info("i: " + i);
+			DB db2 = new DB();
 			if (i < rows)  {
 				db.setRound(i + 1);
 			} else {
 				db.setRound(0);
 			}
-			
+			db2.close();
 			JSONObject json = new JSONObject(array.get(i).toString());
 			String Name = json.getString("name").replaceAll("'", "");	
 			String symbol = json.getString("symbol");
@@ -172,15 +201,32 @@ public class Storage {
 			}
 			
 			if (len == 10) {
-				int mounth = Integer.parseInt(finDate.substring(3, 5));
-				int year = Integer.parseInt(finDate.substring(len-4, len));
 				
-				if (mounth < 6) {
+				boolean guion = finDate.substring(4, 5).contains("-");
+				if (guion) {
+					int mounth = Integer.parseInt(finDate.substring(5, 7));
+					int year = Integer.parseInt(finDate.substring(0, 4));
 					
-					result = Integer.toString(year-1);
+					if (mounth < 6) {
+						
+						result = Integer.toString(year-1);
+					} else {
+						result = Integer.toString(year);
+					}
+					
 				} else {
-					result = Integer.toString(year);
+					int mounth = Integer.parseInt(finDate.substring(3, 5));
+					int year = Integer.parseInt(finDate.substring(len-4, len));
+					
+					if (mounth < 6) {
+						
+						result = Integer.toString(year-1);
+					} else {
+						result = Integer.toString(year);
+					}
 				}
+				
+				
 			}
 			
 		} else {
@@ -193,7 +239,7 @@ public class Storage {
 
 	public static void main(String[] args) {
 		Storage st = new Storage();
-		String result = st.finDateConversion("TTM");
+		String result = st.finDateConversion("2012-10-31");
 		System.out.println(result);
 
 	}

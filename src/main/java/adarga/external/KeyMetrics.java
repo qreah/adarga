@@ -119,8 +119,7 @@ public class KeyMetrics {
 		if (exists) {
 			Storage st = new Storage();
 			Set<String> keys = years.keySet();
-			qreah q = new qreah();
-			DB db = new DB();
+			
 			Iterator<String> iter = keys.iterator();
 			while (iter.hasNext()) {
 				String key = iter.next();
@@ -139,7 +138,7 @@ public class KeyMetrics {
 						
 					}
 					
-					st.store(symbol, concept, ratio, key, db);	
+					st.store(symbol, concept, ratio, key);	
 				}
 			}
 		}

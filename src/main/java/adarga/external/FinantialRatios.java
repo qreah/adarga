@@ -64,10 +64,10 @@ public class FinantialRatios {
 		Gson gson = new Gson();
 		Iterator<String> iter = series.keys();
 		while (iter.hasNext()) {
-			String finDate = st.finDateConversion(iter.next());
+			String finDate = iter.next();
 			String jsonInString = series.getJSONObject(finDate).toString();
 			Ratios ratios = gson.fromJson(jsonInString, Ratios.class);
-			years.put(finDate, ratios);
+			years.put(st.finDateConversion(finDate), ratios);
 		}
 		
 		
@@ -91,8 +91,7 @@ public class FinantialRatios {
 		execute(symbol);
 		Storage st = new Storage();
 		Set<String> keys = years.keySet();
-		qreah q = new qreah();
-		DB db = new DB();
+		
 		Iterator<String> iter = keys.iterator();
 		while (iter.hasNext()) {
 			String key = iter.next();
@@ -103,7 +102,7 @@ public class FinantialRatios {
 			while (keyRatio.hasNext()) {
 				String concept = keyRatio.next();
 				Double ratio = ratiosList.get(concept);
-				st.store(symbol, concept, ratio, key, db);	
+				st.store(symbol, concept, ratio, key);	
 			}
 		}
 	}
