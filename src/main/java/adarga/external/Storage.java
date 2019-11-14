@@ -36,22 +36,34 @@ public class Storage {
 	int rows = 7936;
 	int batch = 80;
 	
-	public void store(String symbol, String concept, Double ratio, String finYear, DB db) throws ClassNotFoundException, SQLException, ServletException, IOException {
+	public void store(String symbol, 
+			String concept, 
+			Double ratio, 
+			String finYear, 
+			String companyName,
+			String sector,
+			String industry,
+			String description,
+			DB db) throws ClassNotFoundException, SQLException, ServletException, IOException {
 		
 		if (exists(symbol, concept, finYear)) {
 		
-			update(symbol, ratio, finYear, db, concept);
+			update(symbol, ratio, finYear, db, concept, companyName, sector, industry, description);
 		} else {
-			insert(symbol, ratio, finYear, db, concept);
+			insert(symbol, ratio, finYear, db, concept, companyName, sector, industry, description);
 		}
 	}
+	
+	
 	
 	static public void update(String symbol, Double ratio, String finYear, DB db, String concept) throws ClassNotFoundException, ServletException, IOException, SQLException {
 		qreah q = new qreah();
 		String SQL = "UPDATE apiadbossDB.adargaConcepts" + 
-				" SET symbol='" + symbol + "', value= '" 
-				+ ratio + "', concept= '" 
-						+ concept + "', finantialDate='" + finYear + "', reportDate='" + q.today() 
+				" SET symbol='" + symbol 
+				+ "', value= '" + ratio 
+				+ "', concept= '" + concept 
+				+ "', finantialDate='" + finYear 
+				+ "', reportDate='" + q.today() 
 				+ "'"
 				+ " WHERE "
 				+ "symbol='" + symbol + "' AND "
@@ -141,9 +153,48 @@ public class Storage {
 		}
 	
 	}
+	
+	public String finDateConversion(String finDate) {
+		String result = "";
+		int len = finDate.length();
+		if (len > 5) {
+			
+			if (len == 7) {
+				int year = Integer.parseInt(finDate.substring(0, 4));
+				int mounth = Integer.parseInt(finDate.substring(len-2, len));
+				
+				if (mounth < 6) {
+					result = Integer.toString(year - 1);
+				} else {
+					result = Integer.toString(year);
+				}
+				
+			}
+			
+			if (len == 10) {
+				int mounth = Integer.parseInt(finDate.substring(3, 5));
+				int year = Integer.parseInt(finDate.substring(len-4, len));
+				
+				if (mounth < 6) {
+					
+					result = Integer.toString(year-1);
+				} else {
+					result = Integer.toString(year);
+				}
+			}
+			
+		} else {
+			result = finDate;
+		}
+		
+		
+		return result;
+	}
 
 	public static void main(String[] args) {
-		
+		Storage st = new Storage();
+		String result = st.finDateConversion("TTM");
+		System.out.println(result);
 
 	}
 

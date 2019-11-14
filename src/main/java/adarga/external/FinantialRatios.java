@@ -47,6 +47,7 @@ public class FinantialRatios {
 	public static void execute(String symbol) throws IOException {
 		
 		String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json";
+		Storage st = new Storage();
 		
 		HttpRequestFactory requestFactory 
 	    = HTTP_TRANSPORT.createRequestFactory(
@@ -63,7 +64,7 @@ public class FinantialRatios {
 		Gson gson = new Gson();
 		Iterator<String> iter = series.keys();
 		while (iter.hasNext()) {
-			String finDate = iter.next();
+			String finDate = st.finDateConversion(iter.next());
 			String jsonInString = series.getJSONObject(finDate).toString();
 			Ratios ratios = gson.fromJson(jsonInString, Ratios.class);
 			years.put(finDate, ratios);

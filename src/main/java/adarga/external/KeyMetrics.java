@@ -29,6 +29,7 @@ import com.google.api.client.util.Key;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import adarga.external.CompanyProfile.Profile;
 import adarga.getinfo.DB;
 import adarga.utis.qreah;
 
@@ -41,12 +42,14 @@ public class KeyMetrics {
 	static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     static JsonFactory JSON_FACTORY = new JacksonFactory();
     private static HashMap<String, Metrics> years = new HashMap<String, Metrics>();
+    private static Profile profile;
     
 	
 
 	public static boolean execute(String symbol) throws IOException {
 		boolean result = false;
 		String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json";
+		Storage st = new Storage();
 		
 		HttpRequestFactory requestFactory 
 	    = HTTP_TRANSPORT.createRequestFactory(
@@ -66,9 +69,13 @@ public class KeyMetrics {
 			while (iter.hasNext()) {
 				JSONObject metricSet = (JSONObject) iter.next();
 				Metrics ratios = gson.fromJson(metricSet.toString(), Metrics.class);
-				years.put(ratios.getDate(), ratios);
+				String finDate = st.finDateConversion(ratios.getDate());
+				years.put(finDate, ratios);
 			}
 		}
+		
+		
+		profile = new CompanyProfile().getProfile(symbol);
 		
 		return result;
 		
