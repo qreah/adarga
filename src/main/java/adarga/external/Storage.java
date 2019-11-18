@@ -49,6 +49,9 @@ public class Storage {
 		String sector = profile.getSector();
 		String industry = profile.getIndustry();
 		String description = profile.getDescription();
+		String price = profile.getPrice();
+		String mktCap = profile.getMktCap();
+		
 		
 		if (exists(symbol, concept, finYear)) {
 		
@@ -175,9 +178,10 @@ public class Storage {
 			log.info(symbol);
 			FinantialRatios fr = new FinantialRatios();
 			KeyMetrics km = new KeyMetrics();
+			Growth g = new Growth();
 			fr.storeReport(symbol);
 			km.storeReport(symbol);
-			
+			g.storeReport(symbol);
 			
 		}
 	

@@ -52,14 +52,29 @@ public class CompanyProfile {
     
     static public class Profile {
 		
-		@Key private String companyName;
-		@Key private String exchange;
-		@Key private String industry;
-		@Key private String sector;
-		@Key private String ceo;
-		@Key private String description;
+		@Key("companyName") private String companyName;
+		@Key("exchange") private String exchange;
+		@Key("industry") private String industry;
+		@Key("sector") private String sector;
+		@Key("ceo") private String ceo;
+		@Key("description") private String description;
+		@Key("price") private String price;
+		@Key("mktCap") private String mktCap;
 		
 		
+		
+		public String getPrice() {
+			return price;
+		}
+		public void setPrice(String price) {
+			this.price = price;
+		}
+		public String getMktCap() {
+			return mktCap;
+		}
+		public void setMktCap(String mktCap) {
+			this.mktCap = mktCap;
+		}
 		public String getCompanyName() {
 			return companyName;
 		}

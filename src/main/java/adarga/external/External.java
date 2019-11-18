@@ -46,9 +46,13 @@ public class External extends HttpServlet {
 		
 		FinantialRatios fr = new FinantialRatios();
 		KeyMetrics km = new KeyMetrics();
+		Growth g = new Growth();
+		
 		try {
 			fr.storeReport(symbol);
 			km.storeReport(symbol);
+			g.storeReport(symbol);
+			
 		} catch (ClassNotFoundException | SQLException e) {
 			
 			e.printStackTrace();
