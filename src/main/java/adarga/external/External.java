@@ -18,7 +18,7 @@ import org.json.JSONObject;
 
 import adarga.external.FinantialRatios.Ratios;
 import adarga.external.FinantialRatios.Series;
-import adarga.getinfo.BalanceSheet;
+
 
 /**
  * Servlet implementation class External
@@ -44,14 +44,21 @@ public class External extends HttpServlet {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		String symbol = request.getParameter("sym");
 		
-		FinantialRatios fr = new FinantialRatios();
-		KeyMetrics km = new KeyMetrics();
-		Growth g = new Growth();
+		
 		
 		try {
+			FinantialRatios fr = new FinantialRatios();
+			KeyMetrics km = new KeyMetrics();
+			Growth g = new Growth();
+			BalanceSheet bs = new BalanceSheet();
+			IncomeStatement is = new IncomeStatement();
+			CashFlowStatement cs = new CashFlowStatement();
 			fr.storeReport(symbol);
 			km.storeReport(symbol);
 			g.storeReport(symbol);
+			is.storeReport(symbol);
+			bs.storeReport(symbol);
+			cs.storeReport(symbol);
 			
 		} catch (ClassNotFoundException | SQLException e) {
 			

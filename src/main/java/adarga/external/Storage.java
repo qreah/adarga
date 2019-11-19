@@ -21,12 +21,12 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
 import adarga.external.CompanyProfile.Profile;
-import adarga.getinfo.BalanceSheet;
-import adarga.getinfo.CashFlowStatement;
+
+
 import adarga.getinfo.Company;
 import adarga.getinfo.CompanyInformation;
 import adarga.getinfo.DB;
-import adarga.getinfo.IncomeStatement;
+
 import adarga.getinfo.BalanceSheet.FinancialModelingPrepUrl;
 import adarga.utis.qreah;
 
@@ -176,12 +176,22 @@ public class Storage {
 			String symbol = json.getString("symbol");
 			log.info(Name);
 			log.info(symbol);
+			
 			FinantialRatios fr = new FinantialRatios();
 			KeyMetrics km = new KeyMetrics();
 			Growth g = new Growth();
+			BalanceSheet bs = new BalanceSheet();
+			IncomeStatement is = new IncomeStatement();
+			CashFlowStatement cs = new CashFlowStatement();
 			fr.storeReport(symbol);
 			km.storeReport(symbol);
 			g.storeReport(symbol);
+			is.storeReport(symbol);
+			bs.storeReport(symbol);
+			cs.storeReport(symbol);
+			
+			
+			
 			
 		}
 	
