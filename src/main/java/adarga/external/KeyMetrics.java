@@ -27,6 +27,7 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Key;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import adarga.external.CompanyProfile.Profile;
@@ -60,16 +61,20 @@ public class KeyMetrics {
 		HttpRequest request = requestFactory.buildGetRequest(url);
 		HttpResponse res = request.execute();
 		String json = res.parseAsString();
+		log.info(json);
 		JSONObject j = new JSONObject(json);
 		if (j.has("metrics")) {
 			result = true;
 			JSONArray metrics = j.getJSONArray("metrics");
-			Gson gson = new Gson();
+			Gson gson = new GsonBuilder().create();
 			Iterator<Object> iter = metrics.iterator();
 			while (iter.hasNext()) {
 				JSONObject metricSet = (JSONObject) iter.next();
+				log.info(metricSet.toString());
 				Metrics ratios = gson.fromJson(metricSet.toString(), Metrics.class);
 				String finDate = st.finDateConversion(ratios.getDate());
+				log.info(ratios.toString());
+				
 				years.put(finDate, ratios);
 			}
 		}
@@ -125,6 +130,7 @@ public class KeyMetrics {
 				String key = iter.next();
 				Metrics metrics = years.get(key);
 				HashMap<String, String> ratiosList = getMetricsList(metrics);
+				log.info(ratiosList.toString());
 				Set<String> keysSet = ratiosList.keySet();
 				Iterator<String> keyRatio = keysSet.iterator();
 				while (keyRatio.hasNext()) {
@@ -148,22 +154,35 @@ public class KeyMetrics {
 	
 	
 	static public class Metrics {
-		@Key private String date;
-		@Key private String revenuePerShare;
-		@Key private String freeCashFlowPerShare;
-		@Key private String PERatio;
-		@Key private String priceToSalesRatio;
-		@Key private String freeCashFlowYield;
-		@Key private String debtToAssets;
-		@Key private String dividendYield;
-		@Key private String payoutRatio;
-		@Key private String SGAToRevenue;
-		@Key private String RDToRevenue;
-		@Key private String GrahamNumber;
-		@Key private String returnOnTangibleAssets;
-		@Key private String ROE;
-		@Key private String CapexToOperatingCashFlow;
 		
+		@Key("date") private String date;
+		@Key("Revenue per Share") private String revenuePerShare;
+		@Key("Free Cash Flow per Share") private String freeCashFlowPerShare;
+		@Key("PE ratio") private String PERatio;
+		@Key("Price to Sales Ratio") private String priceToSalesRatio;
+		@Key("Free Cash Flow Yield") private String freeCashFlowYield;
+		@Key("Debt to Assets") private String debtToAssets;
+		@Key("Dividend Yield") private String dividendYield;
+		@Key("Payout Ratio") private String payoutRatio;
+		@Key("SG&A to Revenue") private String SGAToRevenue;
+		@Key("R&D to Revenue") private String RDToRevenue;
+		@Key("Graham Number") private String GrahamNumber;
+		@Key("Return on Tangible Assets") private String returnOnTangibleAssets;
+		@Key("ROE") private String ROE;
+		@Key("Capex to Operating Cash Flow") private String CapexToOperatingCashFlow;
+		
+		
+		
+		@Override
+		public String toString() {
+			return "Metrics [date=" + date + ", revenuePerShare=" + revenuePerShare + ", freeCashFlowPerShare="
+					+ freeCashFlowPerShare + ", PERatio=" + PERatio + ", priceToSalesRatio=" + priceToSalesRatio
+					+ ", freeCashFlowYield=" + freeCashFlowYield + ", debtToAssets=" + debtToAssets + ", dividendYield="
+					+ dividendYield + ", payoutRatio=" + payoutRatio + ", SGAToRevenue=" + SGAToRevenue
+					+ ", RDToRevenue=" + RDToRevenue + ", GrahamNumber=" + GrahamNumber + ", returnOnTangibleAssets="
+					+ returnOnTangibleAssets + ", ROE=" + ROE + ", CapexToOperatingCashFlow=" + CapexToOperatingCashFlow
+					+ "]";
+		}
 		public String getDate() {
 			return date;
 		}

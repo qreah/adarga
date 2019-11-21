@@ -90,6 +90,7 @@ public class Storage {
 				+ "finantialDate='" + finYear 
 				+ "';";
 		DB db = new DB();
+		
 		db.Execute(SQL);
 		db.close();
 	}
