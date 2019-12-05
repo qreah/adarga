@@ -130,6 +130,7 @@ public class BalanceSheet {
 				Set<String> keysSet = ratiosList.keySet();
 				Iterator<String> keyRatio = keysSet.iterator();
 				DB db = new DB();
+				
 				// Itera para cada ratio
 				while (keyRatio.hasNext()) {
 					String concept = keyRatio.next();

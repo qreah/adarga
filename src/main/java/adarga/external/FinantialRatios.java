@@ -141,7 +141,7 @@ public class FinantialRatios {
 				String concept = keyRatio.next();
 				Double ratio = ratiosList.get(concept);
 				String SQL = st.storeRow(companyData, concept, ratio, key, category(concept));	
-				log.info(SQL);
+			
 				db.addBatch(SQL);
 			}
 			db.executeBatch();

@@ -29,7 +29,6 @@ public class Ratios {
 		String concept = "FreeCashFlow";		
 		DB db = new DB();
 		String finDate = db.getLastFinDate(symbol);
-		log.info(finDate);
 		log.info(db.getRatio(symbol, concept, finDate));
 		Double freeCashFlow = Double.valueOf(db.getRatio(symbol, concept, finDate));
 		Double FCFYield = freeCashFlow / mrkCap;

@@ -132,7 +132,7 @@ public class Growth {
 				Iterator<String> keyRatio = keysSet.iterator();
 				while (keyRatio.hasNext()) {
 					String concept = keyRatio.next();
-					log.info("value: " + ratiosList.get(concept));
+					
 					Double ratio = null;
 					if (ratiosList.get(concept) != null) {
 						if (!ratiosList.get(concept).equals("")) {

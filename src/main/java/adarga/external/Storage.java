@@ -33,7 +33,8 @@ public class Storage {
 	static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     static JsonFactory JSON_FACTORY = new JacksonFactory();
 	int rows = 7936;
-	int batch = 5;
+	int batch = 2;
+	int batchFCFY = 20;
 	static ResultSet exist;
 	
 	
@@ -84,7 +85,7 @@ public class Storage {
 		String mktCap = companyData.get("mktCap");
 		
 		String SQL = "";
-		SQL = insertSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
+		//SQL = insertSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
 		
 		
 		if (exists(symbol, concept, finYear)) {
@@ -201,7 +202,7 @@ public class Storage {
 				+ type  
 				+ "');";
 		DB db = new DB();
-		log.info(SQL);
+		
 		db.Execute(SQL);
 		db.close();
 	}
@@ -248,8 +249,21 @@ public class Storage {
 		ResultSet rs = db.ExecuteSELECT(SQL);
 		*/
 		
+		while (exist.next()) {
+			String symbolStr = exist.getString("symbol");
+			if (symbolStr.equals(symbol)) {
+				String conceptStr = exist.getString("concept");
+				if (conceptStr.equals(symbol)) {
+					String finantialDateStr = exist.getString("finantialDate");
+					if (finantialDateStr.equals(symbol)) {
+						result = true;
+					}
+				}
+			}
+		}
+		
 		if (exist.next()) {
-			result = true;
+			
 		}
 		//db.close();
 		return result;
@@ -276,19 +290,19 @@ public class Storage {
 		
 		JSONArray array = getCompaniesList();
 		
-		DB db = new DB();
-		//String delete = "delete from apiadbossDB.adargaConcepts";
-		//db.Execute(delete);
-		String exists = "SELECT symbol, concept, finantialDate FROM apiadbossDB.adargaConcepts group by symbol, concept, finantialDate";
-		exist = db.ExecuteSELECT(exists);
+		DB db = new DB();		
 		int round = db.getRound();
 		if ((round + batch) > rows) {
 			batch = rows - round;
 		} 
+		db.setRound(round + 1);
 		db.close();
 		
+		
+		// Para cada empresa en el batch
 		for (int i = round; i < round + batch; i++) {
-			log.info("iter: " + round);
+			
+			log.info("Nº de Empresa: " + round);
 			round = i;
 			JSONObject json = new JSONObject(array.get(i).toString());
 			String Name = json.getString("name").replaceAll("'", "");	
@@ -302,7 +316,6 @@ public class Storage {
 			CashFlowStatement cs = new CashFlowStatement();
 			Ratios ratio = new Ratios();
 			qreah q = new qreah();
-			String init = Long.toString(q.getTimestamp());
 			
 			Profile profile = new CompanyProfile().getProfile(symbol);
 			String companyName = profile.getCompanyName().replaceAll("'", "");
@@ -313,6 +326,9 @@ public class Storage {
 			String price = profile.getPrice();
 			String mktCap = profile.getMktCap();
 			
+			String exists = "SELECT symbol, concept, finantialDate FROM apiadbossDB.adargaConcepts group by symbol, concept, finantialDate";
+			exist = db.ExecuteSELECT(exists);
+			
 			HashMap<String, String> companyData = new HashMap<String, String>();
 			companyData.put("symbol", symbol);
 			companyData.put("companyName", companyName);
@@ -322,21 +338,74 @@ public class Storage {
 			companyData.put("price", price);
 			companyData.put("mktCap", mktCap);
 			
-			log.info("symbol: " + symbol + " | start time: " + init);
-			fr.storeReport(companyData);
-			km.storeReport(companyData);
-			g.storeReport(companyData);
 			is.storeReport(companyData);
 			bs.storeReport(companyData);
 			cs.storeReport(companyData);
-			ratio.setFCFYield(companyData);
-			
+			//ratio.setFCFYield(companyData);
+			fr.storeReport(companyData);
+			km.storeReport(companyData);
+			g.storeReport(companyData);
 			
 		}
 		
-		DB db2 = new DB();
-		db2.setRound(round);
-		db2.close();
+		
+		
+		return "ok";
+	
+	}
+	
+	@SuppressWarnings("static-access")
+	public String storeFCFY() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		
+		JSONArray array = getCompaniesList();
+		
+		DB db = new DB();		
+		int round = db.getRoundFCFY();
+		if ((round + batchFCFY) > rows) {
+			batchFCFY = rows - round;
+		} 
+		db.setRoundFCFY(round + 1);
+		db.close();
+		
+		
+		// Para cada empresa en el batch
+		for (int i = round; i < round + batchFCFY; i++) {
+			
+			log.info("Nº de Empresa FCFY: " + round);
+			round = i;
+			JSONObject json = new JSONObject(array.get(i).toString());
+			String Name = json.getString("name").replaceAll("'", "");	
+			String symbol = json.getString("symbol");
+			
+			Ratios ratio = new Ratios();
+			qreah q = new qreah();
+			
+			Profile profile = new CompanyProfile().getProfile(symbol);
+			String companyName = profile.getCompanyName().replaceAll("'", "");
+			String sector = profile.getSector().replaceAll("'", "");
+			String industry = profile.getIndustry().replaceAll("'", "");
+			String description = profile.getDescription();
+			description = description.replaceAll("'", "");
+			String price = profile.getPrice();
+			String mktCap = profile.getMktCap();
+			
+			String exists = "SELECT symbol, concept, finantialDate FROM apiadbossDB.adargaConcepts group by symbol, concept, finantialDate";
+			exist = db.ExecuteSELECT(exists);
+			
+			HashMap<String, String> companyData = new HashMap<String, String>();
+			companyData.put("symbol", symbol);
+			companyData.put("companyName", companyName);
+			companyData.put("sector", sector);
+			companyData.put("industry", industry);
+			companyData.put("description", description);
+			companyData.put("price", price);
+			companyData.put("mktCap", mktCap);
+			
+			ratio.setFCFYield(companyData);
+			
+		}
+		
+		
 		
 		return "ok";
 	

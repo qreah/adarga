@@ -1,4 +1,4 @@
-package adarga.endpoint;
+package adarga.cron;
 
 import java.io.IOException;
 import java.io.PrintWriter;

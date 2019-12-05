@@ -38,7 +38,7 @@ public class CompanyProfile {
 	      (HttpRequest requestX) -> {
 	        requestX.setParser(new JsonObjectParser(JSON_FACTORY));
 	    });
-    	log.info(urlEndpointComposer);
+    	
 		GenericUrl url = new GenericUrl(urlEndpointComposer);
 		HttpRequest request = requestFactory.buildGetRequest(url);
 		HttpResponse res = request.execute();

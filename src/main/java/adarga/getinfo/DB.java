@@ -31,12 +31,14 @@ public class DB {
 	public DB() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
 		conn = ConnectDB();
+		statement = conn.createStatement();
 		
 	}
 	
 	public void close() throws SQLException {
 		//conn.close();
 		conn.abort(Runnable::run);
+		statement.close();
 	}
 	
 	public Connection ConnectDB() throws ServletException, ClassNotFoundException, IOException, SQLException {
@@ -153,7 +155,6 @@ public class DB {
 		if (conn.isClosed()) {
 			ConnectDB();
 		}
-		//	log.info(SQL);
 		boolean equity = SQL.contains("tockholders");
 		if (equity) {
 			SQL = SQL.replace("tockholders'", "tockholders");
@@ -166,8 +167,6 @@ public class DB {
 		try {
 			
 			secuencia = conn.createStatement();
-			
-			//log.info(SQL);
 			secuencia.executeUpdate(SQL);
 			executed = true;
 		} catch (SQLException e) {
@@ -184,11 +183,7 @@ public class DB {
 		if (conn.isClosed()) {
 			ConnectDB();	
 		}
-		
-		statement = conn.createStatement();
 		statement.addBatch(SQL);
-		
-		
 	}
 	
 	public int[] executeBatch() throws SQLException {
@@ -207,9 +202,27 @@ public class DB {
 		return round;
 	}
 	
+	public int getRoundFCFY() throws SQLException, ClassNotFoundException, ServletException, IOException {
+		int round = 0;
+		String SQL = "SELECT value FROM apiadbossDB.cv_variables WHERE variable = 'roundFCFY'";
+		ResultSet rs = ExecuteSELECT(SQL);
+		while (rs.next()) {
+			round = Integer.parseInt(rs.getString("value"));
+	    }
+		close();
+		return round;
+	}
+	
 	public void setRound(int round) throws ClassNotFoundException, ServletException, IOException, SQLException {
 		String roundString = String.valueOf(round);
 		String SQL = "UPDATE apiadbossDB.cv_variables SET value = '" + roundString + "' WHERE variable = 'round'";
+		Execute(SQL);
+		
+	}
+	
+	public void setRoundFCFY(int roundFCFY) throws ClassNotFoundException, ServletException, IOException, SQLException {
+		String roundString = String.valueOf(roundFCFY);
+		String SQL = "UPDATE apiadbossDB.cv_variables SET value = '" + roundString + "' WHERE variable = 'roundFCFY'";
 		Execute(SQL);
 		
 	}
@@ -244,7 +257,6 @@ public class DB {
 		String SQL = "select finantialDate from apiadbossDB.adargaConcepts " + 
 				"where symbol = '" + symbol + "'" + 
 				" order by finantialDate asc";	
-		log.info(SQL);
 		ResultSet rs = ExecuteSELECT(SQL);
 		while (rs.next()) {
 			if (!rs.getString("finantialDate").equals("TTM")) {

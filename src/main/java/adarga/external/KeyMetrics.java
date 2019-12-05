@@ -62,7 +62,7 @@ public class KeyMetrics {
 		HttpRequest request = requestFactory.buildGetRequest(url);
 		HttpResponse res = request.execute();
 		String json = res.parseAsString();
-		log.info(json);
+		
 		JSONObject j = new JSONObject(json);
 		if (j.has("metrics")) {
 			result = true;
@@ -71,10 +71,10 @@ public class KeyMetrics {
 			Iterator<Object> iter = metrics.iterator();
 			while (iter.hasNext()) {
 				JSONObject metricSet = (JSONObject) iter.next();
-				log.info(metricSet.toString());
+				
 				Metrics ratios = gson.fromJson(metricSet.toString(), Metrics.class);
 				String finDate = st.finDateConversion(ratios.getDate());
-				log.info(ratios.toString());
+				
 				
 				years.put(finDate, ratios);
 			}

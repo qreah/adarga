@@ -103,8 +103,7 @@ public class CashFlowStatement {
 				metrics.getFreeCashFlow());
 		list.put("EffectOfForexChangesOnCash", 
 				metrics.getEffectOfForexChangesOnCash());
-		list.put("FCFYield", 
-				metrics.getFCFYield());
+		
 		
 		return list;
 	}
@@ -126,7 +125,7 @@ public class CashFlowStatement {
 				Iterator<String> keyRatio = keysSet.iterator();
 				while (keyRatio.hasNext()) {
 					String concept = keyRatio.next();
-					log.info("value: " + ratiosList.get(concept));
+					
 					Double ratio = null;
 					if (ratiosList.get(concept) != null) {
 						if (!ratiosList.get(concept).equals("")) {
@@ -136,10 +135,9 @@ public class CashFlowStatement {
 					}
 					
 					String SQL = st.storeRow(companyData, concept, ratio, key, "Cash Flow Statement");	
-					log.info(SQL);
 					db.addBatch(SQL);	
 				}
-				db.executeBatch();
+				int[] result = db.executeBatch();
 				db.close();
 			}
 		}
@@ -167,16 +165,7 @@ public class CashFlowStatement {
     	@SerializedName("Effect of forex changes on cash") private String EffectOfForexChangesOnCash;
 
 
-    	public String getFCFYield() throws IOException {
-    		String out = "";
-    		Double fcf = Double.valueOf(this.getFreeCashFlow());
-    		CompanyProfile cp = new CompanyProfile();
-    		Profile profile = cp.getProfile(symbolName);
-    		Double marketValue = Double.valueOf(profile.getMktCap());
-    		Double fcfYield = fcf / marketValue;
-    		out = Double.toString(fcfYield);
-    		return out;
-    	}
+    	
     	
 		public String getDate() {
 			return date;
