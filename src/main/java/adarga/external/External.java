@@ -45,25 +45,20 @@ public class External extends HttpServlet {
 		String symbol = request.getParameter("sym");
 		
 		
-		
-		try {
-			FinantialRatios fr = new FinantialRatios();
+					FinantialRatios fr = new FinantialRatios();
 			KeyMetrics km = new KeyMetrics();
 			Growth g = new Growth();
 			BalanceSheet bs = new BalanceSheet();
 			IncomeStatement is = new IncomeStatement();
 			CashFlowStatement cs = new CashFlowStatement();
-			fr.storeReport(symbol);
-			km.storeReport(symbol);
-			g.storeReport(symbol);
-			is.storeReport(symbol);
-			bs.storeReport(symbol);
-			cs.storeReport(symbol);
+			//fr.storeReport(symbol);
+			//km.storeReport(symbol);
+			//g.storeReport(symbol);
+			//is.storeReport(symbol);
+			//bs.storeReport(symbol);
+			//cs.storeReport(symbol);
 			
-		} catch (ClassNotFoundException | SQLException e) {
-			
-			e.printStackTrace();
-		}
+		
 		
 		
 		

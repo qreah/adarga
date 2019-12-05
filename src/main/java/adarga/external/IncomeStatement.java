@@ -23,6 +23,9 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Key;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+
+import adarga.getinfo.DB;
 
 public class IncomeStatement {
 	private static final Logger log = Logger.getLogger(IncomeStatement.class.getName());
@@ -91,8 +94,9 @@ public class IncomeStatement {
 		return list;
 	}
     
-    static public void storeReport(String symbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
-		boolean exists = execute(symbol);
+    static public void storeReport(HashMap<String, String> companyData) throws IOException, ClassNotFoundException, ServletException, SQLException {
+    	String symbol = companyData.get("symbol");
+    	boolean exists = execute(symbol);
 		if (exists) {
 			Storage st = new Storage();
 			Set<String> keys = years.keySet();
@@ -103,10 +107,11 @@ public class IncomeStatement {
 				IS metrics = years.get(key);
 				HashMap<String, String> ratiosList = getMetricsList(metrics);
 				Set<String> keysSet = ratiosList.keySet();
+				DB db = new DB();
 				Iterator<String> keyRatio = keysSet.iterator();
 				while (keyRatio.hasNext()) {
 					String concept = keyRatio.next();
-					log.info("value: " + ratiosList.get(concept));
+					
 					Double ratio = null;
 					if (ratiosList.get(concept) != null) {
 						if (!ratiosList.get(concept).equals("")) {
@@ -115,8 +120,11 @@ public class IncomeStatement {
 						
 					}
 					
-					st.store(symbol, concept, ratio, key);	
+					String SQL = st.storeRow(companyData, concept, ratio, key, "Income Statement");	
+					db.addBatch(SQL);	
 				}
+				db.executeBatch();
+				db.close();
 			}
 		}
 		
@@ -125,16 +133,16 @@ public class IncomeStatement {
     
     static public class IS {
     	
-		@Key("date") private String date;
-		@Key("Revenue") private String Revenue;
-		@Key("Cost of Revenue") private String CostOfRevenue;
-		@Key("Operating Income") private String OperatingIncome;
-		@Key("Interest Expense") private String InterestExpense;
-		@Key("Net Income") private String NetIncome;
-		@Key("EPS") private String EPS;
-		@Key("EPS Diluted") private String EPSDiluted;
-		@Key("Dividend per Share") private String DividendPerShare;
-		@Key("Free Cash Flow margin") private String FreeCashFlowMargin;
+    	@SerializedName("date") private String date;
+    	@SerializedName("Revenue") private String Revenue;
+    	@SerializedName("Cost of Revenue") private String CostOfRevenue;
+    	@SerializedName("Operating Income") private String OperatingIncome;
+    	@SerializedName("Interest Expense") private String InterestExpense;
+    	@SerializedName("Net Income") private String NetIncome;
+    	@SerializedName("EPS") private String EPS;
+    	@SerializedName("EPS Diluted") private String EPSDiluted;
+    	@SerializedName("Dividend per Share") private String DividendPerShare;
+    	@SerializedName("Free Cash Flow margin") private String FreeCashFlowMargin;
 		
 		
 		public String getDate() {

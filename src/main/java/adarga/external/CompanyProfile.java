@@ -17,6 +17,7 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Key;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import adarga.external.KeyMetrics.Metrics;
 
@@ -37,6 +38,7 @@ public class CompanyProfile {
 	      (HttpRequest requestX) -> {
 	        requestX.setParser(new JsonObjectParser(JSON_FACTORY));
 	    });
+    	log.info(urlEndpointComposer);
 		GenericUrl url = new GenericUrl(urlEndpointComposer);
 		HttpRequest request = requestFactory.buildGetRequest(url);
 		HttpResponse res = request.execute();
@@ -52,14 +54,14 @@ public class CompanyProfile {
     
     static public class Profile {
 		
-		@Key("companyName") private String companyName;
-		@Key("exchange") private String exchange;
-		@Key("industry") private String industry;
-		@Key("sector") private String sector;
-		@Key("ceo") private String ceo;
-		@Key("description") private String description;
-		@Key("price") private String price;
-		@Key("mktCap") private String mktCap;
+    	@SerializedName("companyName") private String companyName;
+    	@SerializedName("exchange") private String exchange;
+    	@SerializedName("industry") private String industry;
+    	@SerializedName("sector") private String sector;
+    	@SerializedName("ceo") private String ceo;
+    	@SerializedName("description") private String description;
+    	@SerializedName("price") private String price;
+    	@SerializedName("mktCap") private String mktCap;
 		
 		
 		

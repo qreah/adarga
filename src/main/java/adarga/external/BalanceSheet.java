@@ -23,9 +23,11 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Key;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import adarga.external.IncomeStatement.IS;
 import adarga.external.KeyMetrics.Metrics;
+import adarga.getinfo.DB;
 
 public class BalanceSheet {
 	private static final Logger log = Logger.getLogger(BalanceSheet.class.getName());
@@ -111,22 +113,26 @@ public class BalanceSheet {
 	}
     
     
-    public static void storeReport(String symbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
-		boolean exists = execute(symbol);
+    public static void storeReport(HashMap<String, String> companyData) throws IOException, ClassNotFoundException, ServletException, SQLException {
+		String symbol = companyData.get("symbol");
+    	boolean exists = execute(symbol);
 		if (exists) {
 			Storage st = new Storage();
 			Set<String> keys = years.keySet();
 			
 			Iterator<String> iter = keys.iterator();
+			
+			// Itera para cada año
 			while (iter.hasNext()) {
 				String key = iter.next();
 				BS metrics = years.get(key);
 				HashMap<String, String> ratiosList = getMetricsList(metrics);
 				Set<String> keysSet = ratiosList.keySet();
 				Iterator<String> keyRatio = keysSet.iterator();
+				DB db = new DB();
+				// Itera para cada ratio
 				while (keyRatio.hasNext()) {
 					String concept = keyRatio.next();
-					log.info("value: " + ratiosList.get(concept));
 					Double ratio = null;
 					if (ratiosList.get(concept) != null) {
 						if (!ratiosList.get(concept).equals("")) {
@@ -135,9 +141,15 @@ public class BalanceSheet {
 						
 					}
 					
-					st.store(symbol, concept, ratio, key);	
+					String SQL = st.storeRow(companyData, concept, ratio, key, "Balance Sheet");	
+					
+					db.addBatch(SQL);
 				}
+				db.executeBatch();
+				db.close();
 			}
+			
+			
 		}
 		
 	}
@@ -146,25 +158,25 @@ public class BalanceSheet {
     
     static public class BS {
     	
-		@Key("date") private String date;
-		@Key("Cash and short-term investments") private String CashAndShortTermInvestments;
-		@Key("Receivables") private String Receivables;
-		@Key("Inventories") private String Inventories;
-		@Key("Total current assets") private String TotalCurrentAssets;
-		@Key("Property, Plant & Equipment Net") private String PropertyPlantEquipmentNet;
-		@Key("Goodwill and Intangible Assets") private String GoodwillAndIntangibleAssets;
-		@Key("Total non-current assets") private String TotalNonCurrentAssets;
-		@Key("Total assets") private String TotalAssets;
-		@Key("Payables") private String Payables;
-		@Key("Short-term debt") private String ShortTermDebt;
-		@Key("Total current liabilities") private String TotalCurrentLiabilities;
-		@Key("Long-term debt") private String LongTermDebt;
-		@Key("Total debt") private String TotalDebt;
-		@Key("Deferred revenue") private String DeferredRevenue;
-		@Key("Total non-current liabilities") private String TotalNonCurrentLiabilities;
-		@Key("Total liabilities") private String TotalLiabilities;
-		@Key("Total shareholders equity") private String TotalShareholdersEquity;
-		@Key("Net Debt") private String NetDebt;
+		@SerializedName("date") private String date;
+		@SerializedName("Cash and short-term investments") private String CashAndShortTermInvestments;
+		@SerializedName("Receivables") private String Receivables;
+		@SerializedName("Inventories") private String Inventories;
+		@SerializedName("Total current assets") private String TotalCurrentAssets;
+		@SerializedName("Property, Plant & Equipment Net") private String PropertyPlantEquipmentNet;
+		@SerializedName("Goodwill and Intangible Assets") private String GoodwillAndIntangibleAssets;
+		@SerializedName("Total non-current assets") private String TotalNonCurrentAssets;
+		@SerializedName("Total assets") private String TotalAssets;
+		@SerializedName("Payables") private String Payables;
+		@SerializedName("Short-term debt") private String ShortTermDebt;
+		@SerializedName("Total current liabilities") private String TotalCurrentLiabilities;
+		@SerializedName("Long-term debt") private String LongTermDebt;
+		@SerializedName("Total debt") private String TotalDebt;
+		@SerializedName("Deferred revenue") private String DeferredRevenue;
+		@SerializedName("Total non-current liabilities") private String TotalNonCurrentLiabilities;
+		@SerializedName("Total liabilities") private String TotalLiabilities;
+		@SerializedName("Total shareholders equity") private String TotalShareholdersEquity;
+		@SerializedName("Net Debt") private String NetDebt;
 		
 		public String getDate() {
 			return date;

@@ -23,9 +23,11 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Key;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import adarga.external.FinantialRatios.Ratios;
 import adarga.external.KeyMetrics.Metrics;
+import adarga.getinfo.DB;
 
 public class Growth {
 	
@@ -113,8 +115,9 @@ public class Growth {
 		return list;
 	}
     
-    public static void storeReport(String symbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
-		boolean exists = execute(symbol);
+    public static void storeReport(HashMap<String, String> companyData) throws IOException, ClassNotFoundException, ServletException, SQLException {
+    	String symbol = companyData.get("symbol");
+    	boolean exists = execute(symbol);
 		if (exists) {
 			Storage st = new Storage();
 			Set<String> keys = years.keySet();
@@ -125,6 +128,7 @@ public class Growth {
 				GrowthMetrics metrics = years.get(key);
 				HashMap<String, String> ratiosList = getMetricsList(metrics);
 				Set<String> keysSet = ratiosList.keySet();
+				DB db = new DB();
 				Iterator<String> keyRatio = keysSet.iterator();
 				while (keyRatio.hasNext()) {
 					String concept = keyRatio.next();
@@ -137,8 +141,11 @@ public class Growth {
 						
 					}
 					
-					st.store(symbol, concept, ratio, key);	
+					String SQL = st.storeRow(companyData, concept, ratio, key, "Growth");	
+					db.addBatch(SQL);
 				}
+				db.executeBatch();
+				db.close();
 			}
 		}
 		
@@ -146,26 +153,26 @@ public class Growth {
     
     static public class GrowthMetrics {
     	
-    	@Key("date") private String date;
-		@Key("Gross Profit Growth") private String GrossProfitGrowth;
-		@Key("Operating Income Growth") private String OperatingIncomeGrowth;
-		@Key("Net Income Growth") private String NetIncomeGrowth;
-		@Key("EPS Growth") private String EPSGrowth;
-		@Key("EPS Diluted Growth") private String EPSDilutedGrowth;
-		@Key("Dividends per Share Growth") private String DividendsPerShareGrowth;
-		@Key("Free Cash Flow growth") private String FreeCashFlowgrowth;
-		@Key("10Y Revenue Growth (per Share)") private String _10YRevenueGrowthPerShare;
-		@Key("5Y Revenue Growth (per Share)") private String _5YRevenueGrowthPerShare;
-		@Key("3Y Revenue Growth (per Share)") private String _3YRevenueGrowthPerShare;
-		@Key("10Y Operating CF Growth (per Share)") private String _10YOperatingCFGrowthPerShare;
-		@Key("5Y Operating CF Growth (per Share)") private String _5YOperatingCFGrowthPerShare;
-		@Key("3Y Operating CF Growth (per Share)") private String _3YOperatingCFGrowthPerShare;
-		@Key("10Y Dividend per Share Growth (per Share)") private String _10YDividendPerShareGrowthPerShare;
-		@Key("5Y Dividend per Share Growth (per Share)") private String _5YDividendPerShareGrowthPerShare;
-		@Key("3Y Dividend per Share Growth (per Share)") private String _3YDividendPerShareGrowthPerShare;
-		@Key("Debt Growth") private String DebtGrowth;
-		@Key("R&D Expense Growth") private String RDExpenseGrowth;
-		@Key("SG&A Expenses Growth") private String SGAExpensesGrowth;
+    	@SerializedName("date") private String date;
+    	@SerializedName("Gross Profit Growth") private String GrossProfitGrowth;
+    	@SerializedName("Operating Income Growth") private String OperatingIncomeGrowth;
+    	@SerializedName("Net Income Growth") private String NetIncomeGrowth;
+    	@SerializedName("EPS Growth") private String EPSGrowth;
+    	@SerializedName("EPS Diluted Growth") private String EPSDilutedGrowth;
+    	@SerializedName("Dividends per Share Growth") private String DividendsPerShareGrowth;
+    	@SerializedName("Free Cash Flow growth") private String FreeCashFlowgrowth;
+    	@SerializedName("10Y Revenue Growth (per Share)") private String _10YRevenueGrowthPerShare;
+    	@SerializedName("5Y Revenue Growth (per Share)") private String _5YRevenueGrowthPerShare;
+    	@SerializedName("3Y Revenue Growth (per Share)") private String _3YRevenueGrowthPerShare;
+    	@SerializedName("10Y Operating CF Growth (per Share)") private String _10YOperatingCFGrowthPerShare;
+    	@SerializedName("5Y Operating CF Growth (per Share)") private String _5YOperatingCFGrowthPerShare;
+    	@SerializedName("3Y Operating CF Growth (per Share)") private String _3YOperatingCFGrowthPerShare;
+    	@SerializedName("10Y Dividend per Share Growth (per Share)") private String _10YDividendPerShareGrowthPerShare;
+    	@SerializedName("5Y Dividend per Share Growth (per Share)") private String _5YDividendPerShareGrowthPerShare;
+    	@SerializedName("3Y Dividend per Share Growth (per Share)") private String _3YDividendPerShareGrowthPerShare;
+    	@SerializedName("Debt Growth") private String DebtGrowth;
+    	@SerializedName("R&D Expense Growth") private String RDExpenseGrowth;
+    	@SerializedName("SG&A Expenses Growth") private String SGAExpensesGrowth;
 		
 		public String getDate() {
 			return date;

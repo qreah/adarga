@@ -28,6 +28,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Key;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
 import adarga.external.CompanyProfile.Profile;
@@ -66,7 +67,7 @@ public class KeyMetrics {
 		if (j.has("metrics")) {
 			result = true;
 			JSONArray metrics = j.getJSONArray("metrics");
-			Gson gson = new GsonBuilder().create();
+			Gson gson = new Gson();
 			Iterator<Object> iter = metrics.iterator();
 			while (iter.hasNext()) {
 				JSONObject metricSet = (JSONObject) iter.next();
@@ -119,7 +120,8 @@ public class KeyMetrics {
 		return list;
 	}
 	
-	public static void storeReport(String symbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
+	public static void storeReport(HashMap<String, String> companyData) throws IOException, ClassNotFoundException, ServletException, SQLException {
+		String symbol = companyData.get("symbol");
 		boolean exists = execute(symbol);
 		if (exists) {
 			Storage st = new Storage();
@@ -130,12 +132,12 @@ public class KeyMetrics {
 				String key = iter.next();
 				Metrics metrics = years.get(key);
 				HashMap<String, String> ratiosList = getMetricsList(metrics);
-				log.info(ratiosList.toString());
+				DB db = new DB();
 				Set<String> keysSet = ratiosList.keySet();
 				Iterator<String> keyRatio = keysSet.iterator();
 				while (keyRatio.hasNext()) {
 					String concept = keyRatio.next();
-					log.info("value: " + ratiosList.get(concept));
+					
 					Double ratio = null;
 					if (ratiosList.get(concept) != null) {
 						if (!ratiosList.get(concept).equals("")) {
@@ -144,8 +146,11 @@ public class KeyMetrics {
 						
 					}
 					
-					st.store(symbol, concept, ratio, key);	
+					String SQL = st.storeRow(companyData, concept, ratio, key, "KeyMetrics");	
+					db.addBatch(SQL);
 				}
+				db.executeBatch();
+				db.close();
 			}
 		}
 		
@@ -155,23 +160,73 @@ public class KeyMetrics {
 	
 	static public class Metrics {
 		
-		@Key("date") private String date;
-		@Key("Revenue per Share") private String revenuePerShare;
-		@Key("Free Cash Flow per Share") private String freeCashFlowPerShare;
-		@Key("PE ratio") private String PERatio;
-		@Key("Price to Sales Ratio") private String priceToSalesRatio;
-		@Key("Free Cash Flow Yield") private String freeCashFlowYield;
-		@Key("Debt to Assets") private String debtToAssets;
-		@Key("Dividend Yield") private String dividendYield;
-		@Key("Payout Ratio") private String payoutRatio;
-		@Key("SG&A to Revenue") private String SGAToRevenue;
-		@Key("R&D to Revenue") private String RDToRevenue;
-		@Key("Graham Number") private String GrahamNumber;
-		@Key("Return on Tangible Assets") private String returnOnTangibleAssets;
-		@Key("ROE") private String ROE;
-		@Key("Capex to Operating Cash Flow") private String CapexToOperatingCashFlow;
+		@SerializedName("date") private String date;
+		@SerializedName("Revenue per Share") private String revenuePerShare;
+		@SerializedName("Free Cash Flow per Share") private String freeCashFlowPerShare;
+		@SerializedName("PE ratio") private String PERatio;
+		@SerializedName("Price to Sales Ratio") private String priceToSalesRatio;
+		@SerializedName("Free Cash Flow Yield") private String freeCashFlowYield;
+		@SerializedName("Debt to Assets") private String debtToAssets;
+		@SerializedName("Dividend Yield") private String dividendYield;
+		@SerializedName("Payout Ratio") private String payoutRatio;
+		@SerializedName("SG&A to Revenue") private String SGAToRevenue;
+		@SerializedName("R&D to Revenue") private String RDToRevenue;
+		@SerializedName("Graham Number") private String GrahamNumber;
+		@SerializedName("Return on Tangible Assets") private String returnOnTangibleAssets;
+		@SerializedName("ROE") private String ROE;
+		@SerializedName("Capex to Operating Cash Flow") private String CapexToOperatingCashFlow;
 		
-		
+		public String category(String ratio) {
+			String result = "";
+			switch(ratio) {
+				case "revenuePerShare":
+					result = "Per share";
+					break;
+				case "freeCashFlowPerShare":
+					result = "Per share";
+					break;
+				case "PERatio":
+					result = "Valuation";
+					break;
+				case "priceToSalesRatio":
+					result = "Valuation";
+					break;
+				case "freeCashFlowYield":
+					result = "Valuation";
+					break;
+				case "debtToAssets":
+					result = "Debt";
+					break;
+				case "dividendYield":
+					result = "Shareholder return";
+					break;
+				case "payoutRatio":
+					result = "Shareholder return";
+					break;
+				case "SGAToRevenue":
+					result = "Profitability";
+					break;
+				case "RDToRevenue":
+					result = "Profitability";
+					break;
+				case "GrahamNumber":
+					result = "Valuation";
+					break;
+				case "returnOnTangibleAssets":
+					result = "Shareholder return";
+					break;
+				case "ROE":
+					result = "Shareholder return";
+					break;
+				case "CapexToOperatingCashFlow":
+					result = "Shareholder return";
+					break;
+					
+			
+			}
+			
+			return result;
+		}
 		
 		@Override
 		public String toString() {
@@ -285,7 +340,7 @@ public class KeyMetrics {
 
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException, ServletException, SQLException {
-		storeReport("MMM");
+		//storeReport("MMM");
 		
 		
 

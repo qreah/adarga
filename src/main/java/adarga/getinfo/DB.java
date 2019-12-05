@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
@@ -25,6 +26,7 @@ public class DB {
 	String dataBase = "apiadbossDB";
 	String instanceConnectionName = "devadboss-181207:europe-west1:apiadboss";
 	String roorPass = "rootadboss2018";
+	Statement statement;
 	
 	public DB() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
@@ -33,7 +35,8 @@ public class DB {
 	}
 	
 	public void close() throws SQLException {
-		conn.close();
+		//conn.close();
+		conn.abort(Runnable::run);
 	}
 	
 	public Connection ConnectDB() throws ServletException, ClassNotFoundException, IOException, SQLException {
@@ -163,6 +166,7 @@ public class DB {
 		try {
 			
 			secuencia = conn.createStatement();
+			
 			//log.info(SQL);
 			secuencia.executeUpdate(SQL);
 			executed = true;
@@ -173,6 +177,23 @@ public class DB {
 		} 
 		
 		return executed;
+	}
+	
+	
+	public void addBatch(String SQL) throws ClassNotFoundException, SQLException, ServletException, IOException {
+		if (conn.isClosed()) {
+			ConnectDB();	
+		}
+		
+		statement = conn.createStatement();
+		statement.addBatch(SQL);
+		
+		
+	}
+	
+	public int[] executeBatch() throws SQLException {
+		int[] result = statement.executeBatch();
+		return result;
 	}
 
 	public int getRound() throws SQLException, ClassNotFoundException, ServletException, IOException {
@@ -202,6 +223,36 @@ public class DB {
 		}
 		close();
 		return result;
+	}
+	
+	public String getRatio(String symbol, String concept, String finDate) throws ClassNotFoundException, SQLException, ServletException, IOException {
+		String out = "";
+		String SQL = "select value from apiadbossDB.adargaConcepts " + 
+				"where symbol = '" + symbol + "'" + 
+				" and concept = '" + concept + "'" + 
+				" and finantialDate = '" + finDate + "'";	
+		log.info(SQL);
+		ResultSet rs = ExecuteSELECT(SQL);
+		while (rs.next()) {
+			out = rs.getString("value");
+		}
+		return out;
+	}
+	
+	public String getLastFinDate(String symbol) throws ClassNotFoundException, SQLException, ServletException, IOException {
+		String out = "";
+		String SQL = "select finantialDate from apiadbossDB.adargaConcepts " + 
+				"where symbol = '" + symbol + "'" + 
+				" order by finantialDate asc";	
+		log.info(SQL);
+		ResultSet rs = ExecuteSELECT(SQL);
+		while (rs.next()) {
+			if (!rs.getString("finantialDate").equals("TTM")) {
+				out = rs.getString("finantialDate");
+			}
+			
+		}
+		return out;
 	}
 
 }

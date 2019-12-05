@@ -2,6 +2,6 @@
   <cron>
     <url>/data</url>
     <description>daily getting financials data</description>
-    <schedule>every 5 minutes from 00:00 to 7:30</schedule>
+    <schedule>every 20 minutes from 00:00 to 8:00</schedule>
   </cron>
 </cronentries>

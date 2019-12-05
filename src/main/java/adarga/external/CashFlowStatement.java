@@ -23,14 +23,17 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Key;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
+import adarga.external.CompanyProfile.Profile;
 import adarga.external.IncomeStatement.IS;
 import adarga.external.KeyMetrics.Metrics;
+import adarga.getinfo.DB;
 
 public class CashFlowStatement {
 	
 	private static final Logger log = Logger.getLogger(CashFlowStatement.class.getName());
-	private static String symbol;
+	private static String symbolName;
 	private static String urlEndpoint = "https://financialmodelingprep.com/api/v3/financials/cash-flow-statement/";
 	static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     static JsonFactory JSON_FACTORY = new JacksonFactory();
@@ -52,6 +55,7 @@ public class CashFlowStatement {
 		HttpResponse res = request.execute();
 		String json = res.parseAsString();
 		JSONObject j = new JSONObject(json);
+		symbolName = symbol;
 		if (j.has("financials")) {
 			result = true;
 			JSONArray metrics = j.getJSONArray("financials");
@@ -71,7 +75,7 @@ public class CashFlowStatement {
 	}
     
     
-    static public HashMap<String, String> getMetricsList(CS metrics) {
+    static public HashMap<String, String> getMetricsList(CS metrics) throws IOException {
 		HashMap<String, String> list = new HashMap<String, String>();
 		list.put("OperatingCashFlow", 
 				metrics.getOperatingCashFlow());
@@ -99,12 +103,15 @@ public class CashFlowStatement {
 				metrics.getFreeCashFlow());
 		list.put("EffectOfForexChangesOnCash", 
 				metrics.getEffectOfForexChangesOnCash());
+		list.put("FCFYield", 
+				metrics.getFCFYield());
 		
 		return list;
 	}
     
-    public static void storeReport(String symbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
-		boolean exists = execute(symbol);
+    public static void storeReport(HashMap<String, String> companyData) throws IOException, ClassNotFoundException, ServletException, SQLException {
+    	String symbol = companyData.get("symbol");
+    	boolean exists = execute(symbol);
 		if (exists) {
 			Storage st = new Storage();
 			Set<String> keys = years.keySet();
@@ -115,6 +122,7 @@ public class CashFlowStatement {
 				CS metrics = years.get(key);
 				HashMap<String, String> ratiosList = getMetricsList(metrics);
 				Set<String> keysSet = ratiosList.keySet();
+				DB db = new DB();
 				Iterator<String> keyRatio = keysSet.iterator();
 				while (keyRatio.hasNext()) {
 					String concept = keyRatio.next();
@@ -127,8 +135,12 @@ public class CashFlowStatement {
 						
 					}
 					
-					st.store(symbol, concept, ratio, key);	
+					String SQL = st.storeRow(companyData, concept, ratio, key, "Cash Flow Statement");	
+					log.info(SQL);
+					db.addBatch(SQL);	
 				}
+				db.executeBatch();
+				db.close();
 			}
 		}
 		
@@ -139,22 +151,33 @@ public class CashFlowStatement {
     
     static public class CS {
     	
-		@Key("date") private String date;
-		@Key("Operating Cash Flow") private String OperatingCashFlow;
-		@Key("Capital Expenditure") private String CapitalExpenditure;
-		@Key("Inventories") private String Inventories;
-		@Key("Acquisitions and disposals") private String AcquisitionsAndDisposals;
-		@Key("Investment purchases and sales") private String InvestmentPurchasesAndSales;
-		@Key("Investing Cash flow") private String InvestingCashFlow;
-		@Key("Issuance (repayment) of debt") private String IssuanceRepaymentOfDebt;
-		@Key("Issuance (buybacks) of shares") private String IssuanceBuybacksOfShares;
-		@Key("Dividend payments") private String DividendPayments;
-		@Key("Financing Cash Flow") private String FinancingCashFlow;
-		@Key("Net cash flow / Change in cash") private String NetCashFlow_ChangeInCash;
-		@Key("Free Cash Flow") private String FreeCashFlow;
-		@Key("Effect of forex changes on cash") private String EffectOfForexChangesOnCash;
-		
-		
+    	@SerializedName("date") private String date;
+    	@SerializedName("Operating Cash Flow") private String OperatingCashFlow;
+    	@SerializedName("Capital Expenditure") private String CapitalExpenditure;
+    	@SerializedName("Inventories") private String Inventories;
+    	@SerializedName("Acquisitions and disposals") private String AcquisitionsAndDisposals;
+    	@SerializedName("Investment purchases and sales") private String InvestmentPurchasesAndSales;
+    	@SerializedName("Investing Cash flow") private String InvestingCashFlow;
+    	@SerializedName("Issuance (repayment) of debt") private String IssuanceRepaymentOfDebt;
+    	@SerializedName("Issuance (buybacks) of shares") private String IssuanceBuybacksOfShares;
+    	@SerializedName("Dividend payments") private String DividendPayments;
+    	@SerializedName("Financing Cash Flow") private String FinancingCashFlow;
+    	@SerializedName("Net cash flow / Change in cash") private String NetCashFlow_ChangeInCash;
+    	@SerializedName("Free Cash Flow") private String FreeCashFlow;
+    	@SerializedName("Effect of forex changes on cash") private String EffectOfForexChangesOnCash;
+
+
+    	public String getFCFYield() throws IOException {
+    		String out = "";
+    		Double fcf = Double.valueOf(this.getFreeCashFlow());
+    		CompanyProfile cp = new CompanyProfile();
+    		Profile profile = cp.getProfile(symbolName);
+    		Double marketValue = Double.valueOf(profile.getMktCap());
+    		Double fcfYield = fcf / marketValue;
+    		out = Double.toString(fcfYield);
+    		return out;
+    	}
+    	
 		public String getDate() {
 			return date;
 		}

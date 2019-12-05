@@ -46,7 +46,7 @@ package adarga.keywords;
 	import com.google.api.ads.common.lib.exception.ValidationException;
 	import com.google.api.client.auth.oauth2.Credential;
 
-import adarga.endpoint.Automatic;
+
 
 import java.rmi.RemoteException;
 	import java.util.ArrayList;
@@ -62,7 +62,7 @@ import java.util.stream.Collectors;
 	 */
 	
 	public class KeywordPlanner {
-	  private static final Logger log = Logger.getLogger(Automatic.class.getName());
+	  private static final Logger log = Logger.getLogger(KeywordPlanner.class.getName());
 		
 	  public static void main(String[] args) {
 	    AdWordsSession session;

@@ -26,6 +26,7 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Key;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
 import adarga.external.FinantialRatios.Ratios;
@@ -75,19 +76,55 @@ public class FinantialRatios {
 	
 	static public HashMap<String, Double> getRatioList(Ratios ratios) {
 		HashMap<String, Double> list = new HashMap<String, Double>();
-		list.put("GrossProfitMargin", ratios.getProfitabilityIndicatorRatios().getGrossProfitMargin());
-		list.put("OperatingProfitMargin", ratios.getProfitabilityIndicatorRatios().getOperatingProfitMargin());
-		list.put("NetProfitMargin", ratios.getProfitabilityIndicatorRatios().getNetProfitMargin());
-		list.put("ReturnOnEquity", ratios.getProfitabilityIndicatorRatios().getReturnOnEquity());
-		list.put("ReturnOnAssets", ratios.getProfitabilityIndicatorRatios().getReturnOnAssets());
-		list.put("ReturnOnCapitalEmployed", ratios.getProfitabilityIndicatorRatios().getReturnOnCapitalEmployed());
-		list.put("DebtRatio", ratios.getDebtRatios().getDebtRatio());
-		list.put("PriceSalesRatio", ratios.getInvestmentValuationRatios().getPriceSalesRatio());
-		list.put("PriceCashFlowRatio", ratios.getInvestmentValuationRatios().getPriceCashFlowRatio());
+		
+		list.put("debtRatio", ratios.getDebtRatios().getDebtRatio());
+		list.put("longtermDebtToCapitalization", ratios.getDebtRatios().getlongtermDebtToCapitalization());
+		list.put("interestCoverageRatio", ratios.getDebtRatios().getInterestCoverageRatio());
+		list.put("cashFlowToDebtRatio", ratios.getDebtRatios().getCashFlowToDebtRatio());
+		
+		list.put("currentRatio", ratios.getLiquidityMeasurementRatios().getCurrentRatio());
+		list.put("quickRatio", ratios.getLiquidityMeasurementRatios().getQuickRatio());
+		list.put("cashRatio", ratios.getLiquidityMeasurementRatios().getCashRatio());
+		list.put("daysofSalesOutstanding", ratios.getLiquidityMeasurementRatios().getDaysofSalesOutstanding());
+		list.put("daysofInventoryOutstanding", ratios.getLiquidityMeasurementRatios().getDaysofInventoryOutstanding());
+		list.put("operatingCycle", ratios.getLiquidityMeasurementRatios().getOperatingCycle());
+		list.put("daysofPayablesOutstanding", ratios.getLiquidityMeasurementRatios().getDaysofPayablesOutstanding());
+		list.put("cashConversionCycle", ratios.getLiquidityMeasurementRatios().getCashConversionCycle());
+		
+		list.put("grossProfitMargin", ratios.getProfitabilityIndicatorRatios().getGrossProfitMargin());
+		list.put("operatingProfitMargin", ratios.getProfitabilityIndicatorRatios().getOperatingProfitMargin());
+		list.put("netProfitMargin", ratios.getProfitabilityIndicatorRatios().getNetProfitMargin());
+		list.put("returnOnEquity", ratios.getProfitabilityIndicatorRatios().getReturnOnEquity());
+		list.put("returnOnAssets", ratios.getProfitabilityIndicatorRatios().getReturnOnAssets());
+		list.put("returnOnCapitalEmployed", ratios.getProfitabilityIndicatorRatios().getReturnOnCapitalEmployed());
+		list.put("pretaxProfitMargin", ratios.getProfitabilityIndicatorRatios().getPretaxProfitMargin());
+		list.put("effectiveTaxRate", ratios.getProfitabilityIndicatorRatios().getEffectiveTaxRate());
+		
+		list.put("fixedAssetTurnover", ratios.getOperatingPerformanceRatios().getFixedAssetTurnover());
+		list.put("assetTurnover", ratios.getOperatingPerformanceRatios().getAssetTurnover());
+		
+		list.put("operatingCashFlowSalesRatio", ratios.getCashFlowIndicatorRatios().getOperatingCashFlowSalesRatio());
+		list.put("freeCashFlowOperatingCashFlowRatio", ratios.getCashFlowIndicatorRatios().getFreeCashFlowOperatingCashFlowRatio());
+		list.put("cashFlowCoverageRatios", ratios.getCashFlowIndicatorRatios().getCashFlowCoverageRatios());
+		list.put("shortTermCoverageRatios", ratios.getCashFlowIndicatorRatios().getShortTermCoverageRatios());
+		list.put("capitalExpenditureCoverageRatios", ratios.getCashFlowIndicatorRatios().getCapitalExpenditureCoverageRatios());
+		list.put("dividendpaidAndCapexCoverageRatios", ratios.getCashFlowIndicatorRatios().getDividendpaidAndCapexCoverageRatios());
+		list.put("dividendPayoutRatio", ratios.getCashFlowIndicatorRatios().getDividendPayoutRatio());
+		
+		list.put("priceSalesRatio", ratios.getInvestmentValuationRatios().getPriceSalesRatio());
+		list.put("priceCashFlowRatio", ratios.getInvestmentValuationRatios().getPriceCashFlowRatio());
+		list.put("priceBookValueRatio", ratios.getInvestmentValuationRatios().getPriceBookValueRatio());
+		list.put("priceEarningsRatio", ratios.getInvestmentValuationRatios().getPriceEarningsRatio());
+		list.put("priceEarningsToGrowthRatio", ratios.getInvestmentValuationRatios().getPriceEarningsToGrowthRatio());
+		list.put("dividendYield", ratios.getInvestmentValuationRatios().getDividendYield());
+		list.put("enterpriseValueMultiple", ratios.getInvestmentValuationRatios().getEnterpriseValueMultiple());
+		list.put("priceFairValue", ratios.getInvestmentValuationRatios().getPriceFairValue());
+	
 		return list;
 	}
 	
-	public static void storeReport(String symbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
+	public static void storeReport(HashMap<String, String> companyData) throws IOException, ClassNotFoundException, ServletException, SQLException {
+		String symbol = companyData.get("symbol");
 		execute(symbol);
 		Storage st = new Storage();
 		Set<String> keys = years.keySet();
@@ -98,20 +135,157 @@ public class FinantialRatios {
 			Ratios ratios = years.get(key);
 			HashMap<String, Double> ratiosList = getRatioList(ratios);
 			Set<String> keysSet = ratiosList.keySet();
+			DB db = new DB();
 			Iterator<String> keyRatio = keysSet.iterator();
 			while (keyRatio.hasNext()) {
 				String concept = keyRatio.next();
 				Double ratio = ratiosList.get(concept);
-				st.store(symbol, concept, ratio, key);	
+				String SQL = st.storeRow(companyData, concept, ratio, key, category(concept));	
+				log.info(SQL);
+				db.addBatch(SQL);
 			}
+			db.executeBatch();
+			db.close();
 		}
+	}
+	
+	
+
+	
+	public static String category(String ratio) {
+		String result = "";
+		switch(ratio) {
+			case "priceFairValue":
+				result = "Valuation";
+				break;
+			case "enterpriseValueMultiple":
+				result = "Valuation";
+				break;
+			case "dividendYield":
+				result = "Shareholder return";
+				break;
+			case "priceSalesRatio":
+				result = "Valuation";
+				break;
+			case "priceEarningsToGrowthRatio":
+				result = "Valuation";
+				break;
+			case "priceEarningsRatio":
+				result = "Valuation";
+				break;				
+			case "priceCashFlowRatio":
+				result = "Valuation";
+				break;
+			case "priceBookValueRatio":
+				result = "Valuation";
+				break;
+			case "dividendPayoutRatio":
+				result = "Shareholder return";
+				break;
+			case "dividendpaidAndCapexCoverageRatios":
+				result = "Shareholder return";
+				break;
+			case "capitalExpenditureCoverageRatios":
+				result = "Shareholder return";
+				break;
+			case "shortTermCoverageRatios":
+				result = "Debt";
+				break;				
+			case "cashFlowCoverageRatios":
+				result = "Shareholder return";
+				break;
+			case "freeCashFlowOperatingCashFlowRatio":
+				result = "Shareholder return";
+				break;
+			case "operatingCashFlowSalesRatio":
+				result = "Shareholder return";
+				break;
+			case "assetTurnover":
+				result = "Profitability";
+				break;
+			case "fixedAssetTurnover":
+				result = "Profitability";
+				break;
+			case "companyEquityMultiplier":
+				result = "Valuation";
+				break;
+			case "cashFlowToDebtRatio":
+				result = "Debt";
+				break;
+			case "interestCoverageRatio":
+				result = "Debt";
+				break;
+			case "totalDebtToCapitalization":
+				result = "Debt";
+				break;							
+			case "longtermDebtToCapitalization":
+				result = "Debt";
+				break;
+			case "debtEquityRatio":
+				result = "Debt";
+				break;
+			case "debtRatio":
+				result = "Debt";
+				break;
+			case "eBITperRevenue":
+				result = "Profitability";
+				break;
+			case "eBTperEBIT":
+				result = "Profitability";
+				break;
+			case "nIperEBT":
+				result = "Profitability";
+				break;
+			case "returnOnCapitalEmployed":
+				result = "Shareholder return";
+				break;				
+			case "returnOnEquity":
+				result = "Shareholder return";
+				break;
+			case "returnOnAssets":
+				result = "Shareholder return";
+				break;
+			case "effectiveTaxRate":
+				result = "Profitability";
+				break;
+			case "netProfitMargin":
+				result = "Profitability";
+				break;
+			case "cashConversionCycle":
+				result = "Cash Management";
+				break;
+			case "daysofPayablesOutstanding":
+				result = "Cash Management";
+				break;
+			case "operatingCycle":
+				result = "Cash Management";
+				break;
+			case "daysofInventoryOutstanding":
+				result = "Cash Management";
+				break;
+			case "daysofSalesOutstanding":
+				result = "Cash Management";
+				break;				
+			case "currentRatio":
+				result = "Cash Management";
+				break;
+			case "quickRatio":
+				result = "Cash Management";
+				break;
+			case "cashRatio":
+				result = "Cash Management";
+				break;
+
+		}
+		
+		return result;
 	}
 	
 	
 	
 	static public class FinRatio {
-		@Key private String symbol;
-		@Key private Series financialRatios;
+		@SerializedName("symbol") private String symbol;
+		@SerializedName("financialRatios") private Series financialRatios;
 		
 		public String getSymbol() {
 			return symbol;
@@ -196,6 +370,10 @@ public class FinantialRatios {
 		@Key private OperatingPerformanceRatios operatingPerformanceRatios;
 		@Key private CashFlowIndicatorRatios cashFlowIndicatorRatios;
 		@Key private InvestmentValuationRatios investmentValuationRatios;
+		
+		
+		
+		
 		
 		@Override
 		public String toString() {
@@ -396,11 +574,13 @@ public class FinantialRatios {
 		
 	}
 	
+	
+	
 	static public class DebtRatios {
 		
 		@Key private Double debtRatio;
 		@Key private Double debtEquityRatio;
-		@Key private Double DoubletermDebtToCapitalization;
+		@Key private Double longtermDebtToCapitalization;
 		@Key private Double totalDebtToCapitalization;
 		@Key private Double interestCoverageRatio;
 		@Key private Double cashFlowToDebtRatio;
@@ -418,11 +598,11 @@ public class FinantialRatios {
 		public void setDebtEquityRatio(Double debtEquityRatio) {
 			this.debtEquityRatio = debtEquityRatio;
 		}
-		public Double getDoubletermDebtToCapitalization() {
-			return DoubletermDebtToCapitalization;
+		public Double getlongtermDebtToCapitalization() {
+			return longtermDebtToCapitalization;
 		}
-		public void setDoubletermDebtToCapitalization(Double DoubletermDebtToCapitalization) {
-			this.DoubletermDebtToCapitalization = DoubletermDebtToCapitalization;
+		public void setlongtermDebtToCapitalization(Double longtermDebtToCapitalization) {
+			this.longtermDebtToCapitalization = longtermDebtToCapitalization;
 		}
 		public Double getTotalDebtToCapitalization() {
 			return totalDebtToCapitalization;
@@ -453,6 +633,8 @@ public class FinantialRatios {
 		
 	}
 	
+	
+	
 	static public class OperatingPerformanceRatios {
 		
 		@Key private Double fixedAssetTurnover;
@@ -474,6 +656,8 @@ public class FinantialRatios {
 		
 		
 	}
+	
+	
 	
 	static public class CashFlowIndicatorRatios {
 		
@@ -532,6 +716,8 @@ public class FinantialRatios {
 		
 		
 	}
+	
+	
 	
 	static public class InvestmentValuationRatios {
 		
@@ -601,7 +787,7 @@ public class FinantialRatios {
 
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException, ServletException, SQLException {
-		storeReport("MMM");
+		//storeReport("MMM");
 		
 		
 
