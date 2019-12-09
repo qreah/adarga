@@ -208,6 +208,7 @@ public class DB {
 		ResultSet rs = ExecuteSELECT(SQL);
 		while (rs.next()) {
 			round = Integer.parseInt(rs.getString("value"));
+			log.info("round: " + round);
 	    }
 		close();
 		return round;
@@ -257,12 +258,16 @@ public class DB {
 		String SQL = "select finantialDate from apiadbossDB.adargaConcepts " + 
 				"where symbol = '" + symbol + "'" + 
 				" order by finantialDate asc";	
+		boolean anyResult = false;
 		ResultSet rs = ExecuteSELECT(SQL);
 		while (rs.next()) {
 			if (!rs.getString("finantialDate").equals("TTM")) {
 				out = rs.getString("finantialDate");
 			}
-			
+			anyResult = true;
+		}
+		if (!anyResult) {
+			out = "ko";
 		}
 		return out;
 	}

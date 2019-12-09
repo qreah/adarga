@@ -46,8 +46,15 @@ public class FCFY extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		Storage st = new Storage();
+		qreah q = new qreah();
 		try {
+			String start = q.hora() + ":" + q.minutos() + ":" + q.segundos();
 			st.storeFCFY();
+			String end = q.hora() + ":" + q.minutos() + ":" + q.segundos();
+			out.write("<br>");
+			out.write("Start: " + start);
+			out.write("<br>");
+			out.write("End: " + end);
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}

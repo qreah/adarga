@@ -1,0 +1,5 @@
+<cron>
+    <url>/data</url>
+    <description>daily getting financials data</description>
+    <schedule>every 1 minutes from 09:00 to 9:30</schedule>
+  </cron>

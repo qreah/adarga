@@ -40,7 +40,19 @@ public class CashFlowStatement {
     private static HashMap<String, CS> years = new HashMap<String, CS>();
     
     
-    public static boolean execute(String symbol) throws IOException {
+    
+    
+    public static HashMap<String, CS> getYears() {
+		return years;
+	}
+
+
+	public static void setYears(HashMap<String, CS> years) {
+		CashFlowStatement.years = years;
+	}
+
+
+	public static boolean execute(String symbol) throws IOException {
 		boolean result = false;
 		String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json";
 		Storage st = new Storage();

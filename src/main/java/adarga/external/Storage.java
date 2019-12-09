@@ -3,7 +3,9 @@ package adarga.external;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -33,9 +35,10 @@ public class Storage {
 	static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     static JsonFactory JSON_FACTORY = new JacksonFactory();
 	int rows = 7936;
-	int batch = 2;
-	int batchFCFY = 20;
+	int batch = 1;
+	int batchFCFY = 7;
 	static ResultSet exist;
+	static ResultSet existFCF;
 	
 	
 	/**
@@ -67,6 +70,8 @@ public class Storage {
 		}
 	}
 	
+	
+	
 	public String storeRow(HashMap<String, String> companyData, 
 			String concept, 
 			Double ratio, 
@@ -89,6 +94,38 @@ public class Storage {
 		
 		
 		if (exists(symbol, concept, finYear)) {
+		
+			SQL = updateSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
+		} else {
+			SQL = insertSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
+		}
+		
+		
+		return SQL;
+	}
+	
+	public String storeRowFCFY(HashMap<String, String> companyData, 
+			String concept, 
+			Double ratio, 
+			String finYear,
+			String type
+			
+			) throws ClassNotFoundException, SQLException, ServletException, IOException {
+		
+		
+		String symbol = companyData.get("symbol");
+		String companyName = companyData.get("companyName");
+		String sector = companyData.get("sector");
+		String industry = companyData.get("industry");
+		String description = companyData.get("description");
+		String price = companyData.get("price");
+		String mktCap = companyData.get("mktCap");
+		
+		String SQL = "";
+		//SQL = insertSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
+		
+		
+		if (existsFCF(symbol, concept, finYear)) {
 		
 			SQL = updateSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
 		} else {
@@ -269,6 +306,37 @@ public class Storage {
 		return result;
 	}
 	
+	static public boolean existsFCF(String symbol, String concept, String finantialDate) throws ClassNotFoundException, SQLException, ServletException, IOException {
+		boolean result = false;
+		//DB db = new DB();
+		/*
+		String SQL = "SELECT symbol, concept, finantialDate FROM apiadbossDB.adargaConcepts"
+				+ " where concept = '" + concept + "' AND symbol = '"
+				+ symbol + "'  AND finantialDate = '" + finantialDate + "'";
+		
+		ResultSet rs = db.ExecuteSELECT(SQL);
+		*/
+		
+		while (existFCF.next()) {
+			String symbolStr = existFCF.getString("symbol");
+			if (symbolStr.equals(symbol)) {
+				String conceptStr = existFCF.getString("concept");
+				if (conceptStr.equals(symbol)) {
+					String finantialDateStr = existFCF.getString("finantialDate");
+					if (finantialDateStr.equals(symbol)) {
+						result = true;
+					}
+				}
+			}
+		}
+		
+		if (existFCF.next()) {
+			
+		}
+		//db.close();
+		return result;
+	}
+	
 	public JSONArray getCompaniesList() throws IOException {
 		String urlRaw = "https://financialmodelingprep.com/api/v3/company/stock/list";
 		HttpRequestFactory requestFactory 
@@ -292,8 +360,11 @@ public class Storage {
 		
 		DB db = new DB();		
 		int round = db.getRound();
+		
 		if ((round + batch) > rows) {
-			batch = rows - round;
+			//batch = rows - round;
+			round = 0;
+			log.info("enter");
 		} 
 		db.setRound(round + 1);
 		db.close();
@@ -302,8 +373,8 @@ public class Storage {
 		// Para cada empresa en el batch
 		for (int i = round; i < round + batch; i++) {
 			
-			log.info("Nº de Empresa: " + round);
-			round = i;
+			log.info("Nº de Empresa: " + i);
+			
 			JSONObject json = new JSONObject(array.get(i).toString());
 			String Name = json.getString("name").replaceAll("'", "");	
 			String symbol = json.getString("symbol");
@@ -342,9 +413,9 @@ public class Storage {
 			bs.storeReport(companyData);
 			cs.storeReport(companyData);
 			//ratio.setFCFYield(companyData);
-			fr.storeReport(companyData);
-			km.storeReport(companyData);
-			g.storeReport(companyData);
+			//fr.storeReport(companyData);
+			//km.storeReport(companyData);
+			//g.storeReport(companyData);
 			
 		}
 		
@@ -363,22 +434,21 @@ public class Storage {
 		int round = db.getRoundFCFY();
 		if ((round + batchFCFY) > rows) {
 			batchFCFY = rows - round;
+			round = 0;
 		} 
-		db.setRoundFCFY(round + 1);
+		db.setRoundFCFY(round + 1);		
 		db.close();
 		
-		
+		List<String> SQLList = new ArrayList<String>();
 		// Para cada empresa en el batch
 		for (int i = round; i < round + batchFCFY; i++) {
 			
-			log.info("Nº de Empresa FCFY: " + round);
-			round = i;
+			log.info("Nº de Empresa FCFY: " + i);
+			
 			JSONObject json = new JSONObject(array.get(i).toString());
-			String Name = json.getString("name").replaceAll("'", "");	
 			String symbol = json.getString("symbol");
 			
 			Ratios ratio = new Ratios();
-			qreah q = new qreah();
 			
 			Profile profile = new CompanyProfile().getProfile(symbol);
 			String companyName = profile.getCompanyName().replaceAll("'", "");
@@ -389,8 +459,11 @@ public class Storage {
 			String price = profile.getPrice();
 			String mktCap = profile.getMktCap();
 			
-			String exists = "SELECT symbol, concept, finantialDate FROM apiadbossDB.adargaConcepts group by symbol, concept, finantialDate";
-			exist = db.ExecuteSELECT(exists);
+			String existsFCF = "SELECT symbol, concept,"
+					+ " finantialDate FROM apiadbossDB.adargaConcepts"
+					+ " where symbol = '" + symbol + "'"
+					+ " group by symbol, concept, finantialDate";
+			existFCF = db.ExecuteSELECT(existsFCF);
 			
 			HashMap<String, String> companyData = new HashMap<String, String>();
 			companyData.put("symbol", symbol);
@@ -401,9 +474,20 @@ public class Storage {
 			companyData.put("price", price);
 			companyData.put("mktCap", mktCap);
 			
-			ratio.setFCFYield(companyData);
+			String SQL = ratio.setFCFYield(companyData);
+			SQLList.add(SQL);
+			
 			
 		}
+		
+		DB db2 = new DB();
+		Iterator<String> iter = SQLList.iterator();
+		while (iter.hasNext()) {
+			String SQL = iter.next();
+			db2.addBatch(SQL);	
+		}
+		int[] result = db2.executeBatch();
+		db2.close();
 		
 		
 		

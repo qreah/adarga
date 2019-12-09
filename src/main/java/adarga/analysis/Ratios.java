@@ -20,20 +20,40 @@ public class Ratios {
 	
 	private static final Logger log = Logger.getLogger(Ratios.class.getName());
 	
-	public void setFCFYield(HashMap<String, String> companyData) throws IOException, ClassNotFoundException, ServletException, SQLException {
+	public String setFCFYield(HashMap<String, String> companyData) throws IOException, ClassNotFoundException, ServletException, SQLException {
 		String symbol = companyData.get("symbol");
 		CompanyProfile cp = new CompanyProfile();
 		Profile profile = cp.getProfile(symbol);
-		CashFlowStatement cs = new CashFlowStatement();
 		Double mrkCap = Double.valueOf(profile.getMktCap());
-		String concept = "FreeCashFlow";		
-		DB db = new DB();
-		String finDate = db.getLastFinDate(symbol);
-		log.info(db.getRatio(symbol, concept, finDate));
-		Double freeCashFlow = Double.valueOf(db.getRatio(symbol, concept, finDate));
+		String concept = "FreeCashFlow";	
+		CashFlowStatement cs = new CashFlowStatement();
+		cs.execute(symbol);
+		String finDate = cs.getYears().keySet().iterator().next();
+		String FCF = cs.getYears().get(finDate).getFreeCashFlow();
+		Double freeCashFlow = Double.valueOf(FCF);
 		Double FCFYield = freeCashFlow / mrkCap;
+		log.info("FCFYield: " + FCFYield);
 		Storage st = new Storage();
-		st.store(companyData, "FCFY", FCFYield, finDate, "Valuation");
+		String SQL = st.storeRowFCFY(companyData, "FCFY", FCFYield, finDate, "Valuation");	
+		return SQL;
+		
+				
+		/*	
+		//DB db = new DB();
+		//String finDate = db.getLastFinDate(symbol);
+		log.info(finDate);
+		if (!finDate.equals("ko")) {
+			log.info(db.getRatio(symbol, concept, finDate));
+			if (!db.getRatio(symbol, concept, finDate).equals("")) {
+				Double freeCashFlow = Double.valueOf(db.getRatio(symbol, concept, finDate));
+				Double FCFYield = freeCashFlow / mrkCap;
+				Storage st = new Storage();
+				st.storeFCFY(companyData, "FCFY", FCFYield, finDate, "Valuation");
+			}
+			
+		}
+		*/
+		
 		
 		
 	}
