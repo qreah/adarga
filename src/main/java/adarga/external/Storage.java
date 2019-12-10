@@ -92,13 +92,14 @@ public class Storage {
 		String SQL = "";
 		//SQL = insertSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
 		
-		
-		if (exists(symbol, concept, finYear)) {
-		
+		boolean existInDB = exists(symbol, concept, finYear);
+		log.info("ratio exist in DB: " + existInDB);
+		if (existInDB) {
 			SQL = updateSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
 		} else {
 			SQL = insertSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
 		}
+		log.info(SQL);
 		
 		
 		return SQL;
@@ -277,15 +278,6 @@ public class Storage {
 	
 	static public boolean exists(String symbol, String concept, String finantialDate) throws ClassNotFoundException, SQLException, ServletException, IOException {
 		boolean result = false;
-		//DB db = new DB();
-		/*
-		String SQL = "SELECT symbol, concept, finantialDate FROM apiadbossDB.adargaConcepts"
-				+ " where concept = '" + concept + "' AND symbol = '"
-				+ symbol + "'  AND finantialDate = '" + finantialDate + "'";
-		
-		ResultSet rs = db.ExecuteSELECT(SQL);
-		*/
-		
 		while (exist.next()) {
 			String symbolStr = exist.getString("symbol");
 			if (symbolStr.equals(symbol)) {
@@ -298,11 +290,6 @@ public class Storage {
 				}
 			}
 		}
-		
-		if (exist.next()) {
-			
-		}
-		//db.close();
 		return result;
 	}
 	
@@ -376,18 +363,11 @@ public class Storage {
 			log.info("Nº de Empresa: " + i);
 			
 			JSONObject json = new JSONObject(array.get(i).toString());
-			String Name = json.getString("name").replaceAll("'", "");	
 			String symbol = json.getString("symbol");
 			
-			FinantialRatios fr = new FinantialRatios();
-			KeyMetrics km = new KeyMetrics();
-			Growth g = new Growth();
 			BalanceSheet bs = new BalanceSheet();
 			IncomeStatement is = new IncomeStatement();
 			CashFlowStatement cs = new CashFlowStatement();
-			Ratios ratio = new Ratios();
-			qreah q = new qreah();
-			
 			Profile profile = new CompanyProfile().getProfile(symbol);
 			String companyName = profile.getCompanyName().replaceAll("'", "");
 			String sector = profile.getSector().replaceAll("'", "");
@@ -412,10 +392,6 @@ public class Storage {
 			is.storeReport(companyData);
 			bs.storeReport(companyData);
 			cs.storeReport(companyData);
-			//ratio.setFCFYield(companyData);
-			//fr.storeReport(companyData);
-			//km.storeReport(companyData);
-			//g.storeReport(companyData);
 			
 		}
 		
