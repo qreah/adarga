@@ -93,13 +93,13 @@ public class Storage {
 		//SQL = insertSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
 		
 		boolean existInDB = exists(symbol, concept, finYear);
-		log.info("ratio exist in DB: " + existInDB);
+		
 		if (existInDB) {
 			SQL = updateSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
 		} else {
 			SQL = insertSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
 		}
-		log.info(SQL);
+		
 		
 		
 		return SQL;
@@ -282,9 +282,9 @@ public class Storage {
 			String symbolStr = exist.getString("symbol");
 			if (symbolStr.equals(symbol)) {
 				String conceptStr = exist.getString("concept");
-				if (conceptStr.equals(symbol)) {
+				if (conceptStr.equals(concept)) {
 					String finantialDateStr = exist.getString("finantialDate");
-					if (finantialDateStr.equals(symbol)) {
+					if (finantialDateStr.equals(finantialDate)) {
 						result = true;
 					}
 				}
@@ -295,22 +295,14 @@ public class Storage {
 	
 	static public boolean existsFCF(String symbol, String concept, String finantialDate) throws ClassNotFoundException, SQLException, ServletException, IOException {
 		boolean result = false;
-		//DB db = new DB();
-		/*
-		String SQL = "SELECT symbol, concept, finantialDate FROM apiadbossDB.adargaConcepts"
-				+ " where concept = '" + concept + "' AND symbol = '"
-				+ symbol + "'  AND finantialDate = '" + finantialDate + "'";
-		
-		ResultSet rs = db.ExecuteSELECT(SQL);
-		*/
-		
+				
 		while (existFCF.next()) {
 			String symbolStr = existFCF.getString("symbol");
 			if (symbolStr.equals(symbol)) {
 				String conceptStr = existFCF.getString("concept");
-				if (conceptStr.equals(symbol)) {
+				if (conceptStr.equals(concept)) {
 					String finantialDateStr = existFCF.getString("finantialDate");
-					if (finantialDateStr.equals(symbol)) {
+					if (finantialDateStr.equals(finantialDate)) {
 						result = true;
 					}
 				}

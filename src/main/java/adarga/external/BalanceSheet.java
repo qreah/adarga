@@ -35,8 +35,11 @@ public class BalanceSheet {
 	private static String urlEndpoint = "https://financialmodelingprep.com/api/v3/financials/balance-sheet-statement/";
 	static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     static JsonFactory JSON_FACTORY = new JacksonFactory();
-    private static HashMap<String, BS> years = new HashMap<String, BS>();
+    private static HashMap<String, BS> years;
     
+    public BalanceSheet() {
+    	years = new HashMap<String, BS>();
+    }
     
     public static boolean execute(String symbol) throws IOException {
 		boolean result = false;
@@ -53,6 +56,7 @@ public class BalanceSheet {
 		HttpResponse res = request.execute();
 		String json = res.parseAsString();
 		JSONObject j = new JSONObject(json);
+		log.info(symbol);
 		if (j.has("financials")) {
 			result = true;
 			JSONArray metrics = j.getJSONArray("financials");
@@ -62,6 +66,9 @@ public class BalanceSheet {
 				JSONObject metricSet = (JSONObject) iter.next();
 				BS ratios = gson.fromJson(metricSet.toString(), BS.class);
 				String finDate = st.finDateConversion(ratios.getDate());
+				
+				log.info(finDate);
+				log.info(ratios.CashAndShortTermInvestments);
 				years.put(finDate, ratios);
 			}
 		}

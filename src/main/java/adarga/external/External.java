@@ -57,11 +57,6 @@ public class External extends HttpServlet {
 			//is.storeReport(symbol);
 			//bs.storeReport(symbol);
 			//cs.storeReport(symbol);
-			
-		
-		
-		
-		
 		
 	}
 

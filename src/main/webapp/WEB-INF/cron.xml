@@ -1,10 +1,5 @@
 <cronentries>
   <cron>
-    <url>/data</url>
-    <description>daily getting financials data</description>
-    <schedule>every 1 minutes</schedule>
-  </cron>
-  <cron>
     <url>/FCFY</url>
     <description>daily getting FCF Yield data</description>
     <schedule>every 1 minutes</schedule>
