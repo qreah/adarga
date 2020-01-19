@@ -34,7 +34,7 @@ public class Ratios {
 		Double FCFYield = freeCashFlow / mrkCap;
 		log.info("FCFYield: " + FCFYield);
 		Storage st = new Storage();
-		String SQL = st.storeRowFCFY(companyData, "FCFY", FCFYield, finDate, "Valuation");	
+		String SQL = st.SQLAddRow(companyData, "FCFY", FCFYield, finDate, "Valuation");	
 		return SQL;
 		
 				

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,6 +20,8 @@ import adarga.getinfo.DB;
 @WebServlet("/fcfyield")
 public class GetFCFY extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final Logger log = Logger.getLogger(GetFCFY.class.getName());
+	
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -36,15 +39,30 @@ public class GetFCFY extends HttpServlet {
 		response.setContentType("text/html");
 		response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
+        String ini = request.getParameter("ini");
+        String fin = request.getParameter("fin");
+        if (ini == null) {
+        	ini = "0.2";
+        }
+        if (fin == null) {
+        	fin = "0.3";
+        }
+        String Industry = request.getParameter("industry");
+        log.info(Industry);
         try {
 			DB db = new DB();
 			String SQL = "SELECT companyName, symbol, value, reportDate, industry, description FROM apiadbossDB.adargaConcepts\n" + 
 					"	where concept = 'FCFY'\n" + 
-					"		and value > 0.2\n" + 
+					"		and value > " + ini + "\n" + 
 					"        and value is not NULL\n" + 
-					"        and value < 0.3\n" + 
-					"        and industry != ''\n" + 
-					"	order by 3 desc";
+					"        and value < " + fin + "\n" + 
+					"        and industry != ''\n";
+			
+			if (Industry != null) {
+				SQL = SQL + " and industry=" + Industry + "\n";
+	        }
+			SQL	= SQL +	"	order by 3 desc";
+			log.info(SQL);
 			ResultSet rs = db.ExecuteSELECT(SQL);
 			while (rs.next()) {
 				String companyName = rs.getString("companyName");

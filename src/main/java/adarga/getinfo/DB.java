@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,8 +15,12 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.sql.DataSource;
 
+import com.google.appengine.api.ThreadManager;
 import com.google.apphosting.api.ApiProxy;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 
 public class DB {
@@ -27,18 +32,32 @@ public class DB {
 	String instanceConnectionName = "devadboss-181207:europe-west1:apiadboss";
 	String roorPass = "rootadboss2018";
 	Statement statement;
+	DataSource pool;
 	
 	public DB() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
 		conn = ConnectDB();
 		statement = conn.createStatement();
+		//ConnectDBHikari();
 		
 	}
 	
+	
+	
 	public void close() throws SQLException {
-		//conn.close();
+		conn.close();
 		conn.abort(Runnable::run);
 		statement.close();
+	}
+	
+	public void abort() throws SQLException {
+		conn.abort(Runnable::run);
+	}
+	
+	public void reviveDB() throws ClassNotFoundException, ServletException, IOException, SQLException {
+		conn = ConnectDB();
+		statement = conn.createStatement();
+		
 	}
 	
 	public Connection ConnectDB() throws ServletException, ClassNotFoundException, IOException, SQLException {
@@ -81,9 +100,7 @@ public class DB {
 			//	url = "jdbc:mysql://google/MB?cloudSqlInstance=marketboss-201812:europe-west1:marketboss&socketFactory=com.google.cloud.sql.mysql.SocketFactory&user=root&password=QuiqueRafa&useSSL=false";
 			
 	    	Class.forName("com.mysql.cj.jdbc.Driver");
-	    	
-	    	
-	    	conn = DriverManager.getConnection(url); 
+	    	Connection conn = DriverManager.getConnection(url); 
 	    	
 	        return conn;
 	      } catch (SQLException e) {
@@ -94,6 +111,75 @@ public class DB {
 		
 		
 		}
+	
+	public Connection ConnectDBOne() throws ClassNotFoundException, SQLException {
+		
+		String url = "jdbc:mysql://google/" + dataBase + "?cloudSqlInstance=" + instanceConnectionName + "&socketFactory=com.google.cloud.sql.mysql.SocketFactory&user=root&password=" + roorPass + "&useSSL=false";
+		Class.forName("com.mysql.cj.jdbc.Driver");
+    	Connection conn = DriverManager.getConnection(url); 
+    	return conn;
+	}
+	
+	public void ConnectDBHikari() {
+		//String url = "jdbc:mysql://google/" + dataBase + "?cloudSqlInstance=" + instanceConnectionName + "&socketFactory=com.google.cloud.sql.mysql.SocketFactory&user=root&password=" + roorPass + "&useSSL=false";
+	
+		String url = "jdbc:mysql://google/" + dataBase; // + "?cloudSqlInstance=" + instanceConnectionName + "&socketFactory=com.google.cloud.sql.mysql.SocketFactory&user=root&password=" + roorPass + "&useSSL=false";
+		
+		HikariConfig config = new HikariConfig();
+		//config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+		config.setJdbcUrl(String.format("jdbc:mysql:///%s", dataBase));
+		//config.setJdbcUrl(url);
+		//config.setThreadFactory(ThreadManager.backgroundThreadFactory());
+		
+		config.setUsername("root"); 
+		config.setPassword(roorPass); 
+		config.setRegisterMbeans(false);
+		
+		config.addDataSourceProperty("socketFactory", "com.google.cloud.sql.mysql.SocketFactory");
+		config.addDataSourceProperty("cloudSqlInstance", instanceConnectionName);
+		config.addDataSourceProperty("useSSL", "false");
+		
+		/*
+		config.setMaximumPoolSize(12);
+		config.addDataSourceProperty("cachePrepStmts", "true");
+		config.addDataSourceProperty("useServerPrepStmts", "true");
+		config.addDataSourceProperty("prepStmtCacheSize", "250");
+		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+		*/
+		config.setMaximumPoolSize(5);       
+        config.setMinimumIdle(5);
+		config.setConnectionTimeout(10000); // 10 seconds
+		config.setIdleTimeout(600000); // 10 minutes
+		config.setMaxLifetime(1800000); // 30 minutes
+		
+		
+		pool = new HikariDataSource(config);
+		
+	}
+	
+	public void executeHikari(String SQL) {
+		try (Connection conn = pool.getConnection()) {
+
+			PreparedStatement voteStmt = conn.prepareStatement(SQL);
+			voteStmt.execute();
+
+		} catch (SQLException ex) {
+			  
+		}
+	}
+	
+	public ResultSet executeSelectHikari(String SQL) {
+		ResultSet rs = null;
+		try (Connection conn = pool.getConnection()) {
+
+			PreparedStatement voteStmt = conn.prepareStatement(SQL);
+			rs = voteStmt.executeQuery();
+
+		} catch (SQLException ex) {
+			  
+		}
+		return rs;
+	}
 	
 	public Connection ConnectDB(String PropiedadesConexion, ServletContext contexto) {
 		//Método cuyo objetivo es conectarse a una base de datos desde un servlet
@@ -130,44 +216,26 @@ public class DB {
 	    return conn;
 	}
 	
-	public ResultSet ExecuteSELECT(String SQL) throws SQLException, ClassNotFoundException, ServletException, IOException {
-		//conn = ConnectDB();
-		if (conn.isClosed()) {
-			ConnectDB();
-		}
-		ResultSet rsfinal = null;
+	public ResultSet ExecuteSELECT(String SQL) throws SQLException  {
+				
 		ResultSet rs = null;
-		if (conn == null) {
-			
-		} else {
-			Statement secuencia = conn.createStatement(); 
-			rs = (ResultSet) secuencia.executeQuery(SQL);
-		}
-		rsfinal = rs;
 		
-		return rsfinal;
+			rs = (ResultSet) statement.executeQuery(SQL);
+		
+		return rs;
 	}
 	
 	public boolean Execute(String SQL) throws ClassNotFoundException, ServletException, IOException, SQLException  {
 		
-		//conn = ConnectDB();
-		
-		if (conn.isClosed()) {
-			ConnectDB();
-		}
 		boolean equity = SQL.contains("tockholders");
 		if (equity) {
 			SQL = SQL.replace("tockholders'", "tockholders");
 		}
-			
-		
 		
 		boolean executed = false;
-		Statement secuencia;
+		//Statement secuencia;
 		try {
-			
-			secuencia = conn.createStatement();
-			secuencia.executeUpdate(SQL);
+			statement.executeUpdate(SQL);
 			executed = true;
 		} catch (SQLException e) {
 			executed = false;
@@ -182,12 +250,19 @@ public class DB {
 	public void addBatch(String SQL) throws ClassNotFoundException, SQLException, ServletException, IOException {
 		if (conn.isClosed()) {
 			ConnectDB();	
+			statement = conn.createStatement();
+			log.info("conn and statement are closed");
 		}
+		
 		statement.addBatch(SQL);
 	}
 	
-	public int[] executeBatch() throws SQLException {
-		int[] result = statement.executeBatch();
+	public int[] executeBatch() throws SQLException  {
+		
+		int[] result = null;
+		
+			result = statement.executeBatch();
+		
 		return result;
 	}
 
@@ -198,7 +273,7 @@ public class DB {
 		while (rs.next()) {
 			round = Integer.parseInt(rs.getString("value"));
 	    }
-		close();
+		
 		return round;
 	}
 	
@@ -210,7 +285,7 @@ public class DB {
 			round = Integer.parseInt(rs.getString("value"));
 			log.info("round: " + round);
 	    }
-		close();
+		
 		return round;
 	}
 	
@@ -235,7 +310,7 @@ public class DB {
 		while (rs.next()) {
 			result = true;
 		}
-		close();
+	
 		return result;
 	}
 	
@@ -270,6 +345,12 @@ public class DB {
 			out = "ko";
 		}
 		return out;
+	}
+	
+	public boolean StatementClosed() throws SQLException {
+		
+		return statement.isClosed();
+		
 	}
 
 }

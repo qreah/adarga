@@ -48,7 +48,7 @@ public class KeyMetrics {
     
 	
 
-	public static boolean execute(String symbol) throws IOException {
+	public static boolean execute(String symbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
 		boolean result = false;
 		String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json";
 		Storage st = new Storage();
@@ -82,7 +82,7 @@ public class KeyMetrics {
 		
 		
 		profile = new CompanyProfile().getProfile(symbol);
-		
+		st.close();
 		return result;
 		
 	}
@@ -146,7 +146,7 @@ public class KeyMetrics {
 						
 					}
 					
-					String SQL = st.storeRow(companyData, concept, ratio, key, "KeyMetrics");	
+					String SQL = st.SQLAddRow(companyData, concept, ratio, key, "KeyMetrics");	
 					db.addBatch(SQL);
 				}
 				db.executeBatch();

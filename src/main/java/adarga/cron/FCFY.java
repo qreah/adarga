@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import adarga.external.BalanceSheet;
+import adarga.external.CompanyHub;
 import adarga.external.CompanyProfile;
 import adarga.external.KeyMetrics;
 import adarga.external.Storage;
@@ -45,11 +46,11 @@ public class FCFY extends HttpServlet {
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		Storage st = new Storage();
+		CompanyHub hub = new CompanyHub();
 		qreah q = new qreah();
 		try {
 			String start = q.hora() + ":" + q.minutos() + ":" + q.segundos();
-			st.storeFCFY();
+			hub.setFCFY();
 			String end = q.hora() + ":" + q.minutos() + ":" + q.segundos();
 			out.write("<br>");
 			out.write("Start: " + start);

@@ -2,6 +2,7 @@ package adarga.cron;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -10,7 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import adarga.external.CompanyHub;
 import adarga.external.Storage;
+import adarga.getinfo.DBOne;
 import adarga.utis.qreah;
 
 /**
@@ -38,17 +41,21 @@ public class Data extends HttpServlet {
 		String init = Long.toString(q.getTimestamp());
 		
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		Storage st = new Storage();
+		CompanyHub hub = new CompanyHub();
 		out.write("Store Data");
 		try {
 			
+			DBOne one = new DBOne();
+			one.ConnectDBOne();
 			String start = q.hora() + ":" + q.minutos() + ":" + q.segundos();
-			st.getCompanies();
+			hub.setCompanies(one);
 			String end = q.hora() + ":" + q.minutos() + ":" + q.segundos();
 			out.write("<br>");
 			out.write("Start: " + start);
 			out.write("<br>");
 			out.write("End: " + end);
+			
+			one.close();
 		} catch (ClassNotFoundException | SQLException e) {
 			
 			e.printStackTrace();

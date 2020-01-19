@@ -2,8 +2,10 @@ package adarga.external;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -29,6 +31,7 @@ import adarga.external.CompanyProfile.Profile;
 import adarga.external.IncomeStatement.IS;
 import adarga.external.KeyMetrics.Metrics;
 import adarga.getinfo.DB;
+import adarga.getinfo.DBOne;
 
 public class CashFlowStatement {
 	
@@ -52,7 +55,7 @@ public class CashFlowStatement {
 	}
 
 
-	public static boolean execute(String symbol) throws IOException {
+	public static boolean execute(String symbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
 		boolean result = false;
 		String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json";
 		Storage st = new Storage();
@@ -81,7 +84,7 @@ public class CashFlowStatement {
 			}
 		}
 		
-		
+		st.close();
 		return result;
 		
 	}
@@ -124,16 +127,16 @@ public class CashFlowStatement {
     	String symbol = companyData.get("symbol");
     	boolean exists = execute(symbol);
 		if (exists) {
-			Storage st = new Storage();
+			List<String> SQLQuerys = new ArrayList<String>();
 			Set<String> keys = years.keySet();
-			
 			Iterator<String> iter = keys.iterator();
+			int batches = 0;
 			while (iter.hasNext()) {
 				String key = iter.next();
 				CS metrics = years.get(key);
 				HashMap<String, String> ratiosList = getMetricsList(metrics);
 				Set<String> keysSet = ratiosList.keySet();
-				DB db = new DB();
+				
 				Iterator<String> keyRatio = keysSet.iterator();
 				while (keyRatio.hasNext()) {
 					String concept = keyRatio.next();
@@ -145,18 +148,69 @@ public class CashFlowStatement {
 						}
 						
 					}
-					
-					String SQL = st.storeRow(companyData, concept, ratio, key, "Cash Flow Statement");	
-					db.addBatch(SQL);	
+					Storage stA = new Storage();
+					String SQL = stA.SQLAddRow(companyData, concept, ratio, key, "Income Statement");	
+					stA.close();
+					SQLQuerys.add(SQL);		
 				}
-				int[] result = db.executeBatch();
-				db.close();
+				
 			}
+			Iterator<String> iterSQL = SQLQuerys.iterator();
+			Storage stB = new Storage();
+			while (iterSQL.hasNext()) {
+				stB.addBatch(iterSQL.next());
+			}
+			stB.executeBatch();
+			stB.close();
+			
 		}
 		
 	}
     
     
+    public static void storeReport(HashMap<String, String> companyData, DBOne one) throws IOException, ClassNotFoundException, ServletException, SQLException {
+    	String symbol = companyData.get("symbol");
+    	boolean exists = execute(symbol);
+		if (exists) {
+			List<String> SQLQuerys = new ArrayList<String>();
+			Set<String> keys = years.keySet();
+			Iterator<String> iter = keys.iterator();
+			int batches = 0;
+			while (iter.hasNext()) {
+				String key = iter.next();
+				CS metrics = years.get(key);
+				HashMap<String, String> ratiosList = getMetricsList(metrics);
+				Set<String> keysSet = ratiosList.keySet();
+				
+				Iterator<String> keyRatio = keysSet.iterator();
+				while (keyRatio.hasNext()) {
+					String concept = keyRatio.next();
+					
+					Double ratio = null;
+					if (ratiosList.get(concept) != null) {
+						if (!ratiosList.get(concept).equals("")) {
+							ratio = Double.valueOf(ratiosList.get(concept));
+						}
+						
+					}
+					Storage stA = new Storage();
+					String SQL = stA.SQLAddRow(companyData, concept, ratio, key, "Income Statement", one);	
+					
+					SQLQuerys.add(SQL);		
+				}
+				
+			}
+			Iterator<String> iterSQL = SQLQuerys.iterator();
+			Storage stB = new Storage();
+			while (iterSQL.hasNext()) {
+				stB.addBatch(iterSQL.next(), one);
+			}
+			stB.executeBatch(one);
+			
+			
+		}
+		
+	}
     
     
     static public class CS {

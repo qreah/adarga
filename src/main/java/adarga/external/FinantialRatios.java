@@ -45,7 +45,7 @@ public class FinantialRatios {
     private static HashMap<String, Ratios> years = new HashMap<String, Ratios>();
 	
 
-	public static void execute(String symbol) throws IOException {
+	public static void execute(String symbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
 		
 		String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json";
 		Storage st = new Storage();
@@ -71,7 +71,7 @@ public class FinantialRatios {
 			years.put(st.finDateConversion(finDate), ratios);
 		}
 		
-		
+		st.close();
 	}
 	
 	static public HashMap<String, Double> getRatioList(Ratios ratios) {
@@ -140,7 +140,7 @@ public class FinantialRatios {
 			while (keyRatio.hasNext()) {
 				String concept = keyRatio.next();
 				Double ratio = ratiosList.get(concept);
-				String SQL = st.storeRow(companyData, concept, ratio, key, category(concept));	
+				String SQL = st.SQLAddRow(companyData, concept, ratio, key, category(concept));	
 			
 				db.addBatch(SQL);
 			}

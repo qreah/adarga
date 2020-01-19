@@ -38,7 +38,7 @@ public class Growth {
     static JsonFactory JSON_FACTORY = new JacksonFactory();
     private static HashMap<String, GrowthMetrics> years = new HashMap<String, GrowthMetrics>();
     
-    public static boolean execute(String symbol) throws IOException {
+    public static boolean execute(String symbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
     	boolean result = false;
     	
     	String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json";
@@ -67,6 +67,7 @@ public class Growth {
 				years.put(finDate, ratios);
 			}
 		}
+		st.close();
 		
 		return result;
 		
@@ -141,7 +142,7 @@ public class Growth {
 						
 					}
 					
-					String SQL = st.storeRow(companyData, concept, ratio, key, "Growth");	
+					String SQL = st.SQLAddRow(companyData, concept, ratio, key, "Growth");	
 					db.addBatch(SQL);
 				}
 				db.executeBatch();

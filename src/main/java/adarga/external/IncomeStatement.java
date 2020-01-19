@@ -2,8 +2,10 @@ package adarga.external;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -26,6 +28,7 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import adarga.getinfo.DB;
+import adarga.getinfo.DBOne;
 
 public class IncomeStatement {
 	private static final Logger log = Logger.getLogger(IncomeStatement.class.getName());
@@ -36,7 +39,7 @@ public class IncomeStatement {
     private static HashMap<String, IS> years = new HashMap<String, IS>();
     
     
-    public static boolean execute(String symbol) throws IOException {
+    public static boolean execute(String symbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
 		boolean result = false;
 		String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json";
 		Storage st = new Storage();
@@ -64,7 +67,7 @@ public class IncomeStatement {
 			}
 		}
 		
-		
+		st.close();
 		return result;
 		
 	}
@@ -96,18 +99,23 @@ public class IncomeStatement {
     
     static public void storeReport(HashMap<String, String> companyData) throws IOException, ClassNotFoundException, ServletException, SQLException {
     	String symbol = companyData.get("symbol");
-    	boolean exists = execute(symbol);
-		if (exists) {
-			Storage st = new Storage();
+    	boolean existsInAPI = execute(symbol);
+    	if (!existsInAPI) {
+    		log.info("ERROR: Income Statement doesn't exist");
+    	}
+    	
+		if (existsInAPI) {
+			List<String> SQLQuerys = new ArrayList<String>();
 			Set<String> keys = years.keySet();
-			
 			Iterator<String> iter = keys.iterator();
+			int batches = 0;
 			while (iter.hasNext()) {
 				String key = iter.next();
 				IS metrics = years.get(key);
 				HashMap<String, String> ratiosList = getMetricsList(metrics);
 				Set<String> keysSet = ratiosList.keySet();
-				DB db = new DB();
+				
+				
 				Iterator<String> keyRatio = keysSet.iterator();
 				while (keyRatio.hasNext()) {
 					String concept = keyRatio.next();
@@ -119,13 +127,71 @@ public class IncomeStatement {
 						}
 						
 					}
-					
-					String SQL = st.storeRow(companyData, concept, ratio, key, "Income Statement");	
-					db.addBatch(SQL);	
+					Storage stA = new Storage();
+					String SQL = stA.SQLAddRow(companyData, concept, ratio, key, "Income Statement");	
+					stA.close();
+					SQLQuerys.add(SQL);	
 				}
-				db.executeBatch();
-				db.close();
+				
 			}
+			
+			Iterator<String> iterSQL = SQLQuerys.iterator();
+			Storage stB = new Storage();
+			while (iterSQL.hasNext()) {
+				stB.addBatch(iterSQL.next());
+			}
+			stB.executeBatch();
+			stB.close();
+		}
+		
+	}
+    
+    
+    static public void storeReport(HashMap<String, String> companyData, DBOne one) throws IOException, ClassNotFoundException, ServletException, SQLException {
+    	String symbol = companyData.get("symbol");
+    	boolean existsInAPI = execute(symbol);
+    	if (!existsInAPI) {
+    		log.info("ERROR: Income Statement doesn't exist");
+    	}
+    	
+		if (existsInAPI) {
+			List<String> SQLQuerys = new ArrayList<String>();
+			Set<String> keys = years.keySet();
+			Iterator<String> iter = keys.iterator();
+			int batches = 0;
+			while (iter.hasNext()) {
+				String key = iter.next();
+				IS metrics = years.get(key);
+				HashMap<String, String> ratiosList = getMetricsList(metrics);
+				Set<String> keysSet = ratiosList.keySet();
+				
+				
+				Iterator<String> keyRatio = keysSet.iterator();
+				while (keyRatio.hasNext()) {
+					String concept = keyRatio.next();
+					
+					Double ratio = null;
+					if (ratiosList.get(concept) != null) {
+						if (!ratiosList.get(concept).equals("")) {
+							ratio = Double.valueOf(ratiosList.get(concept));
+						}
+						
+					}
+					Storage stA = new Storage();
+					String SQL = stA.SQLAddRow(companyData, concept, ratio, key, "Income Statement", one);	
+					
+					SQLQuerys.add(SQL);	
+				}
+				
+			}
+			
+			Iterator<String> iterSQL = SQLQuerys.iterator();
+			Storage stB = new Storage();
+			while (iterSQL.hasNext()) {
+				stB.addBatch(iterSQL.next(), one);
+			}
+			stB.executeBatch(one);
+			
 		}
 		
 	}
