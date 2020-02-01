@@ -28,41 +28,17 @@ import adarga.analysis.Ratios;
 import adarga.external.CompanyProfile.Profile;
 import adarga.getinfo.DB;
 import adarga.getinfo.DBOne;
-import adarga.utis.qreah;
+import adarga.utils.TableSet;
+import adarga.utils.qreah;
 
 public class Storage {
-	private static final Logger log = Logger.getLogger(KeyMetrics.class.getName());
+	private static final Logger log = Logger.getLogger(Storage.class.getName());
 	
 	static ResultSet existFCF;
 	static DB db;
 	
 	public Storage() throws ClassNotFoundException, ServletException, IOException, SQLException {
 		
-		
-	}
-	
-	
-	
-	public void close() throws SQLException {
-		db.close();
-	}
-	
-	public void reviveDB() throws ClassNotFoundException, ServletException, IOException, SQLException {
-		db = new DB();
-	}
-	
-	public boolean statementClosed() throws SQLException {
-		return db.StatementClosed();
-	}
-	
-	public void addBatch(String SQL) throws ClassNotFoundException, SQLException, ServletException, IOException {		
-		db.addBatch(SQL);
-	}
-	
-	public int[] executeBatch() throws SQLException, ClassNotFoundException, ServletException, IOException {
-		
-		int[] result = db.executeBatch();
-		return result;
 	}
 	
 	public void addBatch(String SQL, DBOne one) throws ClassNotFoundException, SQLException, ServletException, IOException {		
@@ -75,34 +51,6 @@ public class Storage {
 		return result;
 	}
 	
-	public String SQLAddRow(HashMap<String, String> companyData, 
-			String concept, 
-			Double ratio, 
-			String finYear,
-			String type
-			
-			) throws ClassNotFoundException, SQLException, ServletException, IOException {
-		
-		
-		String symbol = companyData.get("symbol");
-		String companyName = companyData.get("companyName");
-		String sector = companyData.get("sector");
-		String industry = companyData.get("industry");
-		String description = companyData.get("description");
-		String price = companyData.get("price");
-		String mktCap = companyData.get("mktCap");
-		
-		String SQL = "";
-		boolean existInDB = exists(symbol, concept, finYear);
-		
-		if (existInDB) {
-			SQL = updateSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
-		} else {
-			SQL = insertSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
-		}	
-		
-		return SQL;
-	}
 	
 	
 	public String SQLAddRow(HashMap<String, String> companyData, 
@@ -110,8 +58,8 @@ public class Storage {
 			Double ratio, 
 			String finYear,
 			String type,
-			DBOne one
-			
+			DBOne one,
+			List<TableSet> companyRegisters
 			) throws ClassNotFoundException, SQLException, ServletException, IOException {
 		
 		
@@ -124,13 +72,19 @@ public class Storage {
 		String mktCap = companyData.get("mktCap");
 		
 		String SQL = "";
-		boolean existInDB = exists(symbol, concept, finYear, one);
+		
+		boolean existInDB = exists(symbol, concept, finYear, companyRegisters);
+		
 		
 		if (existInDB) {
 			SQL = updateSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
 		} else {
 			SQL = insertSQL(symbol, ratio, finYear, concept, companyName, sector, industry, description, type);
 		}	
+		
+			//log.info("existInDB: " + existInDB);
+			//log.info(symbol + " " + concept + " " + finYear);
+			//log.info(SQL);
 		
 		return SQL;
 	}
@@ -147,23 +101,45 @@ public class Storage {
 			String type
 			) throws ClassNotFoundException, ServletException, IOException, SQLException {
 		qreah q = new qreah();
-		String SQL = "UPDATE apiadbossDB.adargaConcepts" + 
-				" SET symbol='" + symbol 
-				+ "', value= '" + ratio 
-				+ "', concept= '" + concept 
-				+ "', finantialDate='" + finYear 
-				+ "', reportDate='" + q.today() 
-				+ "', companyName='" + companyName 
-				+ "', sector='" + sector 
-				+ "', industry='" + industry 
-				+ "', description='" + description 
-				+ "', type='" + type 
-				+ "'"
-				+ " WHERE "
-				+ "symbol='" + symbol + "' AND "
-				+ "concept='" + concept + "' AND "
-				+ "finantialDate='" + finYear 
-				+ "';";
+		String SQL = "";
+		if (concept.equals("FCFY")) {
+			SQL = "UPDATE apiadbossDB.FCFYield" + 
+					" SET symbol='" + symbol 
+					+ "', value= '" + ratio 
+					+ "', concept= '" + concept 
+					+ "', finantialDate='" + finYear 
+					+ "', reportDate='" + q.today() 
+					+ "', companyName='" + companyName 
+					+ "', sector='" + sector 
+					+ "', industry='" + industry 
+					+ "', description='" + description 
+					+ "', type='" + type 
+					+ "'"
+					+ " WHERE "
+					+ "symbol='" + symbol + "' AND "
+					+ "concept='" + concept + "' AND "
+					+ "finantialDate='" + finYear 
+					+ "';";
+		} else {
+			SQL = "UPDATE apiadbossDB.adargaConcepts" + 
+					" SET symbol='" + symbol 
+					+ "', value= '" + ratio 
+					+ "', concept= '" + concept 
+					+ "', finantialDate='" + finYear 
+					+ "', reportDate='" + q.today() 
+					+ "', companyName='" + companyName 
+					+ "', sector='" + sector 
+					+ "', industry='" + industry 
+					+ "', description='" + description 
+					+ "', type='" + type 
+					+ "'"
+					+ " WHERE "
+					+ "symbol='" + symbol + "' AND "
+					+ "concept='" + concept + "' AND "
+					+ "finantialDate='" + finYear 
+					+ "';";
+		}
+		
 		
 		return SQL;
 	}
@@ -182,19 +158,37 @@ public class Storage {
 			String type
 			) throws ClassNotFoundException, ServletException, IOException, SQLException {
 		qreah q = new qreah();
-		String SQL = "INSERT INTO apiadbossDB.adargaConcepts" + 
-				" VALUES ('" 
-				+ symbol + "', '" 
-				+ concept + "', '" 
-				+ ratio + "', '" 
-				+ finYear + "', '" 
-				+ q.today()  + "', '" 
-				+ companyName  + "', '" 
-				+ sector  + "', '" 
-				+ industry  + "', '" 
-				+ description  + "', '" 
-				+ type  
-				+ "');";
+		String SQL = "";
+		if (concept.equals("FCFY")) {
+			SQL = "INSERT INTO apiadbossDB.FCFYield" + 
+					" VALUES ('" 
+					+ symbol + "', '" 
+					+ concept + "', '" 
+					+ ratio + "', '" 
+					+ finYear + "', '" 
+					+ q.today()  + "', '" 
+					+ companyName  + "', '" 
+					+ sector  + "', '" 
+					+ industry  + "', '" 
+					+ description  + "', '" 
+					+ type  
+					+ "');";
+		} else {
+			SQL = "INSERT INTO apiadbossDB.adargaConcepts" + 
+					" VALUES ('" 
+					+ symbol + "', '" 
+					+ concept + "', '" 
+					+ ratio + "', '" 
+					+ finYear + "', '" 
+					+ q.today()  + "', '" 
+					+ companyName  + "', '" 
+					+ sector  + "', '" 
+					+ industry  + "', '" 
+					+ description  + "', '" 
+					+ type  
+					+ "');";
+		}
+		
 		
 		return SQL;
 	}
@@ -227,25 +221,40 @@ public class Storage {
 		return result;
 	}
 	
-	static public boolean exists(String symbol, String concept, String finantialDate, DBOne one) throws ClassNotFoundException, SQLException, ServletException, IOException {
+	static public boolean exists(String symbol, String concept, String finantialDate, List<TableSet> companyRegisters) throws ClassNotFoundException, SQLException, ServletException, IOException {
 		boolean result = false;
-		
+		/*
 		String exists = "SELECT symbol, concept, finantialDate FROM apiadbossDB.adargaConcepts "
 				+ "where symbol = '" + symbol + "' and concept = '" + concept + "' and finantialDate = '" + finantialDate + "'";
 		ResultSet exist = one.ExecuteSELECT(exists);
+		*/
 		
-		while (exist.next()) {
-			String symbolStr = exist.getString("symbol");
-			if (symbolStr.equals(symbol)) {
-				String conceptStr = exist.getString("concept");
-				if (conceptStr.equals(concept)) {
-					String finantialDateStr = exist.getString("finantialDate");
-					if (finantialDateStr.equals(finantialDate)) {
-						result = true;
-					}
-				}
+		Iterator<TableSet> iter = companyRegisters.iterator();
+		//log.info("size: " + companyRegisters.size());
+		String main = symbol + " " + concept + " " + finantialDate;
+		log.info(main);
+		log.info("*************************************");
+		int j = 0;
+		while (iter.hasNext()) {
+			TableSet register = iter.next();
+			String aux = register.getSymbol() + " " + register.getConcept() + " " + register.getFinantialDate();
+			if (main.equals(aux)) {
+				result = true;
 			}
+			j++;
+			if (j<10) {
+				log.info(aux);
+			}
+			
+			
 		}
+		//log.info("j: " + j);
+		//log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		//log.info("result: " + result);
+		
+		//log.info(symbol + " " + concept + " " + finantialDate);
+		
+		
 		return result;
 	}
 	

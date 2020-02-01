@@ -1,4 +1,4 @@
-package adarga.cron;
+package adarga.endpoints;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import adarga.external.CompanyHub;
+import adarga.external.JustOneCompanyHub;
 import adarga.external.Storage;
 import adarga.getinfo.DBOne;
 import adarga.utils.qreah;
@@ -19,14 +20,14 @@ import adarga.utils.qreah;
 /**
  * Servlet implementation class One
  */
-@WebServlet("/data")
-public class Data extends HttpServlet {
+@WebServlet("/one")
+public class One extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Data() {
+    public One() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -41,14 +42,14 @@ public class Data extends HttpServlet {
 		String init = Long.toString(q.getTimestamp());
 		
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		CompanyHub hub = new CompanyHub();
+		JustOneCompanyHub hub = new JustOneCompanyHub();
 		out.write("Store One");
 		try {
 			
 			DBOne one = new DBOne();
 			one.ConnectDBOne();
 			String start = q.hora() + ":" + q.minutos() + ":" + q.segundos();
-			hub.setCompanies(one);
+			hub.setCompanies("AMOV");
 			String end = q.hora() + ":" + q.minutos() + ":" + q.segundos();
 			out.write("<br>");
 			out.write("Start: " + start);

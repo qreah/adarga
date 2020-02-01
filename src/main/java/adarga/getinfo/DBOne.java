@@ -111,6 +111,25 @@ public Connection ConnectDB() throws ServletException, ClassNotFoundException, I
 		
 	}
 	
+	public int getRoundFCFY() throws SQLException, ClassNotFoundException, ServletException, IOException {
+		int round = 0;
+		String SQL = "SELECT value FROM apiadbossDB.cv_variables WHERE variable = 'roundFCFY'";
+		ResultSet rs = ExecuteSELECT(SQL);
+		while (rs.next()) {
+			round = Integer.parseInt(rs.getString("value"));
+	    }
+		
+		return round;
+	}
+	
+	
+	public void setRoundFCFY(int round) throws ClassNotFoundException, ServletException, IOException, SQLException {
+		String roundString = String.valueOf(round);
+		String SQL = "UPDATE apiadbossDB.cv_variables SET value = '" + roundString + "' WHERE variable = 'roundFCFY'";
+		Execute(SQL);
+		
+	}
+	
 	public ResultSet ExecuteSELECT(String SQL) throws SQLException  {
 		
 		ResultSet rs = (ResultSet) statement.executeQuery(SQL);

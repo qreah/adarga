@@ -48,10 +48,12 @@ public class GetFCFY extends HttpServlet {
         	fin = "0.3";
         }
         String Industry = request.getParameter("industry");
+        out.write("api.adarga.org/fcfyield?ini=0.2&fin=0.3");
+        out.write("<br>");
         log.info(Industry);
         try {
 			DB db = new DB();
-			String SQL = "SELECT companyName, symbol, value, reportDate, industry, description FROM apiadbossDB.adargaConcepts\n" + 
+			String SQL = "SELECT companyName, symbol, value, reportDate, industry, description FROM apiadbossDB.FCFYield\n" + 
 					"	where concept = 'FCFY'\n" + 
 					"		and value > " + ini + "\n" + 
 					"        and value is not NULL\n" + 
@@ -85,6 +87,7 @@ public class GetFCFY extends HttpServlet {
 				output = output + "<br>";
 				output = output + "<br>";
 				out.write(output);
+				
 			}
 			
 		} catch (ClassNotFoundException | SQLException e) {

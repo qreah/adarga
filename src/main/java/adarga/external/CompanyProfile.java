@@ -19,10 +19,8 @@ import com.google.api.client.util.Key;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
-import adarga.external.KeyMetrics.Metrics;
-
 public class CompanyProfile {
-	private static final Logger log = Logger.getLogger(KeyMetrics.class.getName());
+	private static final Logger log = Logger.getLogger(CompanyProfile.class.getName());
 	private static String symbol;
 	private static String urlEndpoint = "https://financialmodelingprep.com/api/v3/company/profile/";
 	static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();

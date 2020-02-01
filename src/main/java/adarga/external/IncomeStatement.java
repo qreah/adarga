@@ -1,6 +1,7 @@
 package adarga.external;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import com.google.gson.annotations.SerializedName;
 
 import adarga.getinfo.DB;
 import adarga.getinfo.DBOne;
+import adarga.utils.TableSet;
 
 public class IncomeStatement {
 	private static final Logger log = Logger.getLogger(IncomeStatement.class.getName());
@@ -67,7 +69,6 @@ public class IncomeStatement {
 			}
 		}
 		
-		st.close();
 		return result;
 		
 	}
@@ -97,7 +98,12 @@ public class IncomeStatement {
 		return list;
 	}
     
-    static public void storeReport(HashMap<String, String> companyData) throws IOException, ClassNotFoundException, ServletException, SQLException {
+    
+    
+    static public void storeReport(HashMap<String, String> companyData, 
+    		DBOne one, 
+    		List<TableSet> companyRegisters) throws IOException, ClassNotFoundException, ServletException, SQLException {
+    	
     	String symbol = companyData.get("symbol");
     	boolean existsInAPI = execute(symbol);
     	if (!existsInAPI) {
@@ -115,7 +121,6 @@ public class IncomeStatement {
 				HashMap<String, String> ratiosList = getMetricsList(metrics);
 				Set<String> keysSet = ratiosList.keySet();
 				
-				
 				Iterator<String> keyRatio = keysSet.iterator();
 				while (keyRatio.hasNext()) {
 					String concept = keyRatio.next();
@@ -128,57 +133,7 @@ public class IncomeStatement {
 						
 					}
 					Storage stA = new Storage();
-					String SQL = stA.SQLAddRow(companyData, concept, ratio, key, "Income Statement");	
-					stA.close();
-					SQLQuerys.add(SQL);	
-				}
-				
-			}
-			
-			Iterator<String> iterSQL = SQLQuerys.iterator();
-			Storage stB = new Storage();
-			while (iterSQL.hasNext()) {
-				stB.addBatch(iterSQL.next());
-			}
-			stB.executeBatch();
-			stB.close();
-		}
-		
-	}
-    
-    
-    static public void storeReport(HashMap<String, String> companyData, DBOne one) throws IOException, ClassNotFoundException, ServletException, SQLException {
-    	String symbol = companyData.get("symbol");
-    	boolean existsInAPI = execute(symbol);
-    	if (!existsInAPI) {
-    		log.info("ERROR: Income Statement doesn't exist");
-    	}
-    	
-		if (existsInAPI) {
-			List<String> SQLQuerys = new ArrayList<String>();
-			Set<String> keys = years.keySet();
-			Iterator<String> iter = keys.iterator();
-			int batches = 0;
-			while (iter.hasNext()) {
-				String key = iter.next();
-				IS metrics = years.get(key);
-				HashMap<String, String> ratiosList = getMetricsList(metrics);
-				Set<String> keysSet = ratiosList.keySet();
-				
-				
-				Iterator<String> keyRatio = keysSet.iterator();
-				while (keyRatio.hasNext()) {
-					String concept = keyRatio.next();
-					
-					Double ratio = null;
-					if (ratiosList.get(concept) != null) {
-						if (!ratiosList.get(concept).equals("")) {
-							ratio = Double.valueOf(ratiosList.get(concept));
-						}
-						
-					}
-					Storage stA = new Storage();
-					String SQL = stA.SQLAddRow(companyData, concept, ratio, key, "Income Statement", one);	
+					String SQL = stA.SQLAddRow(companyData, concept, ratio, key, "Income Statement", one, companyRegisters);	
 					
 					SQLQuerys.add(SQL);	
 				}
