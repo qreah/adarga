@@ -41,6 +41,7 @@ public String setCompanies(String symbol) throws ClassNotFoundException, Servlet
 			ResultSet rs = one.ExecuteSELECT(exists);
 			
 			List<TableSet> companyRegisters = new ArrayList<TableSet>();
+			
 			while (rs.next()) {
 				String sym = rs.getString("symbol");
 				String concept = rs.getString("concept");
@@ -53,6 +54,7 @@ public String setCompanies(String symbol) throws ClassNotFoundException, Servlet
 				companyRegisters.add(companyRegister);
 
 			}
+			
 			rs.close();
 			
 			BalanceSheet bs = new BalanceSheet();
@@ -84,12 +86,13 @@ public String setCompanies(String symbol) throws ClassNotFoundException, Servlet
 				companyData.put("mktCap", mktCap);
 				
 				is.storeReport(companyData, one, companyRegisters);
-				bs.storeReport(companyData, one, companyRegisters);
-				cs.storeReport(companyData, one, companyRegisters);
+				//bs.storeReport(companyData, one, companyRegisters);
+				//cs.storeReport(companyData, one, companyRegisters);
+				
 			}	
 		
 		
-		return "ok";
+		return "ok"; 	
 	
 	}
 	

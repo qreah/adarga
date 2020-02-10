@@ -232,8 +232,7 @@ public class Storage {
 		Iterator<TableSet> iter = companyRegisters.iterator();
 		//log.info("size: " + companyRegisters.size());
 		String main = symbol + " " + concept + " " + finantialDate;
-		log.info(main);
-		log.info("*************************************");
+		
 		int j = 0;
 		while (iter.hasNext()) {
 			TableSet register = iter.next();
@@ -243,7 +242,7 @@ public class Storage {
 			}
 			j++;
 			if (j<10) {
-				log.info(aux);
+				//log.info(aux);
 			}
 			
 			
@@ -329,6 +328,27 @@ public class Storage {
 		String result = st.finDateConversion("2012-10-31");
 		System.out.println(result);
 
+	}
+
+	public void store(List<String> SQLQuerys, DBOne one) throws ClassNotFoundException, SQLException, ServletException, IOException {
+		DBOne two = new DBOne();
+		two.ConnectDBOne();
+		Iterator<String> iterSQL = SQLQuerys.iterator();
+		int i = 0;
+
+		while (iterSQL.hasNext()) {
+			String query = iterSQL.next();
+			
+			addBatch(query, two);
+			if (i > 10) {
+				executeBatch(two);					
+				i = 0;
+			} 
+			i++;
+		}
+		executeBatch(two);
+		two.close();
+		
 	}
 
 }

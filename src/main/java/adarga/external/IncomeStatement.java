@@ -106,46 +106,59 @@ public class IncomeStatement {
     	
     	String symbol = companyData.get("symbol");
     	boolean existsInAPI = execute(symbol);
+    	
     	if (!existsInAPI) {
     		log.info("ERROR: Income Statement doesn't exist");
     	}
     	
 		if (existsInAPI) {
 			List<String> SQLQuerys = new ArrayList<String>();
-			Set<String> keys = years.keySet();
-			Iterator<String> iter = keys.iterator();
+			Set<String> yearsReport = years.keySet();
+			
+			Iterator<String> yearsIter = yearsReport.iterator();
 			int batches = 0;
-			while (iter.hasNext()) {
-				String key = iter.next();
-				IS metrics = years.get(key);
-				HashMap<String, String> ratiosList = getMetricsList(metrics);
-				Set<String> keysSet = ratiosList.keySet();
-				
-				Iterator<String> keyRatio = keysSet.iterator();
-				while (keyRatio.hasNext()) {
-					String concept = keyRatio.next();
+			
+			int numYears = 0;
+			log.info("yearsReport: " + yearsReport.size());
+			while (yearsIter.hasNext()) {
+			//for (int m=0; m < numYears; m++) {
+				String key = yearsIter.next();
+				if (numYears < 3) {
 					
-					Double ratio = null;
-					if (ratiosList.get(concept) != null) {
-						if (!ratiosList.get(concept).equals("")) {
-							ratio = Double.valueOf(ratiosList.get(concept));
-						}
+					numYears++;
+					
+					IS metrics = years.get(key);
+					HashMap<String, String> ratiosList = getMetricsList(metrics);
+					Set<String> keysSet = ratiosList.keySet();
+					
+					Iterator<String> keyRatio = keysSet.iterator();
+					
+					while (keyRatio.hasNext()) {
+						String concept = keyRatio.next();
 						
+						Double ratio = null;
+						if (ratiosList.get(concept) != null) {
+							if (!ratiosList.get(concept).equals("")) {
+								ratio = Double.valueOf(ratiosList.get(concept));
+							}
+							
+						}
+						Storage stA = new Storage();
+						String SQL = stA.SQLAddRow(companyData, concept, ratio, key, "Income Statement", one, companyRegisters);	
+						
+						SQLQuerys.add(SQL);	
 					}
-					Storage stA = new Storage();
-					String SQL = stA.SQLAddRow(companyData, concept, ratio, key, "Income Statement", one, companyRegisters);	
 					
-					SQLQuerys.add(SQL);	
 				}
+				
 				
 			}
 			
-			Iterator<String> iterSQL = SQLQuerys.iterator();
+			
 			Storage stB = new Storage();
-			while (iterSQL.hasNext()) {
-				stB.addBatch(iterSQL.next(), one);
-			}
-			stB.executeBatch(one);
+			stB.store(SQLQuerys, one);
+			
+			
 			
 		}
 		

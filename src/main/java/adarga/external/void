@@ -1,1 +1,15 @@
-df
+<cron>
+        <url>/data</url>
+        <description>Get Financial Reports</description>
+        <schedule>every 10 minutes from 0:00 to 8:00</schedule>
+      </cron>
+      <cron>
+        <url>/FCFY</url>
+        <description>Get FCF Yield ratio</description>
+        <schedule>every 10 minutes from 0:00 to 8:00</schedule>
+      </cron>
+       <cron>
+        <url>/one?symbol=RDC</url>
+        <description>Get one income statement</description>
+        <schedule>every 10 minutes from 0:00 to 8:00</schedule>
+      </cron>

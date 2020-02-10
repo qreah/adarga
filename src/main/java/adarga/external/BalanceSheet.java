@@ -133,36 +133,39 @@ public class BalanceSheet {
 			Iterator<String> iter = keys.iterator();
 			// Itera para cada año
 			
-			while (iter.hasNext()) {
-				String key = iter.next();
-				BS metrics = years.get(key);
-				HashMap<String, String> ratiosList = getMetricsList(metrics);
-				Set<String> keysSet = ratiosList.keySet();
-				Iterator<String> keyRatio = keysSet.iterator();
-				
-				// Itera para cada partida
-				while (keyRatio.hasNext()) {
-					String concept = keyRatio.next();
-					Double ratio = null;
-					if (ratiosList.get(concept) != null) {
-						if (!ratiosList.get(concept).equals("")) {
-							ratio = Double.valueOf(ratiosList.get(concept));
-						}
-						
-					}
-					Storage stA = new Storage();
-					String SQL = stA.SQLAddRow(companyData, concept, ratio, key, "Income Statement", one, companyRegisters);	
-					SQLQuerys.add(SQL);	
-				}
-				
-			}
-			Iterator<String> iterSQL = SQLQuerys.iterator();
-			Storage stB = new Storage();
-			while (iterSQL.hasNext()) {
-				stB.addBatch(iterSQL.next(), one);
-			}
-			stB.executeBatch(one);
 			
+			int numYears = 0;
+			while (iter.hasNext()) {
+			//for (int m=0; m < keys.size(); m++) {
+				String key = iter.next();
+				if (numYears < 3) {
+					numYears++;
+					
+					BS metrics = years.get(key);
+					HashMap<String, String> ratiosList = getMetricsList(metrics);
+					Set<String> keysSet = ratiosList.keySet();
+					Iterator<String> keyRatio = keysSet.iterator();
+					
+					// Itera para cada partida
+					while (keyRatio.hasNext()) {
+						String concept = keyRatio.next();
+						Double ratio = null;
+						if (ratiosList.get(concept) != null) {
+							if (!ratiosList.get(concept).equals("")) {
+								ratio = Double.valueOf(ratiosList.get(concept));
+							}
+							
+						}
+						Storage stA = new Storage();
+						String SQL = stA.SQLAddRow(companyData, concept, ratio, key, "Income Statement", one, companyRegisters);	
+						SQLQuerys.add(SQL);	
+					}
+				}
+			
+				
+			}
+			Storage stB = new Storage();
+			stB.store(SQLQuerys, one);
 			
 		}
 		

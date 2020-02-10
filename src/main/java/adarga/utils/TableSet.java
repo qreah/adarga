@@ -1,6 +1,8 @@
 package adarga.utils;
 
-public class TableSet {
+import java.io.Serializable;
+
+public class TableSet implements Serializable {
 
 	private String symbol;
 	private String concept;

@@ -36,7 +36,7 @@ public class CompanyHub {
 	static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     static JsonFactory JSON_FACTORY = new JacksonFactory();
     int rows = 7936;
-	int batch = 100;
+	int batch = 1;
 	int batchFCFY = 1000;
 	
 	/*
@@ -139,8 +139,8 @@ public String setCompanies(DBOne one) throws ClassNotFoundException, ServletExce
 				// companyRegisters are all registers from the database
 				
 				is.storeReport(companyData, one, companyRegisters);
-				bs.storeReport(companyData, one, companyRegisters);
-				cs.storeReport(companyData, one, companyRegisters);
+				//bs.storeReport(companyData, one, companyRegisters);
+				//cs.storeReport(companyData, one, companyRegisters);
 			}	
 			
 			one.setRound(i + 1);

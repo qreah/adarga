@@ -1,6 +1,7 @@
 package adarga.getinfo;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,7 +16,7 @@ import javax.servlet.ServletException;
 
 import com.google.apphosting.api.ApiProxy;
 
-public class DBOne {
+public class DBOne implements Serializable {
 	
 	private Connection conn;
 	private String DB = "apiadbossDB.Users";
@@ -27,7 +28,7 @@ public class DBOne {
 	String rootPass = "rootadboss2018";
 	Statement statement;
 	
-	public void ConnectDBOne() throws ClassNotFoundException, SQLException, ServletException, IOException {
+	public void ConnectDBOne() throws ClassNotFoundException, SQLException, ServletException, IOException  {
 		
 		conn = ConnectDB();
 		statement = conn.createStatement();
@@ -130,10 +131,9 @@ public Connection ConnectDB() throws ServletException, ClassNotFoundException, I
 		
 	}
 	
-	public ResultSet ExecuteSELECT(String SQL) throws SQLException  {
+	public ResultSet ExecuteSELECT(String SQL) throws SQLException   {
 		
-		ResultSet rs = (ResultSet) statement.executeQuery(SQL);
-		return rs;
+		return statement.executeQuery(SQL);
 	}
 	
 	public boolean Execute(String SQL) throws ClassNotFoundException, ServletException, IOException, SQLException  {
@@ -162,7 +162,10 @@ public Connection ConnectDB() throws ServletException, ClassNotFoundException, I
 	}
 	
 	public int[] executeBatch() throws SQLException  {
+		
 		int[] result = statement.executeBatch();
+		statement.clearBatch();
+		
 		return result;
 	}
 	
