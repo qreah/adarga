@@ -34,13 +34,13 @@ import adarga.utils.qreah;
 /**
  * Servlet implementation class Hub
  */
-@WebServlet("/Hub")
-public class Hub extends HttpServlet {
+@WebServlet("/HubIS")
+public class HubIS extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(Hub.class.getName());
+	private static final Logger log = Logger.getLogger(HubIS.class.getName());
        
     
-    public Hub() {
+    public HubIS() {
         super();
     }
 
@@ -66,7 +66,7 @@ public class Hub extends HttpServlet {
         DBOne one = new DBOne();
 		try {
 			one.ConnectDBOne();
-			int round = one.getRound();
+			int round = one.getRoundIS();
 			if ((round + batch) > rows) {
 				round = 0;
 			} 
@@ -79,10 +79,6 @@ public class Hub extends HttpServlet {
 				contador++;
 				JSONObject json = new JSONObject(companies.get(i).toString());
 				String symbol = json.getString("symbol");
-				
-				
-				// Create a table with all the registers from the company
-				// that already exists
 				
 				String exists = "SELECT symbol, concept, finantialDate FROM apiadbossDB.adargaConcepts "
 						+ "where symbol = '" + symbol + "'";
@@ -114,9 +110,6 @@ public class Hub extends HttpServlet {
 						&& (!sector.equals("Financial Services"))
 							) {
 					
-					// Gets data from the company through the API 
-					// only if it is not a financial company
-					
 					HashMap<String, String> companyData = new HashMap<String, String>();
 					companyData.put("symbol", symbol);
 					companyData.put("companyName", companyName);
@@ -130,24 +123,19 @@ public class Hub extends HttpServlet {
 					session.setAttribute("companyData", companyData);
 					session.setAttribute("companyRegisters", companyRegisters);
 					String serviceIS = "/serviceIS" + j;
-					String serviceBS = "/serviceBS" + j;
-					String serviceCS = "/serviceCS" + j;
 					j++;
-					log.info(symbol + " | " + i + " | " + companyName  + " | " + industry);
 					
-					request.getRequestDispatcher(serviceIS).include(request, response);
+					IncomeStatement is = new IncomeStatement();
+					is.storeReport(companyData, one, companyRegisters);
 					
-					request.getRequestDispatcher(serviceBS).include(request, response);
 					
-					request.getRequestDispatcher(serviceCS).include(request, response);
-					
-				    
 					
 				} else {
 					contador = contador -1;
 				}
-				one.setRound(i + 1);
+				one.setRoundIS(i + 1);
 			}
+			one.close();
 			
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
@@ -161,16 +149,6 @@ public class Hub extends HttpServlet {
 		out.write("<br>");
 		out.write("End: " + end);
 		
-	}
-	
-	public void dispatch(HttpServletRequest request, HttpServletResponse response, String serviceIS) throws ServletException, IOException {
-		
-		response.sendRedirect(serviceIS);
-		//RequestDispatcher dispatcher = getServletContext()
-		//	      .getRequestDispatcher(serviceIS);
-		//dispatcher.forward(request, response);  
-		
-		return;
 	}
 
 }

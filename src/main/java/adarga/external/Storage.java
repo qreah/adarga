@@ -55,7 +55,7 @@ public class Storage {
 	
 	public String SQLAddRow(HashMap<String, String> companyData, 
 			String concept, 
-			Double ratio, 
+			String ratio, 
 			String finYear,
 			String type,
 			DBOne one,
@@ -67,7 +67,7 @@ public class Storage {
 		String companyName = companyData.get("companyName");
 		String sector = companyData.get("sector");
 		String industry = companyData.get("industry");
-		String description = companyData.get("description");
+		String description = companyData.get("description").replace(";", ":");
 		String price = companyData.get("price");
 		String mktCap = companyData.get("mktCap");
 		
@@ -91,7 +91,7 @@ public class Storage {
 	
 	
 	static public String updateSQL(String symbol, 
-			Double ratio, 
+			String ratio, 
 			String finYear, 
 			String concept,
 			String companyName,
@@ -148,7 +148,7 @@ public class Storage {
 	
 	
 	static public String insertSQL(String symbol, 
-			Double ratio, 
+			String ratio, 
 			String finYear, 
 			String concept,
 			String companyName,

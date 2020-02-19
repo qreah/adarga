@@ -51,9 +51,10 @@ public class Ratios {
 		} else {
 			Double freeCashFlow = Double.valueOf(FCF);
 			Double FCFYield = freeCashFlow / mrkCap;
+			String FCFYieldStr = Double. toString(FCFYield).replace(".", ",");
 			log.info("FCFYield: " + FCFYield);
 			Storage st = new Storage();
-			SQL = st.SQLAddRow(companyData, "FCFY", FCFYield, finDate, "Valuation", one, companyRegisters);	
+			SQL = st.SQLAddRow(companyData, "FCFY", FCFYieldStr, finDate, "Valuation", one, companyRegisters);	
 		}
 		
 		return SQL;

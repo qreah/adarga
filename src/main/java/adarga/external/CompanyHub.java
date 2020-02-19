@@ -37,7 +37,7 @@ public class CompanyHub {
     static JsonFactory JSON_FACTORY = new JacksonFactory();
     int rows = 7936;
 	int batch = 1;
-	int batchFCFY = 1000;
+	int batchFCFY = 500;
 	
 	/*
 	 * 	Get the list of companies that you can analyze provided by
@@ -220,6 +220,7 @@ public String setCompanies(DBOne one) throws ClassNotFoundException, ServletExce
 		Iterator<String> iter = SQLList.iterator();
 		while (iter.hasNext()) {
 			String SQL = iter.next();
+			log.info(SQL);
 			db2.addBatch(SQL);	
 		}
 		int[] result = db2.executeBatch();

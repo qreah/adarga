@@ -41,58 +41,105 @@ public class GetFCFY extends HttpServlet {
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
         String ini = request.getParameter("ini");
         String fin = request.getParameter("fin");
-        if (ini == null) {
-        	ini = "0.2";
-        }
-        if (fin == null) {
-        	fin = "0.3";
-        }
-        String Industry = request.getParameter("industry");
+        String sym = request.getParameter("sym");
+        
         out.write("api.adarga.org/fcfyield?ini=0.2&fin=0.3");
         out.write("<br>");
-        log.info(Industry);
-        try {
-			DB db = new DB();
-			String SQL = "SELECT companyName, symbol, value, reportDate, industry, description FROM apiadbossDB.FCFYield\n" + 
-					"	where concept = 'FCFY'\n" + 
-					"		and value > " + ini + "\n" + 
-					"        and value is not NULL\n" + 
-					"        and value < " + fin + "\n" + 
-					"        and industry != ''\n";
-			
-			if (Industry != null) {
-				SQL = SQL + " and industry=" + Industry + "\n";
-	        }
-			SQL	= SQL +	"	order by 3 desc";
-			log.info(SQL);
-			ResultSet rs = db.ExecuteSELECT(SQL);
-			while (rs.next()) {
-				String companyName = rs.getString("companyName");
-				String symbol = rs.getString("symbol");
-				String fcfYield = rs.getString("value");
-				String reportDate = rs.getString("reportDate");
-				String industry = rs.getString("industry");
-				String description = rs.getString("description");
-				String output = "<br>";
-				output = output + companyName + " | " + symbol;
-				output = output + "<br>";
-				output = output + "FCF Yield: " + fcfYield;
-				output = output + "<br>";
-				output = output + "Report Date: " + reportDate;
-				output = output + "<br>";
-				output = output + "Industry: " + industry;
-				output = output + "<br>";
-				output = output + "Description: " + description;
-				output = output + "<br>";
-				output = output + "<br>";
-				output = output + "<br>";
-				out.write(output);
-				
-			}
-			
-		} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
-		}
+        
+        if (sym != null) {
+        	
+            String Industry = request.getParameter("industry");
+          
+            try {
+    			DB db = new DB();
+    			String SQL = "SELECT companyName, symbol, value, reportDate, industry, description FROM apiadbossDB.FCFYield\n" + 
+    					"	where concept = 'FCFY'\n" + 
+    					"		and symbol='" + sym + "'";
+    			
+    			log.info(SQL);
+    			ResultSet rs = db.ExecuteSELECT(SQL);
+    			while (rs.next()) {
+    				String companyName = rs.getString("companyName");
+    				String symbol = rs.getString("symbol");
+    				String fcfYield = rs.getString("value");
+    				String reportDate = rs.getString("reportDate");
+    				String industry = rs.getString("industry");
+    				String description = rs.getString("description");
+    				String output = "<br>";
+    				output = output + companyName + " | " + symbol;
+    				output = output + "<br>";
+    				output = output + "FCF Yield: " + fcfYield;
+    				output = output + "<br>";
+    				output = output + "Report Date: " + reportDate;
+    				output = output + "<br>";
+    				output = output + "Industry: " + industry;
+    				output = output + "<br>";
+    				output = output + "Description: " + description;
+    				output = output + "<br>";
+    				output = output + "<br>";
+    				output = output + "<br>";
+    				out.write(output);
+    				
+    			}
+    			
+    		} catch (ClassNotFoundException | SQLException e) {
+    			e.printStackTrace();
+    		}
+        } else {
+        	if (ini == null) {
+            	ini = "0.2";
+            }
+            if (fin == null) {
+            	fin = "0.3";
+            }
+            String Industry = request.getParameter("industry");
+            
+            log.info(Industry);
+            try {
+    			DB db = new DB();
+    			String SQL = "SELECT companyName, symbol, value, reportDate, industry, description FROM apiadbossDB.FCFYield\n" + 
+    					"	where concept = 'FCFY'\n" + 
+    					"		and value > " + ini + "\n" + 
+    					"        and value is not NULL\n" + 
+    					"        and value < " + fin + "\n" + 
+    					"        and industry != ''\n";
+    			
+    			if (Industry != null) {
+    				SQL = SQL + " and industry=" + Industry + "\n";
+    	        }
+    			SQL	= SQL +	"	order by 3 desc";
+    			log.info(SQL);
+    			ResultSet rs = db.ExecuteSELECT(SQL);
+    			while (rs.next()) {
+    				String companyName = rs.getString("companyName");
+    				String symbol = rs.getString("symbol");
+    				String fcfYield = rs.getString("value");
+    				String reportDate = rs.getString("reportDate");
+    				String industry = rs.getString("industry");
+    				String description = rs.getString("description");
+    				String output = "<br>";
+    				output = output + companyName + " | " + symbol;
+    				output = output + "<br>";
+    				output = output + "FCF Yield: " + fcfYield;
+    				output = output + "<br>";
+    				output = output + "Report Date: " + reportDate;
+    				output = output + "<br>";
+    				output = output + "Industry: " + industry;
+    				output = output + "<br>";
+    				output = output + "Description: " + description;
+    				output = output + "<br>";
+    				output = output + "<br>";
+    				output = output + "<br>";
+    				out.write(output);
+    				
+    			}
+    			
+    		} catch (ClassNotFoundException | SQLException e) {
+    			e.printStackTrace();
+    		}
+        }
+        
+        
         
 	}
 

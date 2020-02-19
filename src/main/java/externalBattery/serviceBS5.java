@@ -55,7 +55,9 @@ public class serviceBS5 extends HttpServlet {
 		DBOne one = new DBOne();
 		try {
 			one.ConnectDBOne();
+			
 			bs.storeReport(companyData, one, companyRegisters);
+			
 			one.close();
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();

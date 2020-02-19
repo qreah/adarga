@@ -34,7 +34,7 @@ import adarga.utils.TableSet;
 
 public class IncomeStatement {
 	private static final Logger log = Logger.getLogger(IncomeStatement.class.getName());
-	private static String symbol;
+	private static String symbolInternal;
 	private static String urlEndpoint = "https://financialmodelingprep.com/api/v3/financials/income-statement/";
 	static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     static JsonFactory JSON_FACTORY = new JacksonFactory();
@@ -45,6 +45,7 @@ public class IncomeStatement {
 		boolean result = false;
 		String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json";
 		Storage st = new Storage();
+		symbolInternal = symbol;
 		
 		HttpRequestFactory requestFactory 
 	    = HTTP_TRANSPORT.createRequestFactory(
@@ -55,19 +56,25 @@ public class IncomeStatement {
 		HttpRequest request = requestFactory.buildGetRequest(url);
 		HttpResponse res = request.execute();
 		String json = res.parseAsString();
+		log.info(json);
 		JSONObject j = new JSONObject(json);
 		if (j.has("financials")) {
 			result = true;
 			JSONArray metrics = j.getJSONArray("financials");
 			Gson gson = new Gson();
 			Iterator<Object> iter = metrics.iterator();
+			
+			years.clear();
 			while (iter.hasNext()) {
 				JSONObject metricSet = (JSONObject) iter.next();
 				IS ratios = gson.fromJson(metricSet.toString(), IS.class);
 				String finDate = st.finDateConversion(ratios.getDate());
 				years.put(finDate, ratios);
+				
 			}
+			
 		}
+		
 		
 		return result;
 		
@@ -114,21 +121,21 @@ public class IncomeStatement {
 		if (existsInAPI) {
 			List<String> SQLQuerys = new ArrayList<String>();
 			Set<String> yearsReport = years.keySet();
-			
 			Iterator<String> yearsIter = yearsReport.iterator();
 			int batches = 0;
 			
+			//log.info("Revenue store: " + years.get("2018").getRevenue());
 			int numYears = 0;
-			log.info("yearsReport: " + yearsReport.size());
 			while (yearsIter.hasNext()) {
 			//for (int m=0; m < numYears; m++) {
 				String key = yearsIter.next();
-				if (numYears < 3) {
+				if (numYears < yearsReport.size()) {
 					
 					numYears++;
 					
 					IS metrics = years.get(key);
 					HashMap<String, String> ratiosList = getMetricsList(metrics);
+					//log.info(key + " | " + symbol + " | " + metrics.getInterestExpense());
 					Set<String> keysSet = ratiosList.keySet();
 					
 					Iterator<String> keyRatio = keysSet.iterator();
@@ -136,10 +143,10 @@ public class IncomeStatement {
 					while (keyRatio.hasNext()) {
 						String concept = keyRatio.next();
 						
-						Double ratio = null;
+						String ratio = null;
 						if (ratiosList.get(concept) != null) {
 							if (!ratiosList.get(concept).equals("")) {
-								ratio = Double.valueOf(ratiosList.get(concept));
+								ratio = ratiosList.get(concept).replace(".", ",");
 							}
 							
 						}
@@ -157,8 +164,6 @@ public class IncomeStatement {
 			
 			Storage stB = new Storage();
 			stB.store(SQLQuerys, one);
-			
-			
 			
 		}
 		

@@ -47,7 +47,8 @@ public class BalanceSheet {
     }
     
     public static boolean execute(String symbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
-		boolean result = false;
+		
+    	boolean result = false;
 		String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json";
 		Storage st = new Storage();
 		
@@ -61,12 +62,13 @@ public class BalanceSheet {
 		HttpResponse res = request.execute();
 		String json = res.parseAsString();
 		JSONObject j = new JSONObject(json);
-		log.info(symbol);
+		
 		if (j.has("financials")) {
 			result = true;
 			JSONArray metrics = j.getJSONArray("financials");
 			Gson gson = new Gson();
 			Iterator<Object> iter = metrics.iterator();
+			years.clear();
 			while (iter.hasNext()) {
 				JSONObject metricSet = (JSONObject) iter.next();
 				BS ratios = gson.fromJson(metricSet.toString(), BS.class);
@@ -125,7 +127,9 @@ public class BalanceSheet {
     
     public static void storeReport(HashMap<String, String> companyData, DBOne one, List<TableSet> companyRegisters) throws IOException, ClassNotFoundException, ServletException, SQLException {
 		String symbol = companyData.get("symbol");
+		
     	boolean exists = execute(symbol);
+    	
 		if (exists) {
 			
 			Set<String> keys = years.keySet();
@@ -138,7 +142,7 @@ public class BalanceSheet {
 			while (iter.hasNext()) {
 			//for (int m=0; m < keys.size(); m++) {
 				String key = iter.next();
-				if (numYears < 3) {
+				if (numYears < keys.size()) {
 					numYears++;
 					
 					BS metrics = years.get(key);
@@ -149,16 +153,18 @@ public class BalanceSheet {
 					// Itera para cada partida
 					while (keyRatio.hasNext()) {
 						String concept = keyRatio.next();
-						Double ratio = null;
+						String ratio = null;
 						if (ratiosList.get(concept) != null) {
 							if (!ratiosList.get(concept).equals("")) {
-								ratio = Double.valueOf(ratiosList.get(concept));
+								ratio = ratiosList.get(concept).replace(".", ",");
 							}
 							
 						}
+						
 						Storage stA = new Storage();
-						String SQL = stA.SQLAddRow(companyData, concept, ratio, key, "Income Statement", one, companyRegisters);	
+						String SQL = stA.SQLAddRow(companyData, concept, ratio, key, "Balance Sheet", one, companyRegisters);	
 						SQLQuerys.add(SQL);	
+						
 					}
 				}
 			

@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import adarga.cron.Hub;
+import adarga.external.CashFlowStatement;
 import adarga.external.IncomeStatement;
 import adarga.getinfo.DBOne;
 import adarga.utils.TableSet;
@@ -22,15 +23,15 @@ import adarga.utils.TableSet;
 /**
  * Servlet implementation class serviceIS0
  */
-@WebServlet("/serviceIS16")
-public class serviceIS16 extends HttpServlet {
+@WebServlet("/serviceCS5")
+public class serviceCS5 extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(serviceIS16.class.getName());
+	private static final Logger log = Logger.getLogger(serviceCS5.class.getName());
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public serviceIS16() {
+    public serviceCS5() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -45,7 +46,7 @@ public class serviceIS16 extends HttpServlet {
 		response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
 		
-		IncomeStatement is = new IncomeStatement();
+        CashFlowStatement cs = new CashFlowStatement();
 		HttpSession session = request.getSession();
 		
 		HashMap<String, String> companyData = new HashMap<String, String>();
@@ -54,7 +55,9 @@ public class serviceIS16 extends HttpServlet {
 		DBOne one = new DBOne();
 		try {
 			one.ConnectDBOne();
-			is.storeReport(companyData, one, companyRegisters);
+			
+			cs.storeReport(companyData, one, companyRegisters);
+			
 			one.close();
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();

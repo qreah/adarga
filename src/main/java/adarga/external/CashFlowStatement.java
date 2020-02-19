@@ -77,6 +77,7 @@ public class CashFlowStatement {
 			JSONArray metrics = j.getJSONArray("financials");
 			Gson gson = new Gson();
 			Iterator<Object> iter = metrics.iterator();
+			years.clear();
 			while (iter.hasNext()) {
 				JSONObject metricSet = (JSONObject) iter.next();
 				CS ratios = gson.fromJson(metricSet.toString(), CS.class);
@@ -138,7 +139,7 @@ public class CashFlowStatement {
 			//for (int m=0; m < numYears; m++) {
 			while (iter.hasNext()) {
 				String key = iter.next();
-				if (numYears < 3) {
+				if (numYears < keys.size()) {
 					numYears++;
 					
 					CS metrics = years.get(key);
@@ -149,15 +150,15 @@ public class CashFlowStatement {
 					while (keyRatio.hasNext()) {
 						String concept = keyRatio.next();
 						
-						Double ratio = null;
+						String ratio = null;
 						if (ratiosList.get(concept) != null) {
 							if (!ratiosList.get(concept).equals("")) {
-								ratio = Double.valueOf(ratiosList.get(concept));
+								ratio = ratiosList.get(concept).replace(".", ",");
 							}
 							
 						}
 						Storage stA = new Storage();
-						String SQL = stA.SQLAddRow(companyData, concept, ratio, key, "Income Statement", one, companyRegisters);	
+						String SQL = stA.SQLAddRow(companyData, concept, ratio, key, "Cash Flow Statement", one, companyRegisters);	
 						
 						SQLQuerys.add(SQL);		
 					}
