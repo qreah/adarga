@@ -29,7 +29,7 @@ public class DB {
 	private String locationTable = "apiadbossDB.locations";
 	private static final Logger log = Logger.getLogger(DB.class.getName());
 	String dataBase = "apiadbossDB";
-	String instanceConnectionName = "devadboss-181207:europe-west1:apiadboss";
+	String instanceConnectionName = "";
 	String roorPass = "rootadboss2018";
 	Statement statement;
 	DataSource pool;
@@ -39,6 +39,7 @@ public class DB {
 		conn = ConnectDB();
 		statement = conn.createStatement();
 		//ConnectDBHikari();
+		instanceConnectionName = getInstanceConnectionName();
 		
 	}
 	
@@ -58,6 +59,13 @@ public class DB {
 		conn = ConnectDB();
 		statement = conn.createStatement();
 		
+	}
+	
+	public String getInstanceConnectionName() throws IOException {
+		Properties properties = new Properties();
+		properties.load(getClass().getClassLoader()
+				.getResourceAsStream("names.sec"));
+		return properties.getProperty("database");
 	}
 	
 	public Connection ConnectDB() throws ServletException, ClassNotFoundException, IOException, SQLException {
@@ -351,6 +359,12 @@ public class DB {
 		
 		return statement.isClosed();
 		
+	}
+	
+	public static void main(String[] args) throws IOException, ClassNotFoundException, ServletException, SQLException {
+		DB db = new DB();
+		log.info(db.getInstanceConnectionName());
+
 	}
 
 }

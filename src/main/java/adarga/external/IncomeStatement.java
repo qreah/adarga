@@ -35,6 +35,7 @@ import adarga.utils.TableSet;
 public class IncomeStatement {
 	private static final Logger log = Logger.getLogger(IncomeStatement.class.getName());
 	private static String symbolInternal;
+	private static String APIKey = "9b587440587b5542b0567b8ac89092d2";
 	private static String urlEndpoint = "https://financialmodelingprep.com/api/v3/financials/income-statement/";
 	static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     static JsonFactory JSON_FACTORY = new JacksonFactory();
@@ -43,7 +44,7 @@ public class IncomeStatement {
     
     public static boolean execute(String symbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
 		boolean result = false;
-		String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json";
+		String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json" + "&apikey=" + APIKey;
 		Storage st = new Storage();
 		symbolInternal = symbol;
 		

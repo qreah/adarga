@@ -35,6 +35,7 @@ public class CompanyHub {
 	private static final Logger log = Logger.getLogger(CompanyHub.class.getName());
 	static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     static JsonFactory JSON_FACTORY = new JacksonFactory();
+    private static String APIKey = "9b587440587b5542b0567b8ac89092d2";
     int rows = 7936;
 	int batch = 1;
 	int batchFCFY = 500;
@@ -45,7 +46,7 @@ public class CompanyHub {
 	 */
 	
 	public JSONArray getCompaniesList() throws IOException {
-		String urlRaw = "https://financialmodelingprep.com/api/v3/company/stock/list";
+		String urlRaw = "https://financialmodelingprep.com/api/v3/company/stock/list" + "?apikey=" + APIKey;
 		HttpRequestFactory requestFactory 
 	    = HTTP_TRANSPORT.createRequestFactory(
 	      (HttpRequest request) -> {

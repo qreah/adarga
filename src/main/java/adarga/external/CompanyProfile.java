@@ -22,6 +22,7 @@ import com.google.gson.annotations.SerializedName;
 public class CompanyProfile {
 	private static final Logger log = Logger.getLogger(CompanyProfile.class.getName());
 	private static String symbol;
+	private static String APIKey = "9b587440587b5542b0567b8ac89092d2";
 	private static String urlEndpoint = "https://financialmodelingprep.com/api/v3/company/profile/";
 	static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     static JsonFactory JSON_FACTORY = new JacksonFactory();
@@ -30,7 +31,8 @@ public class CompanyProfile {
     
     
     public Profile getProfile(String symbol) throws IOException {
-    	String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json";
+    	String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json" + "&apikey=" + APIKey;
+    	log.info(urlEndpointComposer);
     	HttpRequestFactory requestFactory 
 	    = HTTP_TRANSPORT.createRequestFactory(
 	      (HttpRequest requestX) -> {
@@ -40,8 +42,8 @@ public class CompanyProfile {
 		GenericUrl url = new GenericUrl(urlEndpointComposer);
 		HttpRequest request = requestFactory.buildGetRequest(url);
 		HttpResponse res = request.execute();
-		
 		String json = res.parseAsString();
+		log.info(json);
 		JSONObject jsonO = new JSONObject(json);
 		JSONObject prof = jsonO.getJSONObject("profile");
 		Gson gson = new Gson();

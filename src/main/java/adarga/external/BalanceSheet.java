@@ -37,6 +37,7 @@ import adarga.utils.qreah;
 public class BalanceSheet {
 	private static final Logger log = Logger.getLogger(BalanceSheet.class.getName());
 	private static String symbol;
+	private static String APIKey = "9b587440587b5542b0567b8ac89092d2";
 	private static String urlEndpoint = "https://financialmodelingprep.com/api/v3/financials/balance-sheet-statement/";
 	static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     static JsonFactory JSON_FACTORY = new JacksonFactory();
@@ -49,7 +50,7 @@ public class BalanceSheet {
     public static boolean execute(String symbol) throws IOException, ClassNotFoundException, ServletException, SQLException {
 		
     	boolean result = false;
-		String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json";
+		String urlEndpointComposer = urlEndpoint + symbol + "?datatype=json" + "&apikey=" + APIKey;
 		Storage st = new Storage();
 		
 		HttpRequestFactory requestFactory 

@@ -27,7 +27,27 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-    </dependencies>
+    <dependency>
+<groupId>com.google.appengine</groupId>
+<artifactId>appengine-api-1.0-sdk</artifactId>
+<version>1.9.51</version>
+</dependency>
+<dependency>
+<groupId>com.googlecode.objectify</groupId>
+<artifactId>objectify</artifactId>
+<version>5.1.17</version>
+</dependency>
+<dependency>
+<groupId>com.google.guava</groupId>
+<artifactId>guava</artifactId>
+<version>20.0</version>
+</dependency>
+<dependency>
+<groupId>com.google.appengine</groupId>
+<artifactId>appengine-endpoints</artifactId>
+<version>1.9.51</version>
+</dependency>
+</dependencies>
   </dependencyManagement>
 
   <dependencies>
@@ -87,18 +107,43 @@
 <version>1.9.68</version>
 </dependency>
 
- <!-- Adwords -->
-
-	<dependency>
+ <dependency>
       <groupId>com.google.api-ads</groupId>
       <artifactId>ads-lib</artifactId>
       <version>RELEASE</version>
     </dependency>
-    
     <dependency>
       <groupId>com.google.api-ads</groupId>
       <artifactId>adwords-axis</artifactId>
       <version>RELEASE</version>
+    </dependency>
+    
+    
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>jstl</artifactId>
+        <version>1.2</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>javax.el</groupId>
+        <artifactId>javax.el-api</artifactId>
+        <version>2.2.4</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <!-- GAE Dependencies -->
+    <dependency>
+        <groupId>com.google.appengine</groupId>
+        <artifactId>appengine-api-1.0-sdk</artifactId>
+        <version>1.9.80</version>
+        <scope>compile</scope>
     </dependency>
     
     

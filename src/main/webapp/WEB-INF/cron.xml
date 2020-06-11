@@ -1,13 +1,3 @@
 <cronentries>
-	 <cron>
-        <url>/Hub?batch=1</url>
-        <description>Get Financial Reports</description>
-        <schedule>every 1 minutes</schedule>
-      </cron>
-      
-      <cron>
-        <url>/FCFY</url>
-        <description>Get FCF Yield ratio</description>
-        <schedule>every 10 minutes from 23:00 to 9:00</schedule>
-      </cron>
+	 
 </cronentries>
