@@ -23,7 +23,7 @@ public class DBOne implements Serializable {
 	private String locationTable = "apiadbossDB.locations";
 	private static final Logger log = Logger.getLogger(DBOne.class.getName());
 	String dataBase = "apiadbossDB";
-	String instanceConnectionName = "devadboss-181207:europe-west1:apiadboss";
+	String instanceConnectionName = "";
 	String user = "root";
 	String rootPass = "rootadboss2018";
 	Statement statement;
@@ -32,7 +32,7 @@ public class DBOne implements Serializable {
 		
 		conn = ConnectDB();
 		statement = conn.createStatement();
-    	
+		instanceConnectionName = getInstanceConnectionName();
     	
 	}
 	
@@ -40,6 +40,13 @@ public class DBOne implements Serializable {
 		conn.close();
 		conn.abort(Runnable::run);
 		statement.close();
+	}
+	
+	public String getInstanceConnectionName() throws IOException {
+		Properties properties = new Properties();
+		properties.load(getClass().getClassLoader()
+				.getResourceAsStream("names.sec"));
+		return properties.getProperty("database");
 	}
 	
 public Connection ConnectDB() throws ServletException, ClassNotFoundException, IOException, SQLException {
